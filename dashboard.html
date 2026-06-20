@@ -1010,13 +1010,15 @@ html[lang="en"] .dp-logo,.modal-title,.anam-hero-meta h2,.pat-name{font-family:'
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-  <div class="modal-overlay" id="reminderModal2">
-  <div class="modal-box" style="max-width:480px;">
+<div class="modal-overlay" id="reminderModal2">
+  <div class="modal-box" style="max-width:500px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
       <div class="modal-title">🔔 Нагадування пацієнту</div>
-      <button onclick="closeModal('reminderModal2')" style="background:transparent;border:none;font-size:20px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
+      <button onclick="closeModal('reminderModal2')" style="background:transparent;border:none;font-size:20px;color:var(--muted);cursor:pointer;">×</button>
     </div>
     <div class="modal-sub" id="rem2PatName">—</div>
+
+    <!-- ТИП НАГАДУВАННЯ -->
     <div style="font-size:10.5px;font-weight:700;color:#9CA3AF;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;">Тип нагадування</div>
     <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
       <div class="remind-opt on" id="rem2t1" onclick="selectRem2Type(1)">
@@ -1036,55 +1038,171 @@ html[lang="en"] .dp-logo,.modal-title,.anam-hero-meta h2,.pat-name{font-family:'
         <div class="remind-opt-desc">Довільний текст</div>
       </div>
     </div>
-    <div id="rem2DateWrap" style="display:flex;gap:10px;margin-bottom:12px;">
-      <div style="flex:1;">
-        <label class="modal-lbl">Дата прийому</label>
-        <input class="modal-inp" type="date" id="rem2Date" style="margin-bottom:0;" oninput="buildRem2Preview()"/>
-      </div>
-      <div style="flex:1;">
-        <label class="modal-lbl">Час</label>
-        <input class="modal-inp" type="time" id="rem2Time" style="margin-bottom:0;" oninput="buildRem2Preview()"/>
+
+    <!-- РЕЖИМ НАДСИЛАННЯ -->
+    <div style="font-size:10.5px;font-weight:700;color:#9CA3AF;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;">Режим надсилання</div>
+    <div style="display:flex;gap:6px;margin-bottom:14px;">
+      <button class="rem2-ch-btn on" id="schedMode-once"   onclick="setSchedMode('once')">📅 Одноразово</button>
+      <button class="rem2-ch-btn"    id="schedMode-repeat" onclick="setSchedMode('repeat')">🔁 Повторюване</button>
+      <button class="rem2-ch-btn"    id="schedMode-auto"   onclick="setSchedMode('auto')">⚡ Автоматично</button>
+    </div>
+
+    <!-- ПАНЕЛЬ: ОДНОРАЗОВО -->
+    <div id="schedPanelOnce">
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <div style="flex:1;">
+          <label class="modal-lbl">Дата</label>
+          <input class="modal-inp" type="date" id="rem2Date" style="margin-bottom:0;" oninput="buildRem2Preview()"/>
+        </div>
+        <div style="flex:1;">
+          <label class="modal-lbl">Час</label>
+          <input class="modal-inp" type="time" id="rem2Time" style="margin-bottom:0;" oninput="buildRem2Preview()"/>
+        </div>
       </div>
     </div>
+
+    <!-- ПАНЕЛЬ: ПОВТОРЮВАНЕ -->
+    <div id="schedPanelRepeat" style="display:none;">
+      <div style="background:#FFF5F7;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;">
+
+        <div>
+          <label class="modal-lbl">Повторювати</label>
+          <select class="modal-inp" id="repeatFreq" style="margin-bottom:0;" onchange="updateRepeatUI()">
+            <option value="daily">Щодня</option>
+            <option value="weekly">По днях тижня</option>
+            <option value="interval">Кожні N днів</option>
+          </select>
+        </div>
+
+          <label class="modal-lbl" style="white-space:nowrap;margin:0;">Кожні</label>
+          <input class="modal-inp" type="number" id="repeatIntervalDays" value="3" min="1" max="90" style="width:80px;margin-bottom:0;"/>
+          <span style="font-size:13px;color:var(--muted);">днів</span>
+        </div>
+
+        <div id="repeatWeekdaysWrap" style="display:none;">
+          <label class="modal-lbl">Дні тижня</label>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            <button class="rem2-ch-btn" data-d="1" onclick="toggleWeekday(this)">Пн</button>
+            <button class="rem2-ch-btn" data-d="2" onclick="toggleWeekday(this)">Вт</button>
+            <button class="rem2-ch-btn" data-d="3" onclick="toggleWeekday(this)">Ср</button>
+            <button class="rem2-ch-btn" data-d="4" onclick="toggleWeekday(this)">Чт</button>
+            <button class="rem2-ch-btn" data-d="5" onclick="toggleWeekday(this)">Пт</button>
+            <button class="rem2-ch-btn" data-d="6" onclick="toggleWeekday(this)">Сб</button>
+            <button class="rem2-ch-btn" data-d="0" onclick="toggleWeekday(this)">Нд</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="modal-lbl">Час надсилання</label>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+            <button class="rem2-ch-btn" onclick="setRepeatTime('08:00',this)">08:00</button>
+            <button class="rem2-ch-btn on" onclick="setRepeatTime('09:00',this)">09:00</button>
+            <button class="rem2-ch-btn" onclick="setRepeatTime('12:00',this)">12:00</button>
+            <button class="rem2-ch-btn" onclick="setRepeatTime('18:00',this)">18:00</button>
+            <button class="rem2-ch-btn" onclick="setRepeatTime('20:00',this)">20:00</button>
+          </div>
+          <input class="modal-inp" type="time" id="repeatTime" value="09:00" style="margin-bottom:0;"/>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;">
+            <label class="modal-lbl">Початок</label>
+            <input class="modal-inp" type="date" id="repeatFrom" style="margin-bottom:0;"/>
+          </div>
+          <div style="flex:1;">
+            <label class="modal-lbl">Кінець (необов.)</label>
+            <input class="modal-inp" type="date" id="repeatTo" style="margin-bottom:0;"/>
+          </div>
+        </div>
+
+        <div>
+          <label class="modal-lbl">Кількість повторень</label>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            <button class="rem2-ch-btn" onclick="setRepeatCount(3,this)">3 рази</button>
+            <button class="rem2-ch-btn" onclick="setRepeatCount(7,this)">7 разів</button>
+            <button class="rem2-ch-btn" onclick="setRepeatCount(14,this)">14 разів</button>
+            <button class="rem2-ch-btn" onclick="setRepeatCount(30,this)">30 разів</button>
+            <button class="rem2-ch-btn on" onclick="setRepeatCount(0,this)">Без обмежень</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ПАНЕЛЬ: АВТОМАТИЧНО -->
+    <div id="schedPanelAuto" style="display:none;">
+      <div style="background:#FFF5F7;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <label class="modal-lbl">Тригер</label>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="remind-opt on" id="autoTrig1" onclick="selectAutoTrigger(1)">
+              <div class="remind-opt-title">📆 За 1 день до прийому</div>
+            </div>
+            <div class="remind-opt" id="autoTrig2" onclick="selectAutoTrigger(2)">
+              <div class="remind-opt-title">📆 За 2 дні до прийому</div>
+            </div>
+            <div class="remind-opt" id="autoTrig3" onclick="selectAutoTrigger(3)">
+              <div class="remind-opt-title">🔁 Раз на день (обраний час)</div>
+            </div>
+            <div class="remind-opt" id="autoTrig4" onclick="selectAutoTrigger(4)">
+              <div class="remind-opt-title">📅 Раз на тиждень</div>
+            </div>
+            <div class="remind-opt" id="autoTrig5" onclick="selectAutoTrigger(5)">
+              <div class="remind-opt-title">✅ Через 3 дні після прийому</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="modal-lbl">Час надсилання</label>
+          <input class="modal-inp" type="time" id="autoTime" value="09:00" style="margin-bottom:0;"/>
+        </div>
+        <div>
+          <label class="modal-lbl">Дата прийому (для тригерів)</label>
+          <input class="modal-inp" type="date" id="autoApptDate" style="margin-bottom:0;"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ТЕКСТ (для типу 4 — власне) -->
     <div id="rem2CustomWrap" style="display:none;margin-bottom:12px;">
       <label class="modal-lbl">Текст повідомлення</label>
       <textarea class="modal-inp" id="rem2CustomText" rows="3" style="resize:vertical;" oninput="buildRem2Preview()"></textarea>
     </div>
-  <div style="margin-bottom:12px;">
-  <label class="modal-lbl">
-    ❓ Питання для відповіді Так/Ні
-  </label>
-  <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;" id="rem2QuickBtns">
-  <button type="button" class="rem2-ch-btn on" id="rem2q-yesno" onclick="setRem2Question('Так/Ні')">✅❌ Так/Ні</button>
-  <button type="button" class="rem2-ch-btn" id="rem2q-clear" onclick="setRem2Question('')">✕ Без питання</button>
-</div>
-  <input class="modal-inp" id="rem2Question" 
-    placeholder="Або введіть своє питання..." 
-    style="margin-bottom:0;"
-    oninput="syncRem2QuickBtns()"/>
-  <div style="font-size:10.5px;color:var(--muted);margin-top:4px;">
-    Пацієнт побачить кнопки ✅ Так / ❌ Ні — ви побачите відповідь у картці
-  </div>
-</div>
+
+    <!-- ПИТАННЯ ТАК/НІ -->
+    <div style="margin-bottom:12px;">
+      <label class="modal-lbl">❓ Питання для відповіді Так/Ні</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;" id="rem2QuickBtns">
+        <button type="button" class="rem2-ch-btn on" id="rem2q-yesno" onclick="setRem2Question('Так/Ні')">✅❌ Так/Ні</button>
+        <button type="button" class="rem2-ch-btn" id="rem2q-clear" onclick="setRem2Question('')">✕ Без питання</button>
+      </div>
+      <input class="modal-inp" id="rem2Question" placeholder="Або введіть своє питання..." style="margin-bottom:0;" oninput="syncRem2QuickBtns()"/>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:4px;">Пацієнт побачить кнопки ✅ Так / ❌ Ні</div>
+    </div>
+
+    <!-- НОТАТКА -->
     <div style="margin-bottom:12px;">
       <label class="modal-lbl">Нотатка (тільки для вас)</label>
       <input class="modal-inp" type="text" id="rem2Note" placeholder="Наприклад: перевірити тиск на прийомі" style="margin-bottom:0;"/>
     </div>
-    <div style="background:#FFF5F7;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
-      <div style="font-size:10px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:6px;">Повідомлення пацієнту</div>
-      <div id="rem2Preview" style="font-size:13px;color:var(--text);line-height:1.6;white-space:pre-line;"></div>
-    </div>
+
+    <!-- КАНАЛ -->
     <div style="margin-bottom:12px;">
       <label class="modal-lbl">Канал надсилання</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="rem2-ch-btn on" id="rem2ch-auto" onclick="selectRem2Channel('auto')">🤖 Авто</button>
-        <button class="rem2-ch-btn" id="rem2ch-telegram" onclick="selectRem2Channel('telegram')">✈️ Telegram</button>
-        <button class="rem2-ch-btn" id="rem2ch-email" onclick="selectRem2Channel('email')">📧 Email</button>
+        <button class="rem2-ch-btn on" id="rem2ch-auto"     onclick="selectRem2Channel('auto')">🤖 Авто</button>
+        <button class="rem2-ch-btn"    id="rem2ch-telegram" onclick="selectRem2Channel('telegram')">✈️ Telegram</button>
+        <button class="rem2-ch-btn"    id="rem2ch-email"    onclick="selectRem2Channel('email')">📧 Email</button>
       </div>
-      <div style="font-size:10.5px;color:var(--muted);margin-top:4px;" id="rem2ChannelHint">
-        Авто: використовує канал з картки пацієнта
-      </div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:4px;" id="rem2ChannelHint">Авто: використовує канал з картки пацієнта</div>
     </div>
+
+    <!-- ПРЕВ'Ю -->
+    <div style="background:#FFF5F7;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+      <div style="font-size:10px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:6px;">Повідомлення пацієнту</div>
+      <div id="rem2Preview" style="font-size:13px;color:var(--text);line-height:1.6;white-space:pre-line;"></div>
+      <div id="rem2SchedPreview" style="font-size:11px;color:var(--accent);margin-top:8px;font-family:'IBM Plex Mono',monospace;"></div>
+    </div>
+
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal('reminderModal2')">Скасувати</button>
       <button class="modal-confirm" onclick="sendReminder2()">🔔 Надіслати</button>
@@ -1236,6 +1354,19 @@ function _startLinksRefresh(){
   },15000);
 }
 
+  function _renderPerMonthStat(mArr) {
+  const el = document.getElementById('perMonthChart');
+  if (!el) return;
+  const maxM = Math.max(...mArr.map(m => m.count), 1);
+  el.innerHTML = mArr.map(m =>
+    `<div class="bar-row">
+      <div class="bar-name" style="font-size:10px">${m.label}</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(m.count/maxM*100)}%"></div></div>
+      <div class="bar-val">${m.count}</div>
+    </div>`
+  ).join('');
+}
+  
   function setRem2Question(text) {
   const inp = document.getElementById('rem2Question');
   if (inp) inp.value = text;
@@ -2542,81 +2673,230 @@ function openRemindModal(id) {
   const p = patients.find(x => x.id === id);
   if (!p) return;
 
-  // Відкриваємо reminderModal2 (нова модалка з повним функціоналом)
   const nameEl = document.getElementById('rem2PatName');
   if (nameEl) nameEl.textContent = [p.lastName, p.firstName].filter(Boolean).join(' ') || 'Пацієнт';
 
-  // Зберігаємо ID пацієнта
   _rem2PatId = id;
   _rem2Type  = 1;
+  _rem2SchedMode = 'once';
+  _rem2AutoTrigger = 1;
+  _rem2RepeatCount = 0;
+  _rem2Weekdays = [];
 
-  // Скидаємо стан
+  // Скидаємо тип
   [1,2,3,4].forEach(i => {
     const el = document.getElementById('rem2t' + i);
     if (el) el.classList.toggle('on', i === 1);
   });
-  const dateWrap = document.getElementById('rem2DateWrap');
-  const custWrap = document.getElementById('rem2CustomWrap');
-  if (dateWrap) dateWrap.style.display = '';
-  if (custWrap) custWrap.style.display = 'none';
 
-  const dateInp = document.getElementById('rem2Date');
-  const timeInp = document.getElementById('rem2Time');
-  const custInp = document.getElementById('rem2CustomText');
-  const noteInp = document.getElementById('rem2Note');
-  if (dateInp) dateInp.value = '';
-  if (timeInp) timeInp.value = '';
-  if (custInp) custInp.value = '';
-  if (noteInp) noteInp.value = '';
-setRem2Question('Так/Ні');
+  // Скидаємо режим
+  setSchedMode('once');
+
+  // Скидаємо поля
+  const today = new Date().toISOString().slice(0, 10);
+  const setV = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
+  setV('rem2Date', today);
+  setV('rem2Time', '09:00');
+  setV('rem2CustomText', '');
+  setV('rem2Note', '');
+  setV('repeatFrom', today);
+  setV('repeatTo', '');
+  setV('repeatTime', '09:00');
+  setV('autoTime', '09:00');
+  setV('autoApptDate', today);
+
+  // Скидаємо автотригери
+  [1,2,3,4,5].forEach(i => {
+    const el = document.getElementById('autoTrig' + i);
+    if (el) el.classList.toggle('on', i === 1);
+  });
+
+  setRem2Question('Так/Ні');
+  selectRem2Channel('auto');
   buildRem2Preview();
   openModal('reminderModal2');
+}
+  function setSchedMode(m) {
+  _rem2SchedMode = m;
+  ['once', 'repeat', 'auto'].forEach(x => {
+    const btn = document.getElementById('schedMode-' + x);
+    const panel = document.getElementById('schedPanel' + x.charAt(0).toUpperCase() + x.slice(1));
+    if (btn) btn.classList.toggle('on', x === m);
+    if (panel) panel.style.display = x === m ? '' : 'none';
+  });
+  buildRem2SchedPreview();
+}
+
+function updateRepeatUI() {
+  const v = document.getElementById('repeatFreq')?.value;
+  const intWrap = document.getElementById('repeatIntervalWrap');
+  const wdWrap  = document.getElementById('repeatWeekdaysWrap');
+  if (intWrap) intWrap.style.display = v === 'interval' ? 'flex' : 'none';
+  if (wdWrap)  wdWrap.style.display  = v === 'weekly'   ? ''     : 'none';
+  buildRem2SchedPreview();
+}
+
+function toggleWeekday(btn) {
+  btn.classList.toggle('on');
+  _rem2Weekdays = Array.from(document.querySelectorAll('#repeatWeekdaysWrap .rem2-ch-btn.on'))
+    .map(b => Number(b.dataset.d));
+  buildRem2SchedPreview();
+}
+
+function setRepeatTime(t, btn) {
+  const inp = document.getElementById('repeatTime');
+  if (inp) inp.value = t;
+  document.querySelectorAll('#schedPanelRepeat .rem2-ch-btn[onclick^="setRepeatTime"]')
+    .forEach(x => x.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function setRepeatCount(n, btn) {
+  _rem2RepeatCount = n;
+  document.querySelectorAll('#schedPanelRepeat .rem2-ch-btn[onclick^="setRepeatCount"]')
+    .forEach(x => x.classList.remove('on'));
+  btn.classList.add('on');
+  buildRem2SchedPreview();
+}
+
+function selectAutoTrigger(n) {
+  _rem2AutoTrigger = n;
+  [1,2,3,4,5].forEach(i => {
+    const el = document.getElementById('autoTrig' + i);
+    if (el) el.classList.toggle('on', i === n);
+  });
+  buildRem2SchedPreview();
+}
+
+function buildRem2SchedPreview() {
+  const el = document.getElementById('rem2SchedPreview');
+  if (!el) return;
+
+  let text = '';
+
+  if (_rem2SchedMode === 'once') {
+    const d = document.getElementById('rem2Date')?.value;
+    const t = document.getElementById('rem2Time')?.value;
+    if (d) text = '📅 ' + d.split('-').reverse().join('.') + (t ? ' о ' + t : '');
+
+  } else if (_rem2SchedMode === 'repeat') {
+    const freq = document.getElementById('repeatFreq')?.value;
+    const time = document.getElementById('repeatTime')?.value || '09:00';
+    const from = document.getElementById('repeatFrom')?.value;
+    const to   = document.getElementById('repeatTo')?.value;
+    const cnt  = _rem2RepeatCount;
+
+    const freqLabels = {
+      daily: 'Щодня',
+      weekly: 'По днях: ' + (_rem2Weekdays.length
+        ? _rem2Weekdays.map(d => ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'][d]).join(', ')
+        : 'не обрано'),
+      interval: 'Кожні ' + (document.getElementById('repeatIntervalDays')?.value || 3) + ' дні',
+    };
+
+    text = '🔁 ' + (freqLabels[freq] || '') + ' о ' + time;
+    if (from) text += ' · з ' + from.split('-').reverse().join('.');
+    if (to)   text += ' до ' + to.split('-').reverse().join('.');
+    if (cnt > 0) text += ' · ' + cnt + ' разів';
+
+  } else if (_rem2SchedMode === 'auto') {
+    const trigLabels = {
+      1: 'За 1 день до прийому',
+      2: 'За 2 дні до прийому',
+      3: 'Раз на день',
+      4: 'Раз на тиждень',
+      5: 'Через 3 дні після прийому',
+    };
+    const time = document.getElementById('autoTime')?.value || '09:00';
+    text = '⚡ ' + (trigLabels[_rem2AutoTrigger] || '') + ' о ' + time;
+  }
+
+  el.textContent = text;
+  el.classList.toggle('show', !!text);
 }
 async function sendReminder2() {
   const p = patients.find(x => x.id === _rem2PatId);
   if (!p) { showToast('Пацієнт не знайдений', 'error'); return; }
+
   const preview = document.getElementById('rem2Preview')?.textContent || '';
   if (!preview || preview === '...') { showToast('Введіть текст нагадування', 'error'); return; }
+
   const questionText = document.getElementById('rem2Question')?.value?.trim() || '';
-  const dateVal = document.getElementById('rem2Date')?.value;
-  const timeVal = document.getElementById('rem2Time')?.value;
-  let scheduledAt = null;
-  if (dateVal) scheduledAt = new Date(`${dateVal}T${timeVal || '09:00'}:00`).toISOString();
-  const reminderData = {
-    type: _rem2Type, message: preview, question: questionText, scheduledAt,
-    doctorCode: doctorCode(), doctorName: sessionStorage.getItem('nexum_name') || doctorCode(),
-patientId: _rem2PatId, 
-patientPhone: p.phone || '',
-patientTelegram: p.telegram || p.dynamicAnswers?.__deliveryInfo?.telegramId || '',  };
-  const delivery = getPatientDeliveryInfo(p);
-  const channel = (delivery.channel || '').toLowerCase();
+
+  // Збираємо параметри розкладу
+  let scheduleData = { mode: _rem2SchedMode };
+
+  if (_rem2SchedMode === 'once') {
+    const dateVal = document.getElementById('rem2Date')?.value;
+    const timeVal = document.getElementById('rem2Time')?.value;
+    scheduleData.scheduledAt = dateVal
+      ? new Date(`${dateVal}T${timeVal || '09:00'}:00`).toISOString()
+      : null;
+
+  } else if (_rem2SchedMode === 'repeat') {
+    scheduleData.repeatFreq     = document.getElementById('repeatFreq')?.value || 'daily';
+    scheduleData.repeatTime     = document.getElementById('repeatTime')?.value || '09:00';
+    scheduleData.repeatFrom     = document.getElementById('repeatFrom')?.value || '';
+    scheduleData.repeatTo       = document.getElementById('repeatTo')?.value || '';
+    scheduleData.repeatCount    = _rem2RepeatCount;
+    scheduleData.repeatWeekdays = _rem2Weekdays;
+    scheduleData.repeatInterval = Number(document.getElementById('repeatIntervalDays')?.value || 3);
+
+  } else if (_rem2SchedMode === 'auto') {
+    scheduleData.autoTrigger  = _rem2AutoTrigger;
+    scheduleData.autoTime     = document.getElementById('autoTime')?.value || '09:00';
+    scheduleData.autoApptDate = document.getElementById('autoApptDate')?.value || '';
+  }
+
+  const typeLabels = {
+    1: 'Нагадування про прийом',
+    2: 'Прийняти ліки',
+    3: 'Заповнити опитування',
+    4: 'Власне повідомлення',
+  };
+
   try {
-    if (window.NexumReminderSender) {
-      await NexumReminderSender.send(_rem2PatId, reminderData);
-    } else {
     const result = await apiFetch('/api/doctor/reminders', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          doctorCode: doctorCode(), doctorName: sessionStorage.getItem('nexum_name') || doctorCode(),
-          patientId: _rem2PatId, patientPhone: p.phone || '',
-          title: ({1:'Нагадування про прийом',2:'Прийняти ліки',3:'Заповнити опитування',4:'Власне повідомлення'})[_rem2Type],
-          message: preview, question: questionText,
-          priority: _rem2Type === 1 ? 'high' : 'normal', scheduledAt,
-        }),
-      });
-      if (result.tgSent) {
-        showToast('📨 Нагадування надіслано в Telegram пацієнту');
-      } else if (result.tgError) {
-        showToast('⚠ Збережено, але не надіслано в TG: ' + result.tgError, 'error');
-      } else {
-        showToast('✓ Нагадування збережено');
-      }
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        doctorCode:      doctorCode(),
+        doctorName:      sessionStorage.getItem('nexum_name') || doctorCode(),
+        patientId:       _rem2PatId,
+        patientPhone:    p.phone || '',
+        patientTelegram: p.telegram || p.dynamicAnswers?.__deliveryInfo?.telegramId || '',
+        title:           typeLabels[_rem2Type] || 'Нагадування',
+        message:         preview,
+        question:        questionText,
+        priority:        _rem2Type === 1 ? 'high' : 'normal',
+        schedule:        scheduleData,
+      }),
+    });
+
+    if (result.tgSent) {
+      showToast('📨 Нагадування надіслано в Telegram');
+    } else if (result.scheduled) {
+      const modeLabel = {
+        once:   '📅 Заплановано',
+        repeat: '🔁 Повторюване нагадування активовано',
+        auto:   '⚡ Автонагадування активовано',
+      }[_rem2SchedMode] || '✓ Збережено';
+      showToast(modeLabel);
+    } else {
+      showToast('✓ Нагадування збережено');
     }
+
     closeModal('reminderModal2');
-  } catch(e) { showToast('Помилка: ' + e.message, 'error'); }
+  } catch(e) {
+    showToast('Помилка: ' + e.message, 'error');
+  }
 }
 // ── Стан для reminderModal2 ────────────────────────────────
 let _rem2PatId = null;
+let _rem2SchedMode = 'once';   // 'once' | 'repeat' | 'auto'
+let _rem2AutoTrigger = 1;      // 1-5
+let _rem2RepeatCount = 0;      // 0 = без обмежень
+let _rem2Weekdays = [];        // [1,2,3,4,5] = пн-пт
 let _rem2Type  = 1;
 let _rem2Channel = 'auto';
 
@@ -2640,22 +2920,21 @@ function selectRem2Type(n) {
     const el = document.getElementById('rem2t' + i);
     if (el) el.classList.toggle('on', i === n);
   });
-  const dateWrap = document.getElementById('rem2DateWrap');
+  const dateWrap = document.getElementById('rem2DateWrap');   // більше не існує — можна прибрати
   const custWrap = document.getElementById('rem2CustomWrap');
-  if (dateWrap) dateWrap.style.display = (n === 1) ? '' : 'none';
   if (custWrap) custWrap.style.display = (n === 4) ? '' : 'none';
   buildRem2Preview();
-  // Автооновлення питання при зміні типу
-const questInp = document.getElementById('rem2Question');
-if (questInp) {
-  const p = _rem2PatId ? patients.find(x => x.id === _rem2PatId) : null;
-  const meds = p && Array.isArray(p.meds) && p.meds.length ? p.meds.join(', ') : null;
-  if (n === 2) questInp.value = meds ? `Ви прийняли ліки (${meds})?` : 'Ви прийняли ліки сьогодні?';
-  else if (n === 1) questInp.value = 'Ви підтверджуєте запис на прийом?';
-  else if (n === 3) questInp.value = 'Ви заповнили анкету?';
-  else if (n === 4) questInp.value = '';
-  syncRem2QuickBtns();
-}
+  // Автооновлення питання
+  const questInp = document.getElementById('rem2Question');
+  if (questInp) {
+    const p = _rem2PatId ? patients.find(x => x.id === _rem2PatId) : null;
+    const meds = p && Array.isArray(p.meds) && p.meds.length ? p.meds.join(', ') : null;
+    if (n === 2) questInp.value = meds ? `Ви прийняли ліки (${meds})?` : 'Ви прийняли ліки сьогодні?';
+    else if (n === 1) questInp.value = 'Ви підтверджуєте запис на прийом?';
+    else if (n === 3) questInp.value = 'Ви заповнили анкету?';
+    else if (n === 4) questInp.value = '';
+    syncRem2QuickBtns();
+  }
 }
 
 function buildRem2Preview() {
@@ -2671,12 +2950,16 @@ function buildRem2Preview() {
   } else if (_rem2Type === 2) {
     msg = `Привіт, ${name}! Не забудьте прийняти ліки: ${meds}.`;
   } else if (_rem2Type === 3) {
-    msg = `Привіт, ${name}! Будь ласка, заповніть анкету на нашому порталі — це займе лише кілька хвилин.`;
+    msg = `Привіт, ${name}! Будь ласка, заповніть анкету — це займе лише кілька хвилин.`;
   } else {
     msg = document.getElementById('rem2CustomText')?.value || '...';
   }
+
   const el = document.getElementById('rem2Preview');
   if (el) el.textContent = msg;
+
+  // Також оновлюємо розклад-прев'ю
+  buildRem2SchedPreview();
 }
 
 // ── Photos ─────────────────────────────────────────────────
@@ -4066,6 +4349,17 @@ const deliveryTarget = deliveryTargetText(delivery, p);
     .sidebar-card { position: static; }
     .two-col, .three-col { grid-template-columns: 1fr; }
   }
+  /* SCHEDULE MODE BUTTONS */
+#schedPanelRepeat .rem2-ch-btn,
+#schedPanelAuto .remind-opt {
+  transition: .15s;
+}
+#rem2SchedPreview {
+  display: none;
+}
+#rem2SchedPreview.show {
+  display: block;
+}
 </style>
 </head>
 <body>
