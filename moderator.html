@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Модератор — Nexum</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet"/><style>
+:root{
+  --bg:#FFF5F8;
+  --surface:#ffeef4;
+  --card:#FFFFFF;
+  --card2:#FFF5FA;
+  --border:rgba(131,24,67,0.15);
+  --border-hi:rgba(131,24,67,0.35);
+  --accent:#831843;
+  --accent2:#3b0018;
+  --accent-glow:rgba(131,24,67,0.22);
+  --accent-light:rgba(249,168,212,0.25);
+  --accent-mid:rgba(131,24,67,0.15);
+  --green:#10B981;
+  --green-glow:rgba(16,185,129,0.15);
+  --red:#EF4444;
+  --yellow:#F59E0B;
+  --text:#1F0A20;
+  --muted:#9070A0;
+  --subtle:#C4A0D0;
+  --white:#fff;
+  --grad:linear-gradient(135deg,#831843,#f9a8d4);
+  --grad-dark:linear-gradient(135deg,rgba(131,24,67,0.12),rgba(249,168,212,0.06));
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 800px 500px at 70% -20%,rgba(233,30,140,0.08) 0%,transparent 70%),
+    radial-gradient(ellipse 600px 400px at -10% 90%,rgba(244,114,182,0.06) 0%,transparent 60%);
+}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:rgba(233,30,140,0.25);border-radius:2px;}
+
+/* ── LOGIN SCREEN ── */
+#loginScreen{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+}
+.login-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:52px 48px;
+  width:100%;max-width:420px;
+  box-shadow:0 40px 100px rgba(0,0,0,.45),0 0 0 1px var(--border);
+  position:relative;overflow:hidden;
+}
+.login-box::before{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(108,111,255,.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+.login-brand{
+  display:flex;align-items:center;gap:12px;margin-bottom:36px;
+}
+.login-mark{
+  width:44px;height:44px;border-radius:14px;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  box-shadow:0 6px 24px var(--accent-glow);
+}
+.login-brand-name{
+  font-family:'Roboto Condensed',sans-serif;font-size:22px;font-weight:800;
+  letter-spacing:-.03em;
+}
+.login-brand-name .dot{color:var(--accent);}
+.login-badge{
+  display:inline-block;
+  font-size:10px;font-weight:700;font-family:'DM Mono',monospace;
+  color:var(--accent2);background:var(--accent-light);
+  border:1px solid var(--border-hi);
+  padding:3px 10px;border-radius:20px;margin-bottom:20px;letter-spacing:.08em;
+}
+.login-title{
+  font-family:'Roboto Condensed',sans-serif;font-size:26px;font-weight:800;
+  letter-spacing:-.03em;margin-bottom:8px;
+}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:32px;}
+.field-label{
+  display:block;font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;
+}
+.field-input{
+  width:100%;background:var(--surface);
+  border:1.5px solid var(--border);border-radius:14px;
+  padding:14px 18px;font-size:15px;color:var(--text);
+  font-family:'DM Mono',monospace;letter-spacing:.12em;
+  outline:none;transition:all .2s;
+}
+.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.field-input::placeholder{color:var(--subtle);letter-spacing:.05em;}
+.btn-primary{
+  width:100%;background:var(--grad);
+  border:none;border-radius:14px;
+  padding:15px;color:white;font-size:15px;font-weight:700;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  margin-top:20px;transition:all .2s;
+  box-shadow:0 8px 28px var(--accent-glow);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 36px var(--accent-glow);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.login-err{
+  margin-top:14px;text-align:center;
+  font-size:13px;color:var(--red);
+  background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);
+  border-radius:10px;padding:10px;display:none;
+}
+
+/* ── MAIN APP ── */
+#app{display:none;}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(24px);
+  background:rgba(255,248,252,0.92);
+  border-bottom:1px solid var(--border);
+  padding:0 44px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{
+  font-family:'Roboto Condensed',sans-serif;font-size:20px;font-weight:800;
+  color:var(--text);letter-spacing:-.03em;
+  display:flex;align-items:center;gap:10px;text-decoration:none;
+}
+.logo-mark{
+  width:34px;height:34px;border-radius:10px;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  box-shadow:0 4px 14px var(--accent-glow);
+}
+.nav-badge{
+  font-size:10px;font-weight:700;font-family:'DM Mono',monospace;
+  color:var(--accent);background:var(--accent-light);
+  border:1px solid var(--border-hi);
+  padding:3px 10px;border-radius:20px;letter-spacing:.08em;margin-left:4px;
+}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn-sm{
+  background:transparent;border:1.5px solid var(--border);
+  color:var(--muted);border-radius:10px;padding:7px 16px;
+  font-size:12.5px;font-weight:600;cursor:pointer;
+  transition:all .15s;font-family:'DM Sans',sans-serif;
+}
+.btn-sm:hover{border-color:var(--border-hi);color:var(--text);}
+
+/* ── TABS ── */
+.tabs-bar{
+  display:flex;gap:4px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:0 44px;
+}
+.tab{
+  padding:14px 20px;font-size:13.5px;font-weight:600;
+  color:var(--muted);cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all .18s;display:flex;align-items:center;gap:7px;
+}
+.tab.active{color:var(--text);border-bottom-color:var(--accent);}
+.tab:hover{color:var(--text);}
+.tab .tab-count{
+  font-size:10px;font-family:'DM Mono',monospace;font-weight:700;
+  background:var(--accent-light);color:var(--accent2);
+  border:1px solid var(--border-hi);
+  padding:2px 8px;border-radius:20px;
+}
+
+/* ── PANELS ── */
+.panel{display:none;max-width:1100px;margin:0 auto;padding:36px 44px 80px;}
+.panel.active{display:block;}
+
+/* ── CREATE PANEL — centered ── */
+#panel-create{
+  display:none;
+  padding:36px 44px 80px;
+}
+#panel-create.active{display:flex;flex-direction:column;align-items:center;}
+#panel-create .page-header{width:100%;max-width:680px;}
+#panel-create > div:last-child,
+#panel-create > .create-form-wrap{width:100%;max-width:680px;}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;}
+.page-title{
+  font-family:'Roboto Condensed',sans-serif;font-size:26px;font-weight:800;
+  letter-spacing:-.03em;margin-bottom:4px;
+}
+.page-sub{font-size:13px;color:var(--muted);}
+.btn-action{
+  background:var(--grad);border:none;border-radius:14px;
+  padding:12px 22px;color:white;font-size:13.5px;font-weight:700;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  box-shadow:0 6px 20px var(--accent-glow);transition:all .2s;
+  display:flex;align-items:center;gap:8px;
+}
+.btn-action:hover{transform:translateY(-1px);box-shadow:0 10px 28px var(--accent-glow);}
+
+/* ── STATS ROW ── */
+.stats-row{display:flex;gap:14px;margin-bottom:28px;}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:20px 24px;flex:1;
+  transition:all .2s;
+}
+.stat-card:hover{border-color:var(--border-hi);box-shadow:0 4px 20px rgba(0,0,0,.25);}
+.stat-ic{font-size:22px;margin-bottom:10px;}
+.stat-num{
+  font-family:'Roboto Condensed',sans-serif;font-size:28px;font-weight:800;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:4px;
+}
+.stat-lbl{font-size:12px;color:var(--muted);font-weight:500;}
+
+/* ── SEARCH ── */
+.search-bar{
+  display:flex;gap:10px;margin-bottom:20px;
+}
+.search-input{
+  flex:1;background:var(--card);
+  border:1.5px solid var(--border);border-radius:14px;
+  padding:12px 18px;font-size:14px;color:var(--text);
+  font-family:'DM Sans',sans-serif;outline:none;transition:all .2s;
+}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.search-input::placeholder{color:var(--subtle);}
+
+/* ── TABLE ── */
+.table-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+}
+.table-head{
+  display:grid;
+  padding:14px 20px;
+  background:var(--card2);
+  border-bottom:1px solid var(--border);
+  font-size:11px;font-weight:700;color:var(--subtle);
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.tr{
+  display:grid;padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  align-items:center;transition:background .15s;
+}
+.tr:last-child{border-bottom:0;}
+.tr:hover{background:var(--card2);}
+.tr-name{font-weight:600;font-size:14px;color:var(--text);}
+.tr-sub{font-size:12px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;}
+.tr-badge{
+  display:inline-flex;align-items:center;padding:4px 12px;
+  border-radius:20px;font-size:11px;font-weight:700;font-family:'DM Mono',monospace;
+}
+.tr-badge.active{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.25);}
+.tr-badge.pending{background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.2);}
+.tr-badge.none{background:var(--accent-light);color:var(--accent2);border:1px solid var(--border-hi);}
+.tr-actions{display:flex;gap:8px;justify-content:flex-end;}
+.btn-icon{
+  width:32px;height:32px;border-radius:9px;
+  border:1.5px solid var(--border);
+  background:transparent;color:var(--muted);
+  cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+.btn-icon.danger:hover{border-color:var(--red);color:var(--red);background:rgba(248,113,113,.1);}
+.btn-icon.success:hover{border-color:var(--green);color:var(--green);background:var(--green-glow);}
+
+/* ── EMPTY ── */
+.empty-state{
+  text-align:center;padding:60px 20px;
+  background:var(--card);border:1px dashed var(--border-hi);
+  border-radius:20px;
+}
+.empty-ic{font-size:44px;margin-bottom:14px;}
+.empty-title{font-family:'Roboto Condensed',sans-serif;font-size:17px;font-weight:700;margin-bottom:6px;}
+.empty-sub{font-size:13px;color:var(--muted);}
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(31,10,32,0.55);
+  align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;animation:fadeIn .2s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── MODAL ── */
+.modal{
+  background:var(--card);border:1px solid var(--border-hi);
+  border-radius:26px;width:100%;max-width:600px;max-height:90vh;
+  overflow-y:auto;
+  box-shadow:0 40px 100px rgba(233,30,140,0.15),0 0 0 1px var(--border);
+  animation:slideUp .25s cubic-bezier(.34,1.4,.64,1);
+}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.modal-head{
+  padding:24px 28px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;
+  position:sticky;top:0;background:var(--card);z-index:1;
+  border-radius:26px 26px 0 0;
+}
+.modal-head h3{
+  font-family:'Roboto Condensed',sans-serif;font-size:19px;font-weight:800;
+  letter-spacing:-.02em;
+}
+.modal-close{
+  background:var(--accent-light);border:1px solid var(--border-hi);
+  color:var(--accent);width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;transition:.15s;
+}
+.modal-close:hover{background:var(--accent);color:white;}
+.modal-body{padding:24px 28px 28px;}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.form-grid.full{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:7px;}
+.form-group.full{grid-column:1/-1;}
+.form-label{
+  font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.form-input,.form-select,.form-textarea{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:12px;padding:11px 15px;
+  font-size:14px;color:var(--text);
+  font-family:'DM Sans',sans-serif;outline:none;transition:all .2s;
+  width:100%;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);
+}
+.form-select option{background:var(--surface);}
+.form-textarea{min-height:80px;resize:vertical;}
+
+/* ── SURVEY BLOCK ── */
+.survey-block{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:all .15s;
+}
+.survey-block:hover{border-color:var(--border-hi);}
+.survey-block .sb-left{display:flex;align-items:center;gap:12px;}
+.survey-block .sb-ic{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--accent-light);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.survey-block .sb-name{font-weight:600;font-size:13.5px;}
+.survey-block .sb-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.survey-block .sb-status{
+  font-size:10px;font-weight:700;font-family:'DM Mono',monospace;
+  padding:3px 10px;border-radius:20px;
+}
+.sb-status.linked{
+  background:rgba(52,211,153,.12);color:var(--green);
+  border:1px solid rgba(52,211,153,.25);
+}
+.sb-status.unlinked{
+  background:var(--accent-light);color:var(--muted);
+  border:1px solid var(--border);
+}
+.survey-check{
+  width:18px;height:18px;border-radius:5px;
+  border:1.5px solid var(--border-hi);
+  background:transparent;cursor:pointer;
+  accent-color:var(--accent);
+}
+
+/* ── SECTION DIVIDER ── */
+.sec-divider{
+  display:flex;align-items:center;gap:12px;margin:20px 0 16px;
+}
+.sec-divider-line{flex:1;height:1px;background:var(--border);}
+.sec-divider-label{
+  font-size:11px;font-weight:700;color:var(--subtle);
+  text-transform:uppercase;letter-spacing:.1em;
+  white-space:nowrap;
+}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:28px;right:28px;z-index:9999;
+  background:var(--card2);border:1px solid var(--border-hi);
+  border-radius:16px;padding:14px 20px;
+  display:flex;align-items:center;gap:12px;
+  font-size:14px;font-weight:600;
+  box-shadow:0 20px 50px rgba(0,0,0,.5);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s cubic-bezier(.34,1.4,.64,1);
+  pointer-events:none;
+}
+.toast.show{transform:none;opacity:1;}
+.toast.ok{color:var(--green);}
+.toast.err{color:var(--red);}
+.toast-ic{font-size:20px;}
+
+/* ── LOADING ── */
+.loading-state{text-align:center;padding:50px;color:var(--muted);}
+.spinner{
+  width:30px;height:30px;
+  border:2.5px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .7s linear infinite;
+  margin:0 auto 14px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── PATIENT DETAIL ── */
+.detail-head{
+  background:var(--grad-dark);border:1px solid var(--border);
+  border-radius:18px;padding:22px 24px;margin-bottom:20px;
+  display:flex;align-items:center;gap:18px;
+}
+.detail-avatar{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Roboto Condensed',sans-serif;font-size:22px;font-weight:800;
+  color:white;flex-shrink:0;
+}
+.detail-name{font-family:'Roboto Condensed',sans-serif;font-size:18px;font-weight:800;}
+.detail-meta{font-size:12px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace;}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  nav{padding:0 16px;}
+  .tabs-bar{padding:0 16px;overflow-x:auto;}
+  .panel{padding:20px 16px 60px;}
+  #panel-create{padding:20px 16px 60px;}
+  .form-grid{grid-template-columns:1fr;}
+  .stats-row{flex-wrap:wrap;}
+  .stat-card{min-width:calc(50% - 7px);}
+  .modal-body{padding:16px 18px 22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ LOGIN SCREEN ════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="login-mark">✦</div>
+      <span style="font-family:'Roboto Condensed',sans-serif;font-size:21px;font-weight:800;">Nexum<span style="color:var(--accent);">.</span></span>
+    </div>
+    <div class="login-badge">MODERATOR ACCESS</div>
+    <div class="login-title">Вхід модератора</div>
+    <div class="login-sub">Введіть код доступу для входу в адмін-панель</div>
+    <label class="field-label" for="modCode">Код доступу</label>
+    <input class="field-input" id="modCode" type="text" placeholder="MOD-000" autocomplete="off" spellcheck="false"/>
+    <button class="btn-primary" id="loginBtn" onclick="doModLogin()">Увійти →</button>
+    <div class="login-err" id="loginErr">❌ Невірний код доступу</div>
+  </div>
+</div>
+
+<!-- ════ MAIN APP ════ -->
+<div id="app">
+
+  <!-- NAV -->
+  <nav>
+    <a href="nexum.html" class="nav-logo" style="text-decoration:none;color:inherit;">
+  <div class="logo-mark">✦</div>
+  Nexum<span style="color:var(--accent);">.</span>
+  <span class="nav-badge">MODERATOR</span>
+</a>
+    <div class="nav-right">
+      <span id="navCodeLabel" style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;"></span>
+      <button class="btn-sm" onclick="doLogout()">Вийти</button>
+    </div>
+  </nav>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <div class="tab active" onclick="switchTab('patients')" id="tab-patients">
+      👥 Пацієнти <span class="tab-count" id="tcount-patients">0</span>
+    </div>
+    <div class="tab" onclick="switchTab('create')" id="tab-create">
+      ➕ Створити акаунт
+    </div>
+    <div class="tab" onclick="switchTab('assign')" id="tab-assign">
+  📦 Пакети
+</div>
+<div class="tab" onclick="switchTab('surveys')" id="tab-surveys">
+  📋 Опитування <span class="tab-count" id="tcount-surveys">0</span>
+</div>
+  </div>
+
+  <!-- ═══ TAB: PATIENTS ═══ -->
+  <div class="panel active" id="panel-patients">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Пацієнти</div>
+        <div class="page-sub">Усі зареєстровані пацієнти в системі</div>
+      </div>
+      <button class="btn-action" onclick="switchTab('create')">+ Новий пацієнт</button>
+    </div>
+
+    <div class="stats-row" id="patientsStats">
+      <div class="stat-card"><div class="stat-ic">👥</div><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Всього пацієнтів</div></div>
+      <div class="stat-card"><div class="stat-ic">✅</div><div class="stat-num" id="stat-active">—</div><div class="stat-lbl">З опитуваннями</div></div>
+      <div class="stat-card"><div class="stat-ic">📋</div><div class="stat-num" id="stat-surveys-done">—</div><div class="stat-lbl">Пройдено опитувань</div></div>
+    </div>
+
+    <div class="search-bar">
+      <input class="search-input" id="patientSearch" placeholder="🔍  Пошук за ім'ям, телефоном..." oninput="filterPatients()"/>
+    </div>
+
+    <div id="patientsList">
+      <div class="loading-state"><div class="spinner"></div>Завантаження...</div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: CREATE ═══ (centered) -->
+  <div id="panel-create" class="panel">
+    <div class="page-header" style="width:100%;max-width:680px;">
+      <div>
+        <div class="page-title">Новий пацієнт</div>
+        <div class="page-sub">Створення акаунта пацієнта та прив'язка опитувань</div>
+      </div>
+    </div>
+
+    <div style="width:100%;max-width:680px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 30px;">
+
+        <!-- ОСОБИСТІ ДАНІ -->
+        <div class="sec-divider"><div class="sec-divider-line"></div><div class="sec-divider-label">👤 Особисті дані</div><div class="sec-divider-line"></div></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <div class="form-label">Прізвище *</div>
+            <input class="form-input" id="cf-lastName" placeholder="Іваненко" type="text"/>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Ім'я *</div>
+            <input class="form-input" id="cf-firstName" placeholder="Олена" type="text"/>
+          </div>
+          <div class="form-group">
+            <div class="form-label">По батькові</div>
+            <input class="form-input" id="cf-middleName" placeholder="Василівна" type="text"/>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Стать</div>
+            <select class="form-select" id="cf-gender">
+              <option value="">Не вказано</option>
+              <option value="Жіноча">Жіноча</option>
+              <option value="Чоловіча">Чоловіча</option>
+            </select>
+          </div>
+         <div class="form-group">
+            <div class="form-label">Дата народження</div>
+            <input class="form-input" id="cf-birthDate" type="date"/>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Телефон *</div>
+            <input class="form-input" id="cf-phone" placeholder="+380XXXXXXXXX" type="tel"/>
+          </div>
+        </div>
+
+        <!-- АКАУНТ -->
+        <div class="sec-divider"><div class="sec-divider-line"></div><div class="sec-divider-label">🔐 Акаунт для входу</div><div class="sec-divider-line"></div></div>
+        <div style="background:var(--accent-light);border:1px solid var(--border-hi);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--accent2);">
+          ℹ️ Пацієнт зможе увійти на сайт через цей телефон і пароль у розділі <strong>Мій кабінет</strong>
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <div class="form-label">Пароль для пацієнта *</div>
+            <input class="form-input" id="cf-password" type="text" placeholder="Мінімум 6 символів" autocomplete="off"/>
+          </div>
+        </div>
+<!-- ПАКЕТ -->
+<div class="sec-divider"><div class="sec-divider-line"></div><div class="sec-divider-label">📦 Пакет опитувань</div><div class="sec-divider-line"></div></div>
+<div class="form-group" style="margin-bottom:8px;">
+  <div class="form-label">Надіслати пакет після створення</div>
+  <select class="form-select" id="cf-package">
+    <option value="">— Не надсилати —</option>
+  </select>
+  <div style="font-size:11px;color:var(--subtle);margin-top:5px;">Пакети створюються у вкладці «Пакети»</div>
+</div>
+        <!-- BUTTONS -->
+        <div style="display:flex;gap:12px;margin-top:24px;">
+          <button class="btn-action" style="flex:1;" onclick="createPatient()">✨ Створити акаунт</button>
+          <button class="btn-sm" style="padding:12px 20px;" onclick="clearCreateForm()">Очистити</button>
+        </div>
+
+        <div id="createMsg" style="display:none;margin-top:14px;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: SURVEYS ═══ -->
+  <div class="panel" id="panel-surveys">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Опитування</div>
+        <div class="page-sub">Перегляд та управління опитуваннями лікарів</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px 24px;margin-bottom:20px;">
+      <div class="form-label" style="margin-bottom:8px;">Код лікаря для перегляду опитувань</div>
+      <div style="display:flex;gap:10px;">
+        <input class="form-input" id="surveyDoctorCode" placeholder="Введіть код лікаря..." oninput="this.value=this.value.toUpperCase()"/>
+        <button class="btn-action" style="flex-shrink:0;" onclick="loadSurveysTab()">Показати</button>
+      </div>
+    </div>
+
+    <div id="surveysTabContent">
+      <div class="empty-state">
+        <div class="empty-ic">📋</div>
+        <div class="empty-title">Введіть код лікаря</div>
+        <div class="empty-sub">Вкажіть код лікаря вище, щоб побачити його опитування</div>
+      </div>
+    </div>
+  </div>
+<!-- ═══ TAB: ASSIGN ═══ -->
+<div class="panel" id="panel-assign">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Пакети</div>
+<div class="page-sub">Створення та збереження пакетів посилань на опитування</div>
+    </div>
+    <button class="btn-action" onclick="openSaveTemplate()">💾 Зберегти шаблон</button>
+  </div>
+
+  <div style="max-width:1000px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+   <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 30px;">
+  <div style="font-family:'Roboto Condensed',sans-serif;font-size:16px;font-weight:800;margin-bottom:20px;">📦 Новий пакет</div>
+
+  <div class="form-group" style="margin-bottom:20px;">
+    <div class="form-label">Назва пакету</div>
+    <input class="form-input" id="as-title" placeholder="наприклад: Первинне опитування"/>
+  </div>
+
+  <div class="sec-divider">
+    <div class="sec-divider-line"></div>
+    <div class="sec-divider-label">🔗 Посилання</div>
+    <div class="sec-divider-line"></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+      <div class="form-group"><div class="form-label">Назва 1</div><input class="form-input" id="as-l1-label" placeholder="Анкета болю"/></div>
+      <div class="form-group"><div class="form-label">URL 1 *</div><input class="form-input" id="as-l1-url" type="url" placeholder="https://..."/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+      <div class="form-group"><div class="form-label">Назва 2</div><input class="form-input" id="as-l2-label" placeholder=""/></div>
+      <div class="form-group"><div class="form-label">URL 2</div><input class="form-input" id="as-l2-url" type="url" placeholder="https://..."/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+      <div class="form-group"><div class="form-label">Назва 3</div><input class="form-input" id="as-l3-label" placeholder=""/></div>
+      <div class="form-group"><div class="form-label">URL 3</div><input class="form-input" id="as-l3-url" type="url" placeholder="https://..."/></div>
+    </div>
+  </div>
+
+ <div style="display:flex;gap:10px;">
+    <button class="btn-action" style="flex:1;" id="savePacketBtn" onclick="openSaveTemplate()">
+      💾 Зберегти як пакет
+    </button>
+    <button class="btn-sm" style="padding:12px 20px;" onclick="clearPacketForm()">Очистити</button>
+  </div>
+</div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 30px;">
+      <div style="font-family:'Roboto Condensed',sans-serif;font-size:16px;font-weight:800;margin-bottom:20px;">📁 Збережені шаблони</div>
+      <div id="templatesList">
+        <div class="empty-state" style="padding:30px 20px;">
+          <div class="empty-ic">📁</div>
+          <div class="empty-title">Шаблонів поки немає</div>
+          <div class="empty-sub">Натисніть «Зберегти шаблон» щоб створити перший</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- end panel-assign -->
+</div><!-- end #app -->
+<!-- PATIENT DETAIL MODAL -->
+<div class="modal-overlay" id="patientDetailModal" onclick="closeModal('patientDetailModal', event)">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-head">
+      <h3>Деталі пацієнта</h3>
+      <button class="modal-close" onclick="document.getElementById('patientDetailModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="patientDetailBody"></div>
+  </div>
+</div>
+
+<!-- LINK SURVEY MODAL -->
+<div class="modal-overlay" id="linkSurveyModal" onclick="closeModal('linkSurveyModal', event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Прив'язати опитування</h3>
+      <button class="modal-close" onclick="document.getElementById('linkSurveyModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="linkSurveyBody"></div>
+  </div>
+</div>
+<!-- SEND PACKAGE MODAL -->
+<div class="modal-overlay" id="sendPackageModal" onclick="closeModal('sendPackageModal', event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>📦 Надіслати пакет</h3>
+      <button class="modal-close" onclick="document.getElementById('sendPackageModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="sendPackageBody"></div>
+  </div>
+</div>
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-ic" id="toastIc">✅</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ══════════════════════════════════
+   MODERATOR CODES CONFIG
+   ══════════════════════════════════ */
+const LOCAL_PATIENTS_KEY = 'nexum_local_patients';
+
+/* ══════════════════════════════════
+   STATE
+   ══════════════════════════════════ */
+let currentMod = null;
+let allPatients = [];
+let allAccounts = [];
+let selectedDoctorSurveys = {};
+let selectedSurveyKeys = new Set();
+let activeTab = 'patients';
+
+/* ══════════════════════════════════
+   LOCAL STORAGE HELPERS
+   ══════════════════════════════════ */
+function getLocalPatients() {
+  try {
+    const raw = localStorage.getItem(LOCAL_PATIENTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveLocalPatient(patient) {
+  const patients = getLocalPatients();
+  // avoid duplicate by id
+  const idx = patients.findIndex(p => String(p.id) === String(patient.id));
+  if (idx >= 0) patients[idx] = patient;
+  else patients.unshift(patient);
+  localStorage.setItem(LOCAL_PATIENTS_KEY, JSON.stringify(patients));
+}
+
+function removeLocalPatient(id) {
+  const patients = getLocalPatients().filter(p => String(p.id) !== String(id));
+  localStorage.setItem(LOCAL_PATIENTS_KEY, JSON.stringify(patients));
+}
+
+/* ══════════════════════════════════
+   AUTH
+   ══════════════════════════════════ */
+async function doModLogin() {
+  const raw  = document.getElementById('modCode').value.trim().toUpperCase();
+  const btn  = document.getElementById('loginBtn');
+  const errEl = document.getElementById('loginErr');
+  errEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Перевірка...';
+
+  try {
+    const r = await fetch('/api/moderator/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: raw, password: '' })
+    });
+    const data = await r.json();
+    if(r.ok && data.ok){
+currentMod = { code: data.code, name: data.name, _secret: data.secret };
+      sessionStorage.setItem('nexum_mod', JSON.stringify(currentMod));
+      showApp();
+    } else {
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Увійти →';
+    }
+  } catch(e){
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Увійти →';
+  }
+}
+
+function checkAuth() {
+  const saved = sessionStorage.getItem('nexum_mod');
+  if (saved) {
+    try {
+      currentMod = JSON.parse(saved);
+      showApp();
+      return;
+    } catch {}
+  }
+  // Немає сесії — редирект на login
+  location.href = 'login.html';
+}
+
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('navCodeLabel').textContent = currentMod.code + ' · ' + currentMod.name;
+  loadPatients();
+}
+
+function doLogout() {
+  sessionStorage.removeItem('nexum_mod');
+  location.href = 'login.html';
+}
+
+document.getElementById('modCode').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doModLogin();
+});
+
+/* ══════════════════════════════════
+   TABS
+   ══════════════════════════════════ */
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  activeTab = name;
+
+ if (name === 'patients') loadPatients();
+if (name === 'assign') renderTemplates();
+  if (name === 'create') populatePackageSelect();
+}
+
+/* ══════════════════════════════════
+   LOAD PATIENTS — API + localStorage merge
+   ══════════════════════════════════ */
+async function loadPatients() {
+  const container = document.getElementById('patientsList');
+  container.innerHTML = '<div class="loading-state"><div class="spinner"></div>Завантаження пацієнтів...</div>';
+
+  let remoteAccounts = [];
+  try {
+const r = await fetch('/api/admin/patient-accounts?secret=' + currentMod._secret);
+    if (r.ok) {
+      const data = await r.json();
+      remoteAccounts = Array.isArray(data) ? data : [];
+    }
+  } catch(e) {
+    // server unavailable — fall through to local only
+  }
+
+  // Merge: remote first, then any local-only entries not already in remote
+  const localPatients = getLocalPatients();
+  const remoteIds = new Set(remoteAccounts.map(p => String(p.id)));
+  const localOnly = localPatients.filter(p => !remoteIds.has(String(p.id)));
+  allAccounts = [...remoteAccounts, ...localOnly];
+  allPatients = allAccounts;
+
+  document.getElementById('stat-total').textContent = allPatients.length;
+  document.getElementById('tcount-patients').textContent = allPatients.length;
+
+  renderPatients(allPatients);
+}
+
+function renderPatients(list) {
+  const container = document.getElementById('patientsList');
+  document.getElementById('stat-total').textContent = list.length;
+  document.getElementById('tcount-patients').textContent = list.length;
+
+  if (!list.length) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="empty-ic">👥</div>
+      <div class="empty-title">Пацієнти відсутні</div>
+      <div class="empty-sub">Створіть перший акаунт пацієнта у вкладці «Створити акаунт»</div>
+    </div>`;
+    return;
+  }
+
+  const cols = 'grid-template-columns:2fr 1.4fr 1fr 120px;';
+  let html = `<div class="table-wrap">
+    <div class="table-head" style="${cols}">
+      <div>Пацієнт</div>
+      <div>Телефон</div>
+      <div>Дата реєстрації</div>
+      <div style="text-align:right;">Дії</div>
+    </div>`;
+
+  list.forEach(p => {
+    const date = p.created_at
+      ? new Date(p.created_at).toLocaleDateString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric'})
+      : '—';
+    const initial = (p.name || '?')[0].toUpperCase();
+    const isLocal = p._local ? ' title="Збережено локально"' : '';
+    const localBadge = p._local ? `<span style="font-size:9px;font-weight:700;font-family:'DM Mono',monospace;color:var(--yellow);background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);padding:2px 7px;border-radius:20px;margin-left:6px;">LOCAL</span>` : '';
+
+    html += `<div class="tr" style="${cols}"${isLocal}>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:'Roboto Condensed',sans-serif;color:white;flex-shrink:0;">${esc(initial)}</div>
+        <div>
+          <div class="tr-name">${esc(p.name || '—')}${localBadge}</div>
+          <div class="tr-sub">#${esc(String(p.id).slice(0,8))}</div>
+        </div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);">${esc(p.phone || '—')}</div>
+      <div style="font-size:12px;color:var(--subtle);">${date}</div>
+      <div class="tr-actions">
+  <button class="btn-icon" title="Надіслати пакет" onclick="openSendPackageById('${esc(String(p.id))}')">📦</button>
+  <button class="btn-icon danger" title="Видалити" onclick="deletePatient('${esc(String(p.id))}', '${esc(p.name||'')}', ${!!p._local})">🗑</button>
+</div>
+    </div>`;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function filterPatients() {
+  const q = document.getElementById('patientSearch').value.toLowerCase().trim();
+  if (!q) { renderPatients(allPatients); return; }
+  const filtered = allPatients.filter(p =>
+    (p.name || '').toLowerCase().includes(q) ||
+    (p.phone || '').includes(q)
+  );
+  renderPatients(filtered);
+}
+
+/* ══════════════════════════════════
+   PATIENT DETAIL MODAL
+   ══════════════════════════════════ */
+function openPatientDetail(enc) {
+  let p;
+  try { p = JSON.parse(enc); } catch { return; }
+
+  const date = p.created_at
+    ? new Date(p.created_at).toLocaleDateString('uk-UA', {day:'2-digit', month:'long', year:'numeric'})
+    : '—';
+  const initial = (p.name || '?')[0].toUpperCase();
+
+  document.getElementById('patientDetailBody').innerHTML = `
+    <div class="detail-head">
+      <div class="detail-avatar">${esc(initial)}</div>
+      <div>
+        <div class="detail-name">${esc(p.name || '—')}</div>
+        <div class="detail-meta">${esc(p.phone || '—')} · Реєстрація: ${date}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:11px;color:var(--subtle);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">ID акаунта</div>
+        <div style="font-family:'DM Mono',monospace;font-size:13px;">${esc(String(p.id))}</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:11px;color:var(--subtle);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">Статус</div>
+        <span class="tr-badge active">✓ Активний</span>
+      </div>
+    </div>
+    ${p.notes ? `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px;font-size:13px;color:var(--muted);">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;color:var(--subtle);">Нотатки</div>
+      ${esc(p.notes)}
+    </div>` : ''}
+    <div style="background:var(--accent-light);border:1px solid var(--border-hi);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--accent2);">
+      ℹ️ Пацієнт може увійти в <strong>Мій кабінет</strong> через цей телефон та встановлений пароль.
+    </div>
+  `;
+  document.getElementById('patientDetailModal').classList.add('open');
+}
+
+/* ══════════════════════════════════
+   LINK SURVEY MODAL
+   ══════════════════════════════════ */
+let linkTargetPatient = null;
+
+async function openLinkSurvey(enc) {
+  try { linkTargetPatient = JSON.parse(enc); } catch { return; }
+
+  const body = document.getElementById('linkSurveyBody');
+  body.innerHTML = `
+    <div class="detail-head" style="margin-bottom:16px;">
+      <div class="detail-avatar" style="width:44px;height:44px;font-size:18px;">${esc((linkTargetPatient.name||'?')[0].toUpperCase())}</div>
+      <div>
+        <div class="detail-name" style="font-size:15px;">${esc(linkTargetPatient.name||'—')}</div>
+        <div class="detail-meta">${esc(linkTargetPatient.phone||'—')}</div>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <div class="form-label">Код лікаря</div>
+      <div style="display:flex;gap:8px;">
+        <input class="form-input" id="linkDoctorCode" placeholder="ABC123" style="flex:1;" oninput="this.value=this.value.toUpperCase()"/>
+        <button class="btn-action" style="flex-shrink:0;padding:11px 14px;font-size:13px;" onclick="loadLinkSurveys()">Завантажити</button>
+      </div>
+    </div>
+    <div id="linkSurveyList"><div style="font-size:13px;color:var(--muted);">Введіть код лікаря вище</div></div>
+  `;
+  document.getElementById('linkSurveyModal').classList.add('open');
+}
+  function openSendPackageById(patientId) {
+  const p = allPatients.find(x => String(x.id) === String(patientId));
+  if (!p) return;
+  openSendPackage(JSON.stringify(p));
+}
+function openSendPackage(enc) {
+  let p;
+  try { 
+    p = typeof enc === 'string' ? JSON.parse(enc) : enc; 
+  } catch { return; }
+
+  const templates = getTemplates();
+  const body = document.getElementById('sendPackageBody');
+
+  if (!templates.length) {
+    body.innerHTML = `
+      <div class="detail-head" style="margin-bottom:16px;">
+        <div class="detail-avatar" style="width:44px;height:44px;font-size:18px;">${esc((p.name||'?')[0].toUpperCase())}</div>
+        <div>
+          <div class="detail-name" style="font-size:15px;">${esc(p.name||'—')}</div>
+          <div class="detail-meta">${esc(p.phone||'—')}</div>
+        </div>
+      </div>
+      <div class="empty-state" style="padding:30px 20px;">
+        <div class="empty-ic">📦</div>
+        <div class="empty-title">Пакетів немає</div>
+        <div class="empty-sub">Спочатку створіть пакет у вкладці «Пакети»</div>
+      </div>`;
+    document.getElementById('sendPackageModal').classList.add('open');
+    return;
+  }
+
+  const options = templates.map((t, i) => {
+    const links = [t.link1_label, t.link2_label, t.link3_label].filter(Boolean);
+    return `<div class="survey-block" style="cursor:pointer;margin-bottom:10px;"
+        onclick="confirmAndSend('${esc(p.phone||'')}', '${esc(p.name||'')}', ${i}, this)"
+        onmouseover="this.style.borderColor='var(--border-hi)'"
+        onmouseout="this.style.borderColor=this.dataset.selected?'var(--accent)':'var(--border)'"
+        data-index="${i}">
+      <div class="sb-left">
+        <div class="sb-ic">📦</div>
+        <div>
+          <div class="sb-name">${esc(t.title || 'Без назви')}</div>
+          <div class="sb-meta">${links.join(' · ') || 'Немає посилань'}</div>
+        </div>
+      </div>
+      <span class="pkg-check" style="font-size:18px;opacity:0;">✓</span>
+    </div>`;
+  }).join('');
+
+  body.innerHTML = `
+    <div class="detail-head" style="margin-bottom:16px;">
+      <div class="detail-avatar" style="width:44px;height:44px;font-size:18px;">${esc((p.name||'?')[0].toUpperCase())}</div>
+      <div>
+        <div class="detail-name" style="font-size:15px;">${esc(p.name||'—')}</div>
+        <div class="detail-meta">${esc(p.phone||'—')}</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Оберіть пакет для надсилання:</div>
+    ${options}
+    <button id="confirmSendBtn" class="btn-action" style="width:100%;margin-top:8px;opacity:0.4;pointer-events:none;" onclick="doSendPackage()">
+      ✅ Підтвердити надсилання
+    </button>
+    <div id="sendPkgMsg" style="min-height:16px;margin-top:8px;font-size:13px;text-align:center;"></div>`;
+
+  document.getElementById('sendPackageModal').classList.add('open');
+}
+
+let _sendTarget = null; // { phone, name, templateIndex }
+
+function confirmAndSend(phone, name, index, el) {
+  // Скинути виділення
+  document.querySelectorAll('#sendPackageBody .survey-block').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.background = 'var(--surface)';
+    b.querySelector('.pkg-check').style.opacity = '0';
+    delete b.dataset.selected;
+  });
+  // Виділити обраний
+  el.style.borderColor = 'var(--accent)';
+  el.style.background = 'var(--accent-light)';
+  el.querySelector('.pkg-check').style.opacity = '1';
+  el.dataset.selected = '1';
+
+  _sendTarget = { phone, name, index };
+
+  const btn = document.getElementById('confirmSendBtn');
+  const t = getTemplates()[index];
+  btn.style.opacity = '1';
+  btn.style.pointerEvents = 'auto';
+  btn.textContent = `✅ Надіслати «${t?.title || 'Пакет'}»`;
+}
+
+async function doSendPackage() {
+  if (!_sendTarget) return;
+  const { phone, name, index } = _sendTarget;
+  const t = getTemplates()[index];
+  if (!t) return;
+
+  const btn = document.getElementById('confirmSendBtn');
+  const msg = document.getElementById('sendPkgMsg');
+  btn.disabled = true;
+  btn.textContent = '⏳ Надсилаємо...';
+
+  try {
+    const r = await fetch('/api/admin/assignments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        patient_phone: phone,
+        title:         t.title        || 'Пакет опитувань',
+        doctor_name:   currentMod?.name || 'Модератор',
+        link1_label:   t.link1_label  || '',
+        link1_url:     t.link1_url    || '',
+        link2_label:   t.link2_label  || '',
+        link2_url:     t.link2_url    || '',
+        link3_label:   t.link3_label  || '',
+        link3_url:     t.link3_url    || '',
+      }),
+    });
+    const data = await r.json();
+    if (data.ok) {
+      msg.style.color = 'var(--green)';
+      msg.textContent = `✅ Пакет «${t.title}» надіслано ${name}`;
+      showToast('ok', `✅ Пакет надіслано пацієнту ${name}`);
+      _sendTarget = null;
+      setTimeout(() => {
+        document.getElementById('sendPackageModal').classList.remove('open');
+      }, 1200);
+    } else {
+      throw new Error(data.error || 'Помилка сервера');
+    }
+  } catch(e) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = '❌ ' + e.message;
+    btn.disabled = false;
+    btn.textContent = `✅ Надіслати «${t.title}»`;
+    showToast('err', e.message);
+  }
+}
+/* ══════════════════════════════════
+   CREATE PATIENT
+   ══════════════════════════════════ */
+async function loadDoctorSurveys() {
+  const dc = document.getElementById('cf-doctorCode').value.trim().toUpperCase();
+  if (!dc) { showToast('err', 'Введіть код лікаря'); return; }
+
+  const section = document.getElementById('surveysSection');
+  const list = document.getElementById('surveysList');
+  section.style.display = 'block';
+  list.innerHTML = '<div class="loading-state" style="padding:16px;"><div class="spinner"></div></div>';
+  selectedSurveyKeys.clear();
+
+  try {
+    const r = await fetch('/api/surveys?doctorCode=' + encodeURIComponent(dc));
+    const data = await r.json();
+    selectedDoctorSurveys = data.surveys || {};
+    const keys = Object.keys(selectedDoctorSurveys);
+
+    if (!keys.length) {
+      list.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0;">Опитувань не знайдено для цього лікаря</div>';
+      return;
+    }
+
+    list.innerHTML = keys.map(k => {
+      const s = selectedDoctorSurveys[k];
+      const qCount = (s.questions || []).length;
+      return `<div class="survey-block">
+        <div class="sb-left">
+          <div class="sb-ic">📋</div>
+          <div>
+            <div class="sb-name">${esc(s.name || k)}</div>
+            <div class="sb-meta">${qCount} питань</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="sb-status unlinked" id="ss_status_${esc(k)}">Не вибрано</span>
+          <input type="checkbox" class="survey-check" value="${esc(k)}" id="ss_${esc(k)}" onchange="toggleSurveyKey('${esc(k)}')"/>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="font-size:13px;color:var(--red);">Помилка: ${esc(e.message)}</div>`;
+  }
+}
+
+function toggleSurveyKey(key) {
+  const el = document.getElementById('ss_' + key);
+  const status = document.getElementById('ss_status_' + key);
+  if (el.checked) {
+    selectedSurveyKeys.add(key);
+    status.textContent = '✓ Вибрано';
+    status.className = 'sb-status linked';
+  } else {
+    selectedSurveyKeys.delete(key);
+    status.textContent = 'Не вибрано';
+    status.className = 'sb-status unlinked';
+  }
+}
+
+async function createPatient() {
+  const lastName  = document.getElementById('cf-lastName').value.trim();
+  const firstName = document.getElementById('cf-firstName').value.trim();
+  const phone     = document.getElementById('cf-phone').value.trim().replace(/\s/g, '');
+  const password  = document.getElementById('cf-password').value.trim();
+  const msg       = document.getElementById('createMsg');
+
+  if (!lastName || !firstName) { showToast('err', 'Вкажіть прізвище та ім\'я'); return; }
+  if (!phone) { showToast('err', 'Вкажіть телефон'); return; }
+  if (!password || password.length < 6) { showToast('err', 'Пароль мінімум 6 символів'); return; }
+
+const doctorCode = '';
+
+
+  msg.style.display = 'none';
+  const btn = document.querySelector('#panel-create .btn-action');
+  btn.disabled = true;
+  btn.textContent = '⏳ Збереження...';
+
+  const name = [lastName, firstName, document.getElementById('cf-middleName').value.trim()].filter(Boolean).join(' ');
+
+  try {
+    // 1. Try to create patient_account via API
+    let patientId = null;
+    let savedRemotely = false;
+
+    try {
+      const regR = await fetch('/api/patient/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, password }),
+      });
+      const regData = await regR.json();
+
+      if (!regData.ok) {
+        const errMap = {
+          phone_exists: 'Цей телефон вже зареєстровано',
+          weak_password: 'Пароль занадто простий',
+          missing_fields: 'Заповніть усі обов\'язкові поля',
+        };
+        throw new Error(errMap[regData.error] || regData.error || 'Помилка реєстрації');
+      }
+      patientId = regData.id || regData.patientId || ('local_' + Date.now());
+      savedRemotely = true;
+    } catch(apiErr) {
+      // If API unavailable, create a local-only record
+      if (apiErr.message && (apiErr.message.includes('Failed to fetch') || apiErr.message.includes('NetworkError'))) {
+        patientId = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+        savedRemotely = false;
+      } else {
+        throw apiErr;
+      }
+    }
+
+    // 2. Always save to localStorage
+    const newPatient = {
+      id: patientId,
+      name,
+      phone,
+      gender: document.getElementById('cf-gender').value,
+      birthDate: document.getElementById('cf-birthDate').value,
+      telegram: '',
+notes: '',
+doctorCode: '',
+      created_at: new Date().toISOString(),
+      _local: !savedRemotely,
+    };
+ saveLocalPatient(newPatient);
+
+    const localNote = savedRemotely ? '' : ' (збережено локально)';
+    showToast('ok', `✅ Акаунт для ${name} створено!`);
+    msg.style.display = 'block';
+    msg.style.background = 'rgba(52,211,153,.1)';
+    msg.style.border = '1px solid rgba(52,211,153,.25)';
+    msg.style.color = 'var(--green)';
+    msg.innerHTML = `✅ <strong>${esc(name)}</strong> зареєстровано${localNote}. Пацієнт може увійти через телефон <strong>${esc(phone)}</strong>.${selectedSurveyKeys.size > 0 ? ` Прив'язано опитувань: <strong>${selectedSurveyKeys.size}</strong>.` : ''}`;
+// Надіслати пакет якщо обрано
+const pkgIdx = document.getElementById('cf-package')?.value;
+if (pkgIdx !== '' && pkgIdx !== undefined && pkgIdx !== null) {
+  const t = getTemplates()[parseInt(pkgIdx)];
+  if (t) {
+    fetch('/api/admin/assignments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        patient_phone: phone,
+        title: t.title || 'Пакет опитувань',
+        doctor_name: currentMod?.name || 'Модератор',
+        link1_label: t.link1_label || '',
+        link1_url:   t.link1_url   || '',
+        link2_label: t.link2_label || '',
+        link2_url:   t.link2_url   || '',
+        link3_label: t.link3_label || '',
+        link3_url:   t.link3_url   || '',
+      }),
+    }).catch(() => {});
+  }
+}
+    // Refresh patient list
+    allPatients = [];
+    clearCreateForm();
+  } catch(e) {
+    msg.style.display = 'block';
+    msg.style.background = 'rgba(248,113,113,.1)';
+    msg.style.border = '1px solid rgba(248,113,113,.25)';
+    msg.style.color = 'var(--red)';
+    msg.textContent = '❌ ' + e.message;
+    showToast('err', e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ Створити акаунт';
+  }
+}
+
+function clearCreateForm() {
+  ['cf-lastName','cf-firstName','cf-middleName','cf-phone','cf-password'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('cf-gender').value = '';
+  document.getElementById('cf-birthDate').value = '';
+  const sel = document.getElementById('cf-package');
+if (sel) sel.value = '';
+}
+
+/* ══════════════════════════════════
+   SURVEYS TAB
+   ══════════════════════════════════ */
+async function loadSurveysTab() {
+  const dc = document.getElementById('surveyDoctorCode').value.trim().toUpperCase();
+  if (!dc) return;
+  const cont = document.getElementById('surveysTabContent');
+  cont.innerHTML = '<div class="loading-state"><div class="spinner"></div>Завантаження...</div>';
+
+  try {
+    const r = await fetch('/api/surveys?doctorCode=' + encodeURIComponent(dc));
+    const data = await r.json();
+    const surveys = data.surveys || {};
+    const keys = Object.keys(surveys);
+
+    document.getElementById('tcount-surveys').textContent = keys.length;
+
+    if (!keys.length) {
+      cont.innerHTML = `<div class="empty-state"><div class="empty-ic">📋</div><div class="empty-title">Опитувань не знайдено</div><div class="empty-sub">Лікар ${esc(dc)} ще не створив опитувань</div></div>`;
+      return;
+    }
+
+    let html = `<div style="margin-bottom:14px;font-size:13px;color:var(--muted);">Знайдено <strong style="color:var(--text);">${keys.length}</strong> опитувань для лікаря <strong style="color:var(--accent);">${esc(dc)}</strong></div>`;
+
+    keys.forEach(k => {
+      const s = surveys[k];
+      const qs = Array.isArray(s.questions) ? s.questions : [];
+      html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 22px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div style="font-family:'Roboto Condensed',sans-serif;font-size:16px;font-weight:800;">${esc(s.name || k)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;">${qs.length} питань · ключ: ${esc(k)}</div>
+          </div>
+          <span class="tr-badge active">${qs.length} Q</span>
+        </div>`;
+
+      if (qs.length) {
+        html += `<div style="display:flex;flex-direction:column;gap:6px;">`;
+     qs.forEach((q, i) => {
+          html += `<div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 13px;font-size:13px;">
+            <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--subtle);flex-shrink:0;">${i+1}.</span>
+            <span>${esc(q.text || q.question || '—')}</span>
+            ${q.type ? `<span style="margin-left:auto;font-size:10px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent2);background:var(--accent-light);padding:2px 8px;border-radius:20px;">${esc(q.type)}</span>` : ''}
+          </div>`;
+        });
+        html += '</div>';
+      }
+
+      html += '</div>';
+    });
+
+    cont.innerHTML = html;
+  } catch(e) {
+    cont.innerHTML = `<div class="empty-state"><div class="empty-ic">⚠️</div><div class="empty-title">Помилка</div><div class="empty-sub">${esc(e.message)}</div></div>`;
+  }
+}
+
+/* ══════════════════════════════════
+   DELETE PATIENT
+   ══════════════════════════════════ */
+async function deletePatient(id, name, isLocalOnly) {
+  if (!confirm(`Видалити акаунт пацієнта "${name}"?\n\nЦя дія незворотна.`)) return;
+  try {
+    // Always remove from localStorage
+    removeLocalPatient(id);
+
+    // If not local-only, also try remote deletion
+    if (!isLocalOnly) {
+      try {
+const r = await fetch('/api/admin/patient-accounts/' + encodeURIComponent(id) + '?secret=' + currentMod._secret, { method: 'DELETE' });
+        if (!r.ok) throw new Error('Помилка видалення');
+      } catch(e) {
+        // If remote fails, still remove from UI
+      }
+    }
+
+    showToast('ok', `✅ Акаунт "${name}" видалено`);
+    allPatients = allPatients.filter(p => String(p.id) !== String(id));
+    renderPatients(allPatients);
+  } catch(e) {
+    showToast('err', e.message);
+  }
+}
+
+/* ══════════════════════════════════
+   HELPERS
+   ══════════════════════════════════ */
+function closeModal(id, e) {
+  if (e && e.target !== document.getElementById(id)) return;
+  document.getElementById(id).classList.remove('open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+let toastTimer;
+function showToast(type, msg) {
+  const el = document.getElementById('toast');
+  const ic = document.getElementById('toastIc');
+  const txt = document.getElementById('toastMsg');
+  ic.textContent = type === 'ok' ? '✅' : '❌';
+  txt.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3500);
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+  /* ══════════════════════════════════
+   ASSIGNMENT TEMPLATES
+   ══════════════════════════════════ */
+const TEMPLATES_KEY = 'nexum_assign_templates';
+
+function getTemplates() {
+  try { return JSON.parse(localStorage.getItem(TEMPLATES_KEY) || '[]'); } catch { return []; }
+}
+
+function saveTemplates(list) {
+  localStorage.setItem(TEMPLATES_KEY, JSON.stringify(list));
+}
+
+function renderTemplates() {
+  const list = getTemplates();
+  const cont = document.getElementById('templatesList');
+  if (!cont) return;
+
+  if (!list.length) {
+    cont.innerHTML = `<div class="empty-state" style="padding:30px 20px;">
+      <div class="empty-ic">📁</div>
+      <div class="empty-title">Шаблонів поки немає</div>
+      <div class="empty-sub">Натисніть «Зберегти шаблон» щоб створити перший</div>
+    </div>`;
+    return;
+  }
+
+  cont.innerHTML = list.map((t, i) => {
+    const links = [t.link1_label, t.link2_label, t.link3_label].filter(Boolean);
+   return `<div style="background:var(--surface);border:1px solid var(--border);
+            border-radius:14px;padding:14px 16px;margin-bottom:10px;transition:all .15s;cursor:pointer;"
+     onmouseover="this.style.borderColor='var(--border-hi)'"
+     onmouseout="this.style.borderColor='var(--border)'"
+     onclick="loadTemplate(${i})">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div style="font-weight:700;font-size:13.5px;">${esc(t.title || 'Без назви')}</div>
+    <div style="display:flex;gap:6px;" onclick="event.stopPropagation()">
+      <button class="btn-icon" title="Редагувати" onclick="editTemplate(${i})">✏️</button>
+      <button class="btn-icon danger" title="Видалити" onclick="deleteTemplate(${i})">🗑</button>
+    </div>
+  </div>
+      <div style="font-size:11px;color:var(--muted);">
+        ${links.map(l => `<span style="background:var(--accent-light);color:var(--accent2);border:1px solid var(--border-hi);padding:2px 8px;border-radius:20px;margin-right:4px;font-family:'DM Mono',monospace;">${esc(l)}</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+function populatePackageSelect() {
+  const sel = document.getElementById('cf-package');
+  if (!sel) return;
+  const templates = getTemplates();
+  sel.innerHTML = '<option value="">— Не надсилати —</option>';
+  templates.forEach((t, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = t.title || 'Пакет ' + (i + 1);
+    sel.appendChild(opt);
+  });
+}
+function openSaveTemplate() {
+  const l1u = document.getElementById('as-l1-url').value.trim();
+  if (!l1u) { showToast('err', 'Заповніть хоча б перше посилання перед збереженням'); return; }
+  const title = document.getElementById('as-title').value.trim();
+  const name = prompt('Назва шаблону:', title || 'Новий шаблон');
+  if (!name) return;
+  const templates = getTemplates();
+  templates.unshift({
+    title: name,
+    link1_label: document.getElementById('as-l1-label').value.trim(),
+    link1_url:   l1u,
+    link2_label: document.getElementById('as-l2-label').value.trim(),
+    link2_url:   document.getElementById('as-l2-url').value.trim(),
+    link3_label: document.getElementById('as-l3-label').value.trim(),
+    link3_url:   document.getElementById('as-l3-url').value.trim(),
+    savedAt: new Date().toISOString(),
+  });
+  saveTemplates(templates);
+  renderTemplates();
+  showToast('ok', `✅ Шаблон «${name}» збережено`);
+}
+function clearPacketForm() {
+  document.getElementById('as-title').value    = '';
+  document.getElementById('as-l1-label').value = '';
+  document.getElementById('as-l1-url').value   = '';
+  document.getElementById('as-l2-label').value = '';
+  document.getElementById('as-l2-url').value   = '';
+  document.getElementById('as-l3-label').value = '';
+  document.getElementById('as-l3-url').value   = '';
+
+  // Reset edit state if active
+  editingTemplateIndex = null;
+  const btn = document.getElementById('savePacketBtn');
+  btn.innerHTML = '💾 Зберегти як пакет';
+  btn.onclick = openSaveTemplate;
+
+  showToast('ok', '🧹 Форму очищено');
+}
+function loadTemplate(index) {
+  const t = getTemplates()[index];
+  if (!t) return;
+  document.getElementById('as-title').value    = t.title       || '';
+  document.getElementById('as-l1-label').value = t.link1_label || '';
+  document.getElementById('as-l1-url').value   = t.link1_url   || '';
+  document.getElementById('as-l2-label').value = t.link2_label || '';
+  document.getElementById('as-l2-url').value   = t.link2_url   || '';
+  document.getElementById('as-l3-label').value = t.link3_label || '';
+  document.getElementById('as-l3-url').value   = t.link3_url   || '';
+  showToast('ok', `📥 Шаблон «${t.title}» завантажено`);
+}
+let editingTemplateIndex = null;
+
+function editTemplate(index) {
+  const templates = getTemplates();
+  const t = templates[index];
+  if (!t) return;
+
+  editingTemplateIndex = index;
+
+  document.getElementById('as-title').value    = t.title       || '';
+  document.getElementById('as-l1-label').value = t.link1_label || '';
+  document.getElementById('as-l1-url').value   = t.link1_url   || '';
+  document.getElementById('as-l2-label').value = t.link2_label || '';
+  document.getElementById('as-l2-url').value   = t.link2_url   || '';
+  document.getElementById('as-l3-label').value = t.link3_label || '';
+  document.getElementById('as-l3-url').value   = t.link3_url   || '';
+
+  const btn = document.getElementById('savePacketBtn');
+  btn.innerHTML = '💾 Оновити пакет';
+  btn.onclick = updateTemplate;
+
+  showToast('ok', `✏️ Редагуєте «${t.title}»`);
+}
+
+function updateTemplate() {
+  const l1u = document.getElementById('as-l1-url').value.trim();
+  if (!l1u) { showToast('err', 'Заповніть хоча б перше посилання'); return; }
+
+  const templates = getTemplates();
+  if (editingTemplateIndex === null) return;
+
+  templates[editingTemplateIndex] = {
+    title:       document.getElementById('as-title').value.trim() || templates[editingTemplateIndex].title,
+    link1_label: document.getElementById('as-l1-label').value.trim(),
+    link1_url:   l1u,
+    link2_label: document.getElementById('as-l2-label').value.trim(),
+    link2_url:   document.getElementById('as-l2-url').value.trim(),
+    link3_label: document.getElementById('as-l3-label').value.trim(),
+    link3_url:   document.getElementById('as-l3-url').value.trim(),
+    savedAt:     new Date().toISOString(),
+  };
+  saveTemplates(templates);
+  renderTemplates();
+
+  // Скинути стан
+  editingTemplateIndex = null;
+  const btn = document.getElementById('savePacketBtn');
+  btn.innerHTML = '💾 Зберегти як пакет';
+  btn.onclick = openSaveTemplate;
+
+  // Очистити форму
+  document.getElementById('as-title').value    = '';
+  document.getElementById('as-l1-label').value = '';
+  document.getElementById('as-l1-url').value   = '';
+  document.getElementById('as-l2-label').value = '';
+  document.getElementById('as-l2-url').value   = '';
+  document.getElementById('as-l3-label').value = '';
+  document.getElementById('as-l3-url').value   = '';
+
+  showToast('ok', '✅ Пакет оновлено');
+}
+function deleteTemplate(index) {
+  const t = getTemplates()[index];
+  if (!confirm(`Видалити шаблон «${t?.title}»?`)) return;
+  const list = getTemplates();
+  list.splice(index, 1);
+  saveTemplates(list);
+  renderTemplates();
+  showToast('ok', '🗑 Шаблон видалено');
+}
+checkAuth();
+</script>
+</body>
+</html>

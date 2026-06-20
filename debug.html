@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<title>Nexum Debug</title>
+<style>
+body{font-family:monospace;background:#0a0f1e;color:#dde4f0;padding:24px;margin:0;}
+h2{color:#3b82f6;margin-bottom:8px;}
+.card{background:#0f1525;border:1px solid #1a2540;border-radius:12px;padding:20px;margin-bottom:16px;}
+input{background:#1a2540;border:1px solid #2a3a60;color:#fff;padding:8px 14px;border-radius:8px;font-family:monospace;font-size:14px;width:300px;}
+button{background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:monospace;font-size:14px;cursor:pointer;margin-left:8px;}
+button:hover{opacity:.85;}
+.ok{color:#34d399;} .err{color:#f87171;} .warn{color:#fbbf24;}
+pre{background:#050810;border:1px solid #1a2540;border-radius:8px;padding:16px;overflow-x:auto;font-size:12px;line-height:1.6;max-height:400px;overflow-y:auto;}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:#1a2540;padding:8px 12px;text-align:left;color:#5a6e94;letter-spacing:.05em;}
+td{padding:8px 12px;border-bottom:1px solid #1a2540;vertical-align:top;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;}
+.b-ok{background:#34d39920;color:#34d399;border:1px solid #34d39940;}
+.b-err{background:#f8717120;color:#f87171;border:1px solid #f8717140;}
+.b-warn{background:#fbbf2420;color:#fbbf24;border:1px solid #fbbf2440;}
+</style>
+</head>
+<body>
+
+<h2>🔍 Nexum — Діагностика даних</h2>
+
+<div class="card">
+  <div class="row">
+    <input id="codeInp" placeholder="Код лікаря (наприклад DOC-1234)" value=""/>
+    <button onclick="runDiag()">▶ Запустити діагностику</button>
+  </div>
+  <div id="status" style="color:#5a6e94;font-size:13px;">Введіть код лікаря і натисніть кнопку</div>
+</div>
+
+<div id="results" style="display:none">
+
+  <div class="card">
+    <h2>1. API відповідь — /api/dashboard/patients</h2>
+    <div id="apiStatus"></div>
+    <pre id="apiRaw"></pre>
+  </div>
+
+  <div class="card">
+    <h2>2. Структура пацієнтів</h2>
+    <table>
+      <thead><tr>
+        <th>Пацієнт</th>
+        <th>chatSessions</th>
+        <th>messages у сесіях</th>
+        <th>summary</th>
+        <th>Проблема</th>
+      </tr></thead>
+      <tbody id="patTable"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>3. Деталі chatSessions (перший пацієнт з сесіями)</h2>
+    <pre id="sessionDetail"></pre>
+  </div>
+
+  <div class="card">
+    <h2>4. Висновок</h2>
+    <div id="conclusion"></div>
+  </div>
+
+</div>
+
+<script>
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+async function runDiag() {
+  const code = document.getElementById('codeInp').value.trim();
+  if (!code) { document.getElementById('status').textContent = '⚠️ Введіть код лікаря'; return; }
+
+  document.getElementById('status').innerHTML = '<span class="warn">⏳ Завантаження...</span>';
+  document.getElementById('results').style.display = 'none';
+
+  let patients = [];
+  let apiOk = false;
+
+  try {
+    const r = await fetch('/api/dashboard/patients?doctorCode=' + encodeURIComponent(code));
+    const data = await r.json();
+    apiOk = r.ok;
+
+   document.getElementById('apiStatus').innerHTML =
+  `<span class="${r.ok ? 'ok' : 'err'}">HTTP ${Number(r.status)}
+   — ${r.ok ? 'OK' : 'ПОМИЛКА'}</span>
+   <span style="color:#5a6e94;margin-left:12px">Отримано: ${Array.isArray(data) ? Number(data.length) + ' пацієнтів' : 'не масив!'}</span>`;
+    // Show first 2 patients raw (truncated)
+    const preview = Array.isArray(data) ? data.slice(0,2).map(p => {
+      const cp = {...p};
+      if (cp.chatSessions) cp.chatSessions = cp.chatSessions.map(s => ({
+        id: s.id,
+        createdAt: s.createdAt,
+        summary_len: (s.summary||'').length,
+        messages_field: s.messages !== undefined ? '✅ є' : '❌ немає',
+        chatHistory_field: s.chatHistory !== undefined ? '⚠️ є (старе поле)' : '—',
+        messages_count: Array.isArray(s.messages) ? s.messages.length : (Array.isArray(s.chatHistory) ? '(chatHistory): '+s.chatHistory.length : 0),
+      }));
+      return cp;
+    }) : data;
+
+    document.getElementById('apiRaw').textContent = JSON.stringify(preview, null, 2);
+    patients = Array.isArray(data) ? data : [];
+
+  } catch(e) {
+    document.getElementById('apiStatus').innerHTML = `<span class="err">❌ Fetch error: ${e.message}</span>`;
+    document.getElementById('apiRaw').textContent = e.stack || e.message;
+  }
+
+  // Table
+  const tbody = document.getElementById('patTable');
+  tbody.innerHTML = '';
+  let firstWithSessions = null;
+  const issues = [];
+
+  patients.forEach(p => {
+    const name = [p.lastName, p.firstName].filter(Boolean).join(' ') || p.id;
+    const sessions = p.chatSessions || [];
+    const hasSessions = sessions.length > 0;
+
+    let msgInfo = '—';
+    let problem = '';
+
+    if (hasSessions) {
+      if (!firstWithSessions) firstWithSessions = p;
+      const counts = sessions.map((s, i) => {
+        const hasMsgs = Array.isArray(s.messages) && s.messages.length > 0;
+        const hasCH = Array.isArray(s.chatHistory) && s.chatHistory.length > 0;
+        if (!hasMsgs && !hasCH) return `сесія ${i+1}: <span class="b-err">0 повід.</span>`;
+        if (hasCH && !hasMsgs) return `сесія ${i+1}: <span class="b-warn">chatHistory: ${s.chatHistory.length}</span>`;
+        return `сесія ${i+1}: <span class="b-ok">${s.messages.length} msg</span>`;
+      });
+      msgInfo = counts.join('<br>');
+
+      sessions.forEach((s, i) => {
+        if (!Array.isArray(s.messages) && !Array.isArray(s.chatHistory)) {
+          problem += `сесія ${i+1}: немає messages/chatHistory; `;
+        } else if (Array.isArray(s.chatHistory) && !Array.isArray(s.messages)) {
+          problem += `сесія ${i+1}: є chatHistory але немає messages (старий формат); `;
+        }
+      });
+    }
+
+    if (problem) issues.push({ name, problem });
+
+const summarySnippet = sessions.length ? (sessions[0].summary || '').slice(0, 60) + '...' : '—';
+
+    tbody.innerHTML += `<tr>
+  <td>${esc(name)}</td>
+  <td><span class="badge ${hasSessions ? 'b-ok' : 'b-warn'}">${Number(sessions.length)} сесій</span></td>
+  <td>${msgInfo || '—'}</td>
+  <td style="font-size:11px;color:#5a6e94">${esc(summarySnippet)}</td>
+  <td style="color:#f87171;font-size:11px">${problem ? esc(problem) : '<span style="color:#34d399">✓</span>'}</td>
+</tr>`;
+  });
+
+  // Session detail
+  if (firstWithSessions) {
+    const s = firstWithSessions.chatSessions[0];
+    document.getElementById('sessionDetail').textContent = JSON.stringify({
+      id: s.id,
+      createdAt: s.createdAt,
+      has_messages: Array.isArray(s.messages),
+      messages_count: Array.isArray(s.messages) ? s.messages.length : 'N/A',
+      has_chatHistory: Array.isArray(s.chatHistory),
+      chatHistory_count: Array.isArray(s.chatHistory) ? s.chatHistory.length : 'N/A',
+      summary_preview: (s.summary || '').slice(0, 200),
+      first_message: Array.isArray(s.messages) && s.messages[0] ? s.messages[0] : (Array.isArray(s.chatHistory) && s.chatHistory[0] ? s.chatHistory[0] : null),
+    }, null, 2);
+  } else {
+    document.getElementById('sessionDetail').textContent = 'Немає пацієнтів з chatSessions';
+  }
+
+  // Conclusion
+  let concl = '';
+  if (!apiOk) {
+    concl = '<span class="err">❌ API не відповідає — перевірте сервер</span>';
+  } else if (patients.length === 0) {
+    concl = '<span class="warn">⚠️ Пацієнтів не знайдено для цього коду лікаря</span>';
+  } else {
+    const withSessions = patients.filter(p => p.chatSessions && p.chatSessions.length > 0);
+    const withMessages = patients.filter(p => p.chatSessions && p.chatSessions.some(s => Array.isArray(s.messages) && s.messages.length > 0));
+    const withChatHistory = patients.filter(p => p.chatSessions && p.chatSessions.some(s => Array.isArray(s.chatHistory) && s.chatHistory.length > 0));
+    const withZero = patients.filter(p => p.chatSessions && p.chatSessions.some(s => !Array.isArray(s.messages) && !Array.isArray(s.chatHistory)));
+
+    concl += `<div style="margin-bottom:8px">👥 Всього пацієнтів: <b>${patients.length}</b></div>`;
+    concl += `<div style="margin-bottom:8px">💬 З chatSessions: <b>${withSessions.length}</b></div>`;
+    concl += `<div style="margin-bottom:8px"><span class="badge b-ok">messages</span> пацієнтів: <b>${withMessages.length}</b></div>`;
+    concl += `<div style="margin-bottom:8px"><span class="badge b-warn">chatHistory (старий формат)</span>: <b>${withChatHistory.length}</b></div>`;
+    concl += `<div style="margin-bottom:8px"><span class="badge b-err">0 повідомлень</span>: <b>${withZero.length}</b></div>`;
+
+    concl += '<hr style="border-color:#1a2540;margin:12px 0"/>';
+
+    if (withMessages.length > 0) {
+      concl += '<div class="ok">✅ Є пацієнти з messages — dashboard.html повинен показувати чат</div>';
+      concl += '<div style="color:#5a6e94;margin-top:6px;font-size:12px">Якщо dashboard все одно показує 0 msg — проблема в dashboard.html (поле chatHistory vs messages)</div>';
+    }
+    if (withChatHistory.length > 0) {
+      concl += '<div class="warn" style="margin-top:8px">⚠️ Є пацієнти з chatHistory (старий формат) — потрібна міграція</div>';
+    }
+    if (withZero.length > 0) {
+      concl += '<div class="err" style="margin-top:8px">❌ Є сесії без повідомлень — patientConverter.js не передає history</div>';
+    }
+    if (issues.length > 0) {
+concl += '<div style="margin-top:12px;color:#fbbf24">Детальні проблеми:<br>' + issues.map(i => `• <b>${esc(i.name)}</b>: ${esc(i.problem)}`).join('<br>') + '</div>';
+    }
+  }
+
+  document.getElementById('conclusion').innerHTML = concl;
+  document.getElementById('results').style.display = '';
+  document.getElementById('status').innerHTML = '<span class="ok">✅ Діагностику завершено</span>';
+}
+
+// Auto-fill from sessionStorage if logged in
+const code = sessionStorage.getItem('nexum_auth');
+if (code) document.getElementById('codeInp').value = code;
+</script>
+</body>
+</html>

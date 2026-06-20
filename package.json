@@ -1,0 +1,16 @@
+{
+  "name": "nexum-server",
+  "version": "1.0.0",
+  "description": "Nexum medical assistant server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "docx": "^8.5.0",
+    "busboy": "^1.6.0"
+  }
+}

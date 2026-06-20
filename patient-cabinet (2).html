@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Мій кабінет — Nexum</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F1F5F9;
+  --surface:#E2E8F0;
+  --card:#FFFFFF;
+  --border:#E2E8F0;
+  --border-mid:#CBD5E1;
+  --accent:#4F46E5;
+  --accent-dark:#3730A3;
+  --accent-hover:#4338CA;
+  --accent-light:#EEF2FF;
+  --accent-glow:rgba(79,70,229,.12);
+  --text:#0F172A;
+  --muted:#334155;
+  --subtle:#64748B;
+  --white:#fff;
+  --teal:#0891B2;
+  --teal-light:#E0F2FE;
+  --teal-border:#BAE6FD;
+  --amber:#B45309;
+  --amber-light:#FFFBEB;
+  --amber-border:#FDE68A;
+  --red:#BE123C;
+  --red-light:#FFF1F2;
+  --red-border:#FECDD3;
+  --green:#047857;
+  --green-light:#ECFDF5;
+  --green-border:#A7F3D0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border-mid);border-radius:2px;}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:0 48px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 1px 3px rgba(15,23,42,.06);
+}
+.nav-logo{
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:19px;font-weight:800;
+  color:var(--text);letter-spacing:-.04em;
+  display:flex;align-items:center;gap:10px;text-decoration:none;
+}
+.logo-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:white;font-weight:800;letter-spacing:-.02em;
+}
+.nav-logo .dot{color:var(--accent);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-badge{
+  font-size:12.5px;font-weight:600;color:var(--muted);
+  background:var(--bg);
+  border:1px solid var(--border);
+  padding:5px 14px;border-radius:6px;
+  display:flex;align-items:center;gap:7px;
+}
+.nav-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#22C55E;
+  box-shadow:0 0 0 2px rgba(34,197,94,.22);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.btn-logout{
+  background:transparent;
+  border:1px solid var(--border-mid);
+  color:var(--muted);
+  border-radius:6px;padding:6px 16px;
+  font-size:12.5px;font-weight:600;cursor:pointer;
+  transition:all .14s;font-family:'Plus Jakarta Sans',sans-serif;
+}
+.btn-logout:hover{background:var(--bg);border-color:var(--accent);color:var(--accent);}
+
+/* ── MAIN ── */
+.main{max-width:880px;margin:0 auto;padding:36px 24px 80px;}
+
+/* ── HERO ── */
+.hero{
+  background:var(--accent);
+  border-radius:16px;
+  padding:28px 32px;
+  display:flex;align-items:center;gap:22px;
+  margin-bottom:28px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;
+  top:-80px;right:-80px;
+  width:300px;height:300px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  pointer-events:none;
+}
+.hero::after{
+  content:'';position:absolute;
+  bottom:-40px;left:180px;
+  width:180px;height:180px;
+  border-radius:50%;
+  background:rgba(255,255,255,.04);
+  pointer-events:none;
+}
+.hero-avatar{
+  width:64px;height:64px;border-radius:14px;
+  background:rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;color:white;font-weight:800;
+  flex-shrink:0;border:2px solid rgba(255,255,255,.28);
+}
+.hero-info{flex:1;}
+.hero-info h2{
+  font-size:20px;font-weight:800;
+  letter-spacing:-.03em;margin-bottom:3px;color:white;
+}
+.hero-info p{font-size:13px;color:rgba(255,255,255,.65);}
+.hero-stats{display:flex;gap:10px;flex-shrink:0;}
+.stat-chip{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:10px;padding:12px 20px;text-align:center;
+  backdrop-filter:blur(4px);
+  min-width:80px;
+}
+.stat-chip .num{
+  font-size:22px;font-weight:800;color:white;
+  letter-spacing:-.03em;display:block;
+}
+.stat-chip .lbl{font-size:10.5px;color:rgba(255,255,255,.6);margin-top:2px;font-weight:500;}
+
+/* ── SECTION ── */
+.section{margin-bottom:28px;}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sec-title{
+  font-size:13px;font-weight:700;color:var(--subtle);
+  text-transform:uppercase;letter-spacing:.07em;
+  display:flex;align-items:center;gap:8px;
+}
+.sec-title .ic{font-size:15px;}
+.sec-count{
+  font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  color:var(--accent);
+  background:var(--accent-light);
+  border:1px solid rgba(79,70,229,.2);
+  padding:3px 10px;border-radius:20px;
+}
+
+/* ── EMPTY STATE ── */
+.empty{
+  background:var(--card);
+  border:1px dashed var(--border-mid);
+  border-radius:12px;
+  padding:40px;text-align:center;
+}
+.empty .empty-ic{font-size:34px;margin-bottom:10px;}
+.empty p{font-size:13px;color:var(--subtle);}
+
+/* ── SURVEY CARD ── */
+.survey-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:10px;
+  padding:18px 20px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:box-shadow .18s,transform .18s,border-color .18s;
+  box-shadow:0 1px 3px rgba(15,23,42,.05);
+}
+.survey-card:hover{
+  border-color:var(--border-mid);
+  border-left-color:var(--accent-dark);
+  box-shadow:0 4px 16px rgba(79,70,229,.1);
+  transform:translateY(-1px);
+}
+.survey-card .sc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
+.survey-card .sc-title{font-weight:700;font-size:14px;color:var(--text);}
+.survey-card .sc-date{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--subtle);}
+.survey-card .sc-doctor{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.badge.indigo{background:var(--accent-light);color:var(--accent-dark);border:1px solid rgba(79,70,229,.2);}
+.badge.rose{background:var(--red-light);color:var(--red);border:1px solid var(--red-border);}
+.badge.orange{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border);}
+.badge.teal{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal-border);}
+.badge.gray{background:#F8FAFC;color:var(--subtle);border:1px solid var(--border);}
+
+/* ── CONCLUSION CARD ── */
+.conclusion-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-left:3px solid var(--teal);
+  border-radius:10px;
+  padding:18px 20px;
+  margin-bottom:10px;
+  transition:box-shadow .18s,transform .18s;
+  box-shadow:0 1px 3px rgba(15,23,42,.05);
+}
+.conclusion-card:hover{
+  box-shadow:0 4px 16px rgba(8,145,178,.1);
+  transform:translateY(-1px);
+}
+.cc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.cc-title{font-weight:700;font-size:14px;color:var(--text);}
+.cc-date{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--subtle);}
+.cc-doctor{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.cc-text{
+  font-size:13px;color:var(--muted);line-height:1.7;
+  background:var(--bg);border-radius:8px;padding:14px 16px;
+  border:1px solid var(--border);
+}
+
+/* ── REMINDER CARD ── */
+.reminder-card{
+  background:var(--card);
+  border:1px solid var(--amber-border);
+  border-left:3px solid #F59E0B;
+  border-radius:10px;
+  padding:18px 20px;
+  margin-bottom:10px;
+  transition:box-shadow .18s,transform .18s;
+  box-shadow:0 1px 3px rgba(15,23,42,.04);
+  position:relative;
+}
+.reminder-card.unread{background:#FFFDF5;}
+.reminder-card.unread::after{
+  content:'';
+  position:absolute;top:18px;right:18px;
+  width:8px;height:8px;border-radius:50%;
+  background:#F59E0B;
+}
+.reminder-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
+.reminder-title{font-weight:700;font-size:14px;color:var(--text);}
+.reminder-meta{font-size:12px;color:var(--amber);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.reminder-body{
+  font-size:13px;color:var(--muted);line-height:1.7;
+  background:var(--amber-light);border-radius:8px;padding:14px 16px;
+  border:1px solid var(--amber-border);
+  white-space:pre-line;
+}
+.reminder-when{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:10px;
+  background:var(--amber-light);border:1px solid var(--amber-border);border-radius:7px;
+  padding:5px 12px;font-size:11.5px;font-weight:600;color:var(--amber);
+  font-family:'JetBrains Mono',monospace;
+}
+.reminder-actions{display:flex;gap:8px;margin-top:12px;}
+.btn-mark-read{
+  background:transparent;
+  border:1px solid var(--amber-border);
+  color:var(--amber);
+  border-radius:7px;padding:6px 14px;
+  font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .14s;font-family:'Plus Jakarta Sans',sans-serif;
+}
+.btn-mark-read:hover{background:var(--amber-light);}
+
+/* ── MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(15,23,42,.5);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:white;border-radius:16px;max-width:600px;width:100%;max-height:85vh;
+  overflow-y:auto;
+  box-shadow:0 24px 64px rgba(15,23,42,.18);
+  animation:slideUp .22s cubic-bezier(.34,1.3,.64,1);
+  border:1px solid var(--border);
+}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.modal-head{
+  padding:22px 26px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;
+  position:sticky;top:0;background:white;z-index:1;
+  border-radius:16px 16px 0 0;
+}
+.modal-head h3{
+  font-size:16px;font-weight:800;
+  letter-spacing:-.025em;color:var(--text);
+}
+.modal-close{
+  background:var(--bg);border:1px solid var(--border);
+  color:var(--subtle);width:28px;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;transition:.14s;flex-shrink:0;
+}
+.modal-close:hover{background:var(--accent);color:white;border-color:var(--accent);}
+.modal-body{padding:20px 26px;}
+.qa-row{margin-bottom:14px;}
+.qa-q{
+  font-size:10.5px;font-weight:700;color:var(--subtle);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;
+}
+.qa-a{
+  font-size:13.5px;color:var(--text);line-height:1.6;
+  background:var(--bg);border-radius:8px;padding:10px 14px;
+  border:1px solid var(--border);
+}
+
+/* ── LOADING ── */
+.loading{text-align:center;padding:52px;color:var(--subtle);font-size:13px;}
+.spinner{
+  width:28px;height:28px;
+  border:2.5px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  margin:0 auto 14px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:4px 0 16px;}
+
+/* ── MOBILE ── */
+@media(max-width:680px){
+  nav{padding:0 16px;}
+  .main{padding:20px 14px 60px;}
+  .hero{flex-direction:column;gap:14px;padding:20px 18px;}
+  .hero-stats{gap:8px;width:100%;}
+  .stat-chip{flex:1;padding:10px 12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="nexum.html" class="nav-logo">
+    <div class="logo-mark">N</div>
+    Nexum<span class="dot">.</span>
+  </a>
+  <div class="nav-right">
+    <div class="nav-badge">
+      <span class="nav-dot"></span>
+      <span id="navName">Пацієнт</span>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Вийти</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-avatar" id="heroAvatar">?</div>
+    <div class="hero-info">
+      <h2 id="heroName">Завантаження...</h2>
+      <p id="heroPhone"></p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-chip">
+        <span class="num" id="statSurveys">—</span>
+        <div class="lbl">Опитувань</div>
+      </div>
+      <div class="stat-chip">
+        <span class="num" id="statConclusions">—</span>
+        <div class="lbl">Заключень</div>
+      </div>
+      <div class="stat-chip">
+        <span class="num" id="statReminders">—</span>
+        <div class="lbl">Нагадувань</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REMINDERS -->
+  <div class="section">
+    <div class="sec-header">
+      <div class="sec-title"><span class="ic">🔔</span> Нагадування від лікаря</div>
+      <div class="sec-count" id="reminderCount">0</div>
+    </div>
+    <div id="remindersContainer">
+      <div class="loading"><div class="spinner"></div>Завантаження...</div>
+    </div>
+  </div>
+
+  <!-- SURVEYS -->
+  <div class="section">
+    <div class="sec-header">
+      <div class="sec-title"><span class="ic">📋</span> Мої опитування</div>
+      <div class="sec-count" id="surveyCount">0</div>
+    </div>
+    <div id="surveysContainer">
+      <div class="loading"><div class="spinner"></div>Завантаження...</div>
+    </div>
+  </div>
+
+  <!-- ASSIGNMENTS -->
+  <div class="section">
+    <div class="sec-header">
+      <div class="sec-title"><span class="ic">🔗</span> Призначені опитування</div>
+      <div class="sec-count" id="assignmentCount">0</div>
+    </div>
+    <div id="assignmentsContainer">
+      <div class="loading"><div class="spinner"></div>Завантаження...</div>
+    </div>
+  </div>
+
+  <!-- CONCLUSIONS -->
+  <div class="section">
+    <div class="sec-header">
+      <div class="sec-title"><span class="ic">📝</span> Протоколи та заключення</div>
+      <div class="sec-count" id="conclusionCount">0</div>
+    </div>
+    <div id="conclusionsContainer">
+      <div class="loading"><div class="spinner"></div>Завантаження...</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="surveyModal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="modalTitle">Опитування</h3>
+        <div style="font-size:12px;color:var(--subtle);margin-top:3px;" id="modalMeta"></div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('surveyModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ── AUTH GUARD ── */
+const patientId   = sessionStorage.getItem('nexum_patient_auth');
+const patientName = sessionStorage.getItem('nexum_patient_name') || 'Пацієнт';
+const patientPhone= sessionStorage.getItem('nexum_patient_phone') || '';
+let patientConclusions = [];
+
+if(!patientId){ location.href = 'login.html'; }
+
+/* ── INIT UI ── */
+document.getElementById('navName').textContent  = patientName;
+document.getElementById('heroName').textContent = patientName;
+document.getElementById('heroPhone').textContent = patientPhone;
+const initial = patientName.trim()[0] || '?';
+document.getElementById('heroAvatar').textContent = initial.toUpperCase();
+
+/* ── READ STATE ── */
+function getReadReminders(){
+  try { return JSON.parse(localStorage.getItem('nexum_read_reminders') || '[]'); }
+  catch { return []; }
+}
+function markReminderRead(id){
+  const read = getReadReminders();
+  if(!read.includes(String(id))){ read.push(String(id)); }
+  localStorage.setItem('nexum_read_reminders', JSON.stringify(read));
+}
+
+/* ── LOAD DATA ── */
+async function loadData(){
+  await Promise.all([loadReminders(), loadSurveys(), loadConclusions(), loadAssignments()]);
+}
+
+/* ── REMINDERS ── */
+async function loadReminders(){
+  const container = document.getElementById('remindersContainer');
+  try {
+    const res  = await fetch('/api/patient/reminders?patient_id=' + encodeURIComponent(patientId));
+    const data = await res.json();
+    const list = data.reminders || [];
+    document.getElementById('reminderCount').textContent = list.length;
+    document.getElementById('statReminders').textContent = list.length;
+    if(!list.length){
+      container.innerHTML = emptyState('🔔','Нагадувань поки немає','Коли лікар надішле нагадування, воно з\'явиться тут');
+      return;
+    }
+    const readIds = getReadReminders();
+    container.innerHTML = list.map(r => reminderCard(r, readIds)).join('');
+  } catch(e){
+    container.innerHTML = emptyState('⚠️','Помилка завантаження','Не вдалось отримати дані. Оновіть сторінку.');
+  }
+}
+
+function reminderCard(r, readIds){
+  const isUnread = !readIds.includes(String(r.id));
+  const createdDate = r.created_at
+    ? new Date(r.created_at).toLocaleDateString('uk-UA',{day:'2-digit',month:'long',year:'numeric'})
+    : '—';
+  let whenHtml = '';
+  if(r.scheduled_at){
+    const d = new Date(r.scheduled_at);
+    const formatted = d.toLocaleString('uk-UA',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const isPast = d < new Date();
+    whenHtml = `<div class="reminder-when">${isPast ? '✅' : '⏰'} ${isPast ? 'Було: ' : 'Заплановано: '}${formatted}</div>`;
+  }
+  const priority = r.priority || 'normal';
+  const priorityMap = {
+    urgent:{ label:'Терміново', cls:'rose' },
+    high:  { label:'Важливо',   cls:'orange' },
+    normal:{ label:'Звичайне',  cls:'gray' },
+  };
+  const p = priorityMap[priority] || priorityMap.normal;
+
+  let actionHtml = '';
+  if(r.question && r.question.trim()){
+    if(r.patient_reply){
+      const replyEmoji = r.patient_reply === 'yes' ? '✅' : '❌';
+      const replyText  = r.patient_reply === 'yes' ? 'Так' : 'Ні';
+      actionHtml = `<div style="margin-top:12px;padding:10px 14px;background:#F0FDF4;border:1px solid #A7F3D0;border-radius:8px;font-size:13px;font-weight:600;color:#065F46;display:flex;align-items:center;gap:8px;">
+        ${replyEmoji} Ви відповіли: <strong>${replyText}</strong>
+        <span style="font-size:11px;color:#9CA3AF;font-weight:400;margin-left:auto;">${r.replied_at?new Date(r.replied_at).toLocaleDateString('uk-UA',{day:'2-digit',month:'long'}):''}</span>
+      </div>`;
+    } else {
+      actionHtml = `<div style="margin-top:12px;">
+        <div style="font-size:13px;font-weight:600;color:var(--amber);background:var(--amber-light);border:1px solid var(--amber-border);border-radius:8px;padding:10px 14px;margin-bottom:10px;">❓ ${esc(r.question)}</div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="sendReminderReply('${r.id}','yes',this)" style="flex:1;background:#DCFCE7;border:1.5px solid #86EFAC;color:#14532D;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .14s;">✅ Так</button>
+          <button onclick="sendReminderReply('${r.id}','no',this)" style="flex:1;background:#FEE2E2;border:1.5px solid #FCA5A5;color:#7F1D1D;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .14s;">❌ Ні</button>
+        </div>
+      </div>`;
+    }
+  } else {
+    actionHtml = isUnread
+      ? `<button class="btn-mark-read" onclick="handleMarkRead(event,'${r.id}',this)">✓ Позначити прочитаним</button>`
+      : `<span style="font-size:12px;color:#9CA3AF;font-weight:500;">✓ Прочитано</span>`;
+  }
+
+  return `<div class="reminder-card ${isUnread?'unread':''}" id="reminder-${r.id}">
+    <div class="reminder-head">
+      <div class="reminder-title">${esc(r.title||'Нагадування')}</div>
+      <span class="badge ${p.cls}">${p.label}</span>
+    </div>
+    <div class="reminder-meta">🩺 ${esc(r.doctor_name||'Лікар')} · <span style="font-family:'JetBrains Mono',monospace;font-size:11px;">${createdDate}</span></div>
+    <div class="reminder-body">${esc(r.message||r.text||'')}</div>
+    ${whenHtml}
+    <div class="reminder-actions">${actionHtml}</div>
+  </div>`;
+}
+
+async function sendReminderReply(reminderId, reply, btnEl){
+  const btnRow = btnEl.parentElement;
+  btnRow.querySelectorAll('button').forEach(b=>{b.disabled=true;b.style.opacity='0.5';});
+  try {
+    const r = await fetch('/api/patient/reminder-reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reminder_id:reminderId,reply})});
+    if(!r.ok) throw new Error('server error');
+    const replyEmoji = reply==='yes'?'✅':'❌';
+    const replyText  = reply==='yes'?'Так':'Ні';
+    btnRow.closest('.reminder-actions').innerHTML = `<div style="padding:10px 14px;background:#F0FDF4;border:1px solid #A7F3D0;border-radius:8px;font-size:13px;font-weight:600;color:#065F46;display:flex;align-items:center;gap:8px;">${replyEmoji} Ви відповіли: <strong>${replyText}</strong></div>`;
+    markReminderRead(reminderId);
+  } catch(e){
+    btnRow.querySelectorAll('button').forEach(b=>{b.disabled=false;b.style.opacity='1';});
+    alert('Помилка. Спробуйте ще раз.');
+  }
+}
+
+function handleMarkRead(e, id, btn){
+  e.stopPropagation();
+  markReminderRead(id);
+  const card = document.getElementById('reminder-'+id);
+  if(card) card.classList.remove('unread');
+  btn.outerHTML = `<span style="font-size:12px;color:#9CA3AF;font-weight:500;">✓ Прочитано</span>`;
+}
+
+/* ── SURVEYS ── */
+async function loadSurveys(){
+  const container = document.getElementById('surveysContainer');
+  try {
+    const res  = await fetch('/api/patient/surveys?patient_id='+encodeURIComponent(patientId));
+    const data = await res.json();
+    if(!data.surveys||data.surveys.length===0){
+      container.innerHTML = emptyState('📋','Опитувань поки немає','Після заповнення опитування через Telegram-бота воно з\'явиться тут');
+      document.getElementById('surveyCount').textContent='0';
+      document.getElementById('statSurveys').textContent='0';
+      return;
+    }
+    document.getElementById('surveyCount').textContent=data.surveys.length;
+    document.getElementById('statSurveys').textContent=data.surveys.length;
+    container.innerHTML=data.surveys.map(s=>surveyCard(s)).join('');
+  } catch(e){
+    container.innerHTML=emptyState('⚠️','Помилка завантаження','Не вдалось отримати дані. Оновіть сторінку.');
+  }
+}
+
+async function loadConclusions(){
+  const container=document.getElementById('conclusionsContainer');
+  try{
+    const res=await fetch('/api/patient/conclusions?patient_id='+encodeURIComponent(patientId));
+    const data=await res.json();
+    if(!data.conclusions||data.conclusions.length===0){
+      container.innerHTML=emptyState('📝','Протоколів поки немає','Коли лікар надішле протокол зі свого кабінету, він з\'явиться в цьому розділі.');
+      document.getElementById('conclusionCount').textContent='0';
+      document.getElementById('statConclusions').textContent='0';
+      return;
+    }
+    document.getElementById('conclusionCount').textContent=data.conclusions.length;
+    document.getElementById('statConclusions').textContent=data.conclusions.length;
+    patientConclusions=data.conclusions;
+    container.innerHTML=patientConclusions.map((c,i)=>conclusionCard(c,i)).join('');
+  }catch(e){
+    container.innerHTML=emptyState('⚠️','Помилка завантаження','Не вдалось отримати дані. Оновіть сторінку.');
+  }
+}
+
+async function loadAssignments(){
+  const container=document.getElementById('assignmentsContainer');
+  try{
+    const res=await fetch('/api/patient/assignments?patient_id='+encodeURIComponent(patientId));
+    const data=await res.json();
+    const list=data.assignments||[];
+    document.getElementById('assignmentCount').textContent=list.length;
+    if(!list.length){
+      container.innerHTML=emptyState('🔗','Призначень поки немає','Лікар або модератор ще не надіслав вам опитувань');
+      return;
+    }
+    container.innerHTML=list.map(a=>assignmentCard(a)).join('');
+  }catch(e){
+    container.innerHTML=emptyState('⚠️','Помилка завантаження','Не вдалось отримати дані. Оновіть сторінку.');
+  }
+}
+
+/* ── TEMPLATES ── */
+function emptyState(ic,title,sub){
+  return `<div class="empty"><div class="empty-ic">${ic}</div><p style="font-weight:700;font-size:13.5px;color:var(--text);margin-bottom:5px;">${title}</p><p>${sub}</p></div>`;
+}
+
+function surveyCard(s){
+  const date=s.created_at?new Date(s.created_at).toLocaleDateString('uk-UA',{day:'2-digit',month:'long',year:'numeric'}):'—';
+  const enc=encodeURIComponent(JSON.stringify(s));
+  return `<div class="survey-card" onclick="openSurveyModal(${enc})">
+    <div class="sc-top">
+      <div>
+        <div class="sc-title">${esc(s.survey_name||'Опитування')}</div>
+        <div class="sc-doctor">🩺 ${esc(s.doctor_name||'Лікар')}</div>
+      </div>
+      <span class="badge indigo">✓ Заповнено</span>
+    </div>
+    <div class="sc-date">${date}</div>
+  </div>`;
+}
+
+function conclusionCard(c,i){
+  const date=c.created_at?new Date(c.created_at).toLocaleDateString('uk-UA',{day:'2-digit',month:'long',year:'numeric'}):'—';
+  let proto=null;
+  if(c.protocol_json){try{proto=typeof c.protocol_json==='string'?JSON.parse(c.protocol_json):c.protocol_json;}catch(e){}}
+  const pdfBtn=proto?`<button class="btn-logout" style="margin-bottom:10px;border-color:var(--teal-border);color:var(--teal);" onclick="openProtocolPdf(patientConclusions[${i}])">📄 Відкрити PDF</button>`:'';
+  const fmtList=v=>{if(v==null||v==='')return '';if(Array.isArray(v))return v.filter(Boolean).join(', ');return String(v);};
+  const final_diag=proto?.finalDiag||c.final_diag||'';
+  const recommendations=proto?.recommendations??c.recommendations??'';
+  const next_visit=proto?.nextVisit??c.next_visit??'';
+  const notes_txt=proto?.notes!=null?proto.notes:(c.notes||'');
+  let content='';
+  const pi=proto?.patientInfo;
+  if(pi&&(pi.fullName||pi.phone||pi.diag||pi.birthDate)){
+    content+=`<div style="margin-bottom:12px;padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);">
+      <div style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">Дані з протоколу</div>
+      ${pi.fullName?`<div style="font-size:13px;font-weight:700;">${esc(pi.fullName)}</div>`:''}
+      ${pi.birthDate?`<div style="font-size:12px;color:var(--muted);margin-top:4px;">📅 ${esc(pi.birthDate)}${pi.age?' · '+esc(pi.age):''}</div>`:''}
+      ${pi.phone?`<div style="font-size:12px;margin-top:4px;">📞 ${esc(pi.phone)}</div>`:''}
+      ${pi.diag?`<div style="font-size:12px;margin-top:4px;">🩺 ${esc(pi.diag)}</div>`:''}
+    </div>`;
+  }
+  const lh=proto?.lifeHistory;
+  if(lh){
+    const bits=[];
+    const al=fmtList(lh.allergy);if(al)bits.push(`<strong>Алергії:</strong> ${esc(al)}`);
+    const cr=fmtList(lh.chronic);if(cr)bits.push(`<strong>Хронічне:</strong> ${esc(cr)}`);
+    const md=fmtList(lh.meds);if(md)bits.push(`<strong>Препарати:</strong> ${esc(md)}`);
+    if(lh.operations)bits.push(`<strong>Операції:</strong> ${esc(lh.operations)}`);
+    if(bits.length)content+=`<div style="margin-bottom:10px;font-size:12.5px;color:var(--text);line-height:1.55;">${bits.join('<br/>')}</div>`;
+  }
+  if(notes_txt)content+=`<div style="margin-bottom:10px;"><div style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Нотатки лікаря</div><div style="font-size:13px;color:var(--text);white-space:pre-line;">${esc(notes_txt)}</div></div>`;
+  if(final_diag)content+=`<div style="margin-bottom:10px;"><div style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Уточнений діагноз</div><div style="font-size:13px;color:var(--text);">${esc(final_diag)}</div></div>`;
+  if(recommendations)content+=`<div style="margin-bottom:10px;"><div style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Рекомендації</div><div style="font-size:13px;color:var(--text);white-space:pre-line;">${esc(recommendations)}</div></div>`;
+  if(next_visit)content+=`<div style="margin-bottom:10px;"><div style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Наступний прийом</div><div style="font-size:13px;color:var(--text);">${esc(next_visit)}</div></div>`;
+  const urgency=proto?.urgency||proto?.doctor?.urgency||c.urgency||'';
+  if(urgency)content+=`<div style="margin-bottom:10px;"><div style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">⏰ Терміновість</div><div style="font-size:13px;color:var(--red);background:var(--red-light);border:1px solid var(--red-border);border-radius:7px;padding:8px 12px;font-weight:600;">${esc(urgency)}</div></div>`;
+  const tests=proto?.tests||proto?.doctor?.tests||c.tests||'';
+  if(tests){
+    const testIcons={'кров':'🩸','сечі':'🧪','біохімі':'🧬','глюкоз':'🍬','екг':'💓','узд':'🔊','рентген':'📸','ліпідо':'💧','коагуло':'🩺','гормон':'⚗️','кардіолог':'❤️','мрт':'🧲','невролог':'🧠','окуліст':'👁','хірург':'🔪'};
+    function getTestIcon(name){const n=name.toLowerCase();for(const[key,icon]of Object.entries(testIcons)){if(n.includes(key))return icon;}return '📋';}
+    const testItems=tests.split(';').map(s=>s.trim()).filter(Boolean);
+    content+=`<div style="margin-bottom:10px;"><div style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">🔬 Призначені обстеження</div><div style="display:flex;flex-direction:column;gap:6px;">${testItems.map(t=>`<div style="display:flex;align-items:center;gap:10px;background:white;border:1px solid var(--border);border-radius:8px;padding:8px 12px;"><span style="font-size:16px;flex-shrink:0;">${getTestIcon(t)}</span><span style="font-size:13px;color:var(--text);font-weight:500;">${esc(t)}</span></div>`).join('')}</div></div>`;
+  }
+  const protoSurvey=proto?.survey;
+  if(protoSurvey?.answers&&Array.isArray(protoSurvey.answers)&&protoSurvey.answers.length){
+    const rows=protoSurvey.answers.map(qa=>`<div style="margin-bottom:8px;"><div style="font-size:10.5px;color:var(--subtle);font-weight:700;text-transform:uppercase;letter-spacing:.05em;">${esc(qa.question)}</div><div style="font-size:13px;color:var(--text);">${esc(qa.answer)}</div></div>`).join('');
+    content+=`<details style="margin-top:8px;"><summary style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;list-style:none;">💬 ${esc(protoSurvey.name||'Опитування')} <span style="font-weight:400;">(розгорнути)</span></summary><div style="margin-top:10px;">${rows}</div></details>`;
+  } else if(c.survey_answers&&Array.isArray(c.survey_answers)&&c.survey_answers.length){
+    const rows=c.survey_answers.map(qa=>`<div style="margin-bottom:8px;"><div style="font-size:10.5px;color:var(--subtle);font-weight:700;text-transform:uppercase;letter-spacing:.05em;">${esc(qa.question)}</div><div style="font-size:13px;color:var(--text);">${esc(qa.answer)}</div></div>`).join('');
+    content+=`<details style="margin-top:8px;"><summary style="font-size:10.5px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;list-style:none;">💬 ${esc(c.survey_name||'Опитування')} <span style="font-weight:400;">(розгорнути)</span></summary><div style="margin-top:10px;">${rows}</div></details>`;
+  }
+  if(!content.trim())content=`<div style="font-size:13px;color:var(--text);white-space:pre-line;">${esc(c.text||'Деталі відсутні')}</div>`;
+  const cardTitle=(c.type==='protocol')?'Протокол консультації':'Заключення лікаря';
+  return `<div class="conclusion-card">
+    <div class="cc-top"><div class="cc-title">${esc(cardTitle)}</div><span class="badge teal">🩺 Від лікаря</span></div>
+    <div class="cc-doctor">🩺 ${esc(c.doctor_name||'Лікар')} · <span style="font-family:'JetBrains Mono',monospace;font-size:11px;">${date}</span></div>
+    ${pdfBtn}<div class="cc-text">${content}</div>
+  </div>`;
+}
+
+function assignmentCard(a){
+  const date=a.created_at?new Date(a.created_at).toLocaleDateString('uk-UA',{day:'2-digit',month:'long',year:'numeric'}):'—';
+  const links=[{label:a.link1_label,url:a.link1_url},{label:a.link2_label,url:a.link2_url},{label:a.link3_label,url:a.link3_url}].filter(l=>l.url&&l.url.trim());
+  const linksHtml=links.map((l,i)=>`
+    <a href="${esc(l.url)}" target="_blank" rel="noopener"
+       style="display:flex;align-items:center;gap:14px;background:white;border:1.5px solid var(--border-mid);border-radius:10px;padding:14px 18px;text-decoration:none;color:var(--accent-dark);transition:all .16s;"
+       onmouseover="this.style.background='var(--accent-light)';this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
+       onmouseout="this.style.background='white';this.style.borderColor='var(--border-mid)';this.style.transform='none'">
+      <div style="width:40px;height:40px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">📋</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:14px;color:var(--text);">${esc(l.label||'Опитування '+(i+1))}</div>
+        <div style="font-size:12px;color:var(--subtle);margin-top:2px;">Натисніть, щоб заповнити →</div>
+      </div>
+      <div style="flex-shrink:0;background:var(--accent);color:white;border-radius:7px;padding:7px 14px;font-size:12.5px;font-weight:700;">Відкрити →</div>
+    </a>`).join('');
+  return `<div class="conclusion-card" style="cursor:default;">
+    <div class="cc-top"><div class="cc-title">${esc(a.title||'Призначені опитування')}</div><span class="badge indigo">📎 Від модератора</span></div>
+    <div class="cc-doctor">👤 ${esc(a.doctor_name||'Модератор')} · <span style="font-family:'JetBrains Mono',monospace;font-size:11px;">${date}</span></div>
+    <div style="background:var(--accent-light);border:1px solid rgba(79,70,229,.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--accent-dark);display:flex;align-items:center;gap:8px;">
+      👆 <strong>Натисніть на опитування нижче, щоб його заповнити</strong>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">${linksHtml}</div>
+  </div>`;
+}
+
+/* ── MODAL ── */
+function openSurveyModal(enc){
+  let s;
+  try{s=(typeof enc==='string')?JSON.parse(decodeURIComponent(enc)):enc;}catch(e){return;}
+  document.getElementById('modalTitle').textContent=s.survey_name||'Опитування';
+  const date=s.created_at?new Date(s.created_at).toLocaleDateString('uk-UA',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+  document.getElementById('modalMeta').textContent=(s.doctor_name?'🩺 '+s.doctor_name+' · ':'')+date;
+  const answers=s.answers||{};
+  let html='';
+  if(typeof answers==='object'&&!Array.isArray(answers)){
+    for(const[q,a]of Object.entries(answers)){
+      html+=`<div class="qa-row"><div class="qa-q">${esc(q)}</div><div class="qa-a">${esc(String(a))}</div></div>`;
+    }
+  } else if(Array.isArray(answers)){
+    answers.forEach(item=>{
+      html+=`<div class="qa-row"><div class="qa-q">${esc(item.question||item.q||'')}</div><div class="qa-a">${esc(String(item.answer||item.a||''))}</div></div>`;
+    });
+  }
+  if(!html)html='<p style="color:var(--subtle);font-size:13px;">Деталі відсутні</p>';
+  document.getElementById('modalBody').innerHTML=html;
+  document.getElementById('surveyModal').classList.add('open');
+}
+
+function closeModal(e){
+  if(e.target===document.getElementById('surveyModal'))
+    document.getElementById('surveyModal').classList.remove('open');
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.getElementById('surveyModal').classList.remove('open');
+});
+
+function esc(str){
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function doLogout(){
+  sessionStorage.removeItem('nexum_patient_auth');
+  sessionStorage.removeItem('nexum_patient_name');
+  sessionStorage.removeItem('nexum_patient_phone');
+  location.href='login.html';
+}
+
+function openProtocolPdf(conclusion){
+  let proto=conclusion?.protocol_json||{};
+  if(typeof proto==='string'){try{proto=JSON.parse(proto);}catch{proto={};}}
+  const html=buildPatientProtocolHtml(proto,conclusion);
+  const win=window.open('','_blank','width=980,height=900,scrollbars=yes');
+  if(!win){alert('Дозвольте pop-up у браузері');return;}
+  win.document.open();win.document.write(html);win.document.close();
+  win.onload=()=>win.focus();
+}
+
+function buildPatientProtocolHtml(proto,conclusion){
+  const pi=proto.patientInfo||{};
+  const lh=proto.lifeHistory||{};
+  const survey=proto.survey||{};
+  const doctorName=proto.doctorName||conclusion.doctor_name||'Лікар';
+  const finalDiag=proto.finalDiag||proto.doctor?.finalDiag||conclusion.final_diag||'';
+  const recommendations=proto.recommendations||proto.doctor?.recommendations||conclusion.recommendations||'';
+  const nextVisit=proto.nextVisit||proto.doctor?.nextVisit||conclusion.next_visit||'';
+  const notes=proto.notes||conclusion.notes||'';
+  const createdAt=proto.createdAt||conclusion.created_at||new Date().toISOString();
+  const date=new Date(createdAt).toLocaleDateString('uk-UA',{day:'2-digit',month:'long',year:'numeric'});
+  const val=v=>{if(v==null||v==='')return '—';if(Array.isArray(v))return v.filter(Boolean).join(', ')||'—';return String(v);};
+  const item=(label,value)=>`<div class="info-item"><span>${esc(label)}</span><strong>${esc(val(value))}</strong></div>`;
+  const section=(title,html)=>html&&html.trim()?`<section class="protocol-section"><h2>${esc(title)}</h2>${html}</section>`:'';
+  const surveyRows=Array.isArray(survey.answers)?survey.answers.map(qa=>`<div class="survey-row"><div class="survey-q">${esc(val(qa.question||qa.q))}</div><div class="survey-a">${esc(val(qa.answer||qa.a))}</div></div>`).join(''):'';
+  return `<!DOCTYPE html><html lang="uk"><head><meta charset="UTF-8"/><title>Протокол — Nexum</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,system-ui,sans-serif;background:#F1F5F9;color:#0F172A;line-height:1.55;padding:28px}.sheet{max-width:920px;margin:0 auto;background:#fff;border:1px solid #E2E8F0;border-radius:16px;overflow:hidden;box-shadow:0 24px 64px rgba(15,23,42,.1)}.header{padding:32px 40px;background:#fff;border-bottom:1px solid #E2E8F0;display:flex;align-items:flex-start;justify-content:space-between;gap:24px}.brand{color:#4F46E5;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}h1{font-size:26px;line-height:1.1;margin-bottom:8px;color:#0F172A}.meta{color:#64748B;font-size:14px}.print-btn{border:0;border-radius:8px;background:#4F46E5;color:#fff;padding:10px 16px;font-weight:700;cursor:pointer;white-space:nowrap}.content{padding:32px 40px 40px}.protocol-section{margin-bottom:26px}.protocol-section h2{font-size:11px;color:#4F46E5;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;font-weight:700}.info-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid #E2E8F0;border-radius:10px;overflow:hidden}.info-item{padding:12px 15px;min-height:58px;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9}.info-item:nth-child(2n){border-right:0}.info-item span{display:block;color:#64748B;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}.info-item strong{color:#0F172A;font-size:14px;font-weight:700;white-space:pre-line}.note-box{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:16px 18px;font-size:14px;color:#1E293B;white-space:pre-line}.survey-box{border:1px solid #E2E8F0;border-radius:10px;overflow:hidden}.survey-row{display:grid;grid-template-columns:42% 58%;border-bottom:1px solid #F1F5F9}.survey-row:last-child{border-bottom:0}.survey-q{background:#F8FAFC;padding:12px 14px;font-weight:700;color:#0F172A;font-size:13px}.survey-a{padding:12px 14px;color:#334155;font-size:13px;white-space:pre-line}.signatures{display:flex;justify-content:space-between;gap:24px;margin-top:40px;color:#64748B;font-size:14px}.line{display:inline-block;min-width:170px;border-bottom:1px solid #94A3B8}@media print{body{background:#fff;padding:0}.sheet{box-shadow:none;border:0;border-radius:0}.print-btn{display:none}@page{size:A4;margin:15mm}}</style>
+</head><body><main class="sheet"><header class="header"><div><div class="brand">Nexum</div><h1>Протокол консультації</h1><div class="meta">Лікар: ${esc(doctorName)} · Дата: ${esc(date)}</div></div><button class="print-btn" onclick="window.print()">Зберегти як PDF</button></header><div class="content">
+${section('Пацієнт',`<div class="info-grid">${item('ПІБ',pi.fullName)}${item('Телефон',pi.phone||conclusion.patient_phone)}${item('Дата народження',pi.birthDate)}${item('Вік',pi.age)}${item('Діагноз',pi.diag)}${item('Telegram',pi.telegram)}</div>`)}
+${section('Анамнез',`<div class="info-grid">${item('Алергії',lh.allergy)}${item('Хронічні захворювання',lh.chronic)}${item('Препарати',lh.meds)}${item('Операції',lh.operations)}${item('Спадковість',lh.family)}${item('Активність',lh.activity)}</div>`)}
+${section(survey.name||'Опитування',surveyRows?`<div class="survey-box">${surveyRows}</div>`:'')}
+${section('Нотатки лікаря',notes?`<div class="note-box">${esc(notes)}</div>`:'')}
+${section('Уточнений діагноз',finalDiag?`<div class="note-box">${esc(finalDiag)}</div>`:'')}
+${section('Рекомендації',recommendations?`<div class="note-box">${esc(recommendations)}</div>`:'')}
+${section('Наступний прийом',nextVisit?`<div class="note-box">${esc(nextVisit)}</div>`:'')}
+<div class="signatures"><div>Підпис лікаря: <span class="line"></span></div><div>Дата: <span class="line"></span></div></div>
+</div></main></body></html>`;
+}
+
+loadData();
+</script>
+</body>
+</html>

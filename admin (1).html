@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin — Nexum Blog</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --rose:#E91E8C;--rose-mid:#F04BA0;--rose-light:#FF80C0;
+  --rose-pale:#FFF0F8;--rose-pastel:#FFE4F3;--rose-border:rgba(233,30,140,.15);
+  --rose-border-soft:rgba(233,30,140,.08);--bg:#FFF8FC;--white:#fff;
+  --ink:#1F0A20;--ink-mid:#4A2050;--muted:#9070A0;--muted-light:#C4A0D0;
+  --radius-lg:24px;--radius-md:16px;--radius-sm:10px;
+  --shadow-sm:0 4px 16px rgba(233,30,140,.08);
+  --shadow-md:0 8px 32px rgba(233,30,140,.10);
+  --shadow-lg:0 16px 56px rgba(233,30,140,.13);
+  --font-display:'Bricolage Grotesque',sans-serif;
+  --font-body:'Plus Jakarta Sans',sans-serif;
+
+  /* editor accent */
+  --green:#10B981;--red:#EF4444;--amber:#F59E0B;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:200;backdrop-filter:blur(20px);background:rgba(255,248,252,.9);border-bottom:1px solid var(--rose-border-soft);height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:17px;color:var(--ink);}
+.nav-icon{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--rose),var(--rose-mid));display:grid;place-items:center;color:#fff;font-size:16px;font-weight:800;box-shadow:0 4px 14px rgba(233,30,140,.28);}
+.nav-badge{background:linear-gradient(135deg,var(--rose),var(--rose-mid));color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.06em;font-family:var(--font-body);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.btn-nav-sm{height:36px;padding:0 16px;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font-body);cursor:pointer;transition:all .2s;border:1.5px solid var(--rose-border);background:var(--white);color:var(--rose);}
+.btn-nav-sm:hover{background:var(--rose-pale);}
+.admin-name{font-size:13px;font-weight:600;color:var(--muted);}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 66px);}
+.sidebar{background:var(--white);border-right:1px solid var(--rose-border-soft);padding:24px 16px;display:flex;flex-direction:column;gap:6px;}
+.sidebar-section{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-light);padding:12px 12px 6px;font-family:var(--font-display);}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;border:none;background:transparent;width:100%;text-align:left;font-family:var(--font-body);}
+.sidebar-link:hover{background:var(--rose-pale);color:var(--ink);}
+.sidebar-link.active{background:var(--rose-pale);color:var(--rose);font-weight:700;}
+.sidebar-link .si{font-size:16px;width:22px;text-align:center;}
+.sidebar-count{margin-left:auto;background:var(--rose-pale);color:var(--rose);font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid var(--rose-border);}
+
+.main{padding:32px 36px;overflow-y:auto;}
+
+/* ── VIEWS ── */
+.view{display:none;}
+.view.active{display:block;animation:vIn .25s ease both;}
+@keyframes vIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap;}
+.page-title{font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-.03em;color:var(--ink);}
+.page-subtitle{font-size:13px;color:var(--muted);margin-top:3px;}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 20px;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font-body);cursor:pointer;transition:all .2s;border:none;}
+.btn-primary{background:linear-gradient(135deg,var(--rose),var(--rose-mid));color:#fff;box-shadow:var(--shadow-sm);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);}
+.btn-outline{background:var(--white);border:1.5px solid var(--rose-border);color:var(--rose);}
+.btn-outline:hover{background:var(--rose-pale);}
+.btn-ghost{background:transparent;border:1.5px solid rgba(0,0,0,.1);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--muted);color:var(--ink);}
+.btn-danger{background:#FEF2F2;border:1.5px solid #FECACA;color:var(--red);}
+.btn-danger:hover{background:#FEE2E2;}
+.btn-sm{height:34px;padding:0 14px;font-size:12px;border-radius:9px;}
+.btn-icon{width:34px;height:34px;padding:0;border-radius:9px;font-size:15px;}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none !important;}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--white);border:1px solid var(--rose-border-soft);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-sm);}
+.stat-num{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,var(--rose),#D01070);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--white);border:1px solid var(--rose-border-soft);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;}
+.table-toolbar{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--rose-border-soft);flex-wrap:wrap;}
+.search-input{height:38px;padding:0 14px;border-radius:10px;border:1.5px solid var(--rose-border-soft);background:var(--rose-pale);font-size:13px;font-family:var(--font-body);color:var(--ink);outline:none;transition:border-color .2s,background .2s;flex:1;min-width:160px;}
+.search-input:focus{border-color:var(--rose);background:var(--white);}
+.search-input::placeholder{color:var(--muted-light);}
+.cat-filter{height:38px;padding:0 14px;border-radius:10px;border:1.5px solid var(--rose-border-soft);background:var(--rose-pale);font-size:13px;font-family:var(--font-body);color:var(--ink);outline:none;cursor:pointer;}
+table{width:100%;border-collapse:collapse;}
+th{padding:12px 20px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--rose-pale);border-bottom:1px solid var(--rose-border-soft);}
+td{padding:14px 20px;border-bottom:1px solid var(--rose-border-soft);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(233,30,140,.02);}
+.article-icon-cell{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.article-title-cell{font-weight:700;color:var(--ink);font-family:var(--font-display);font-size:14px;}
+.article-excerpt-cell{font-size:12px;color:var(--muted);margin-top:2px;max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;font-family:var(--font-display);}
+.cat-product{background:rgba(233,30,140,.1);color:var(--rose);}
+.cat-clinic{background:rgba(99,102,241,.1);color:#6366f1;}
+.cat-healthtech{background:rgba(16,185,129,.1);color:#059669;}
+.cat-guide{background:rgba(245,158,11,.1);color:#d97706;}
+.cat-news{background:rgba(239,68,68,.1);color:#dc2626;}
+.seed-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:700;font-family:var(--font-display);background:rgba(245,158,11,.12);color:#d97706;border:1px solid rgba(245,158,11,.25);margin-left:6px;}
+.empty-state{padding:60px 20px;text-align:center;color:var(--muted);}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+.empty-title{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.actions-cell{display:flex;gap:6px;align-items:center;}
+
+/* ── EDITOR ── */
+.editor-grid{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;}
+.editor-main{background:var(--white);border:1px solid var(--rose-border-soft);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);}
+.editor-section{padding:24px 28px;border-bottom:1px solid var(--rose-border-soft);}
+.editor-section:last-child{border-bottom:none;}
+.editor-section-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px;}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;}
+.field:last-child{margin-bottom:0;}
+.field-label{font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.04em;font-family:var(--font-display);}
+.field input,.field select,.field textarea{padding:11px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--rose-border-soft);background:var(--rose-pale);color:var(--ink);font-size:14px;font-family:var(--font-body);outline:none;transition:border-color .2s,background .2s;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--rose);background:var(--white);}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted-light);}
+.field textarea{min-height:100px;resize:vertical;line-height:1.7;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* Rich text toolbar */
+.rte-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:10px 14px;background:var(--rose-pale);border-bottom:1px solid var(--rose-border-soft);}
+.rte-btn{height:30px;min-width:30px;padding:0 8px;border-radius:6px;border:none;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:var(--font-body);font-weight:600;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.rte-btn:hover{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.rte-btn.active{background:var(--rose-pale);color:var(--rose);}
+.rte-sep{width:1px;height:20px;background:var(--rose-border);margin:5px 2px;align-self:center;}
+.rte-area{min-height:320px;padding:20px 22px;outline:none;font-size:14px;line-height:1.8;color:var(--ink);font-family:var(--font-body);}
+.rte-area:empty::before{content:attr(data-placeholder);color:var(--muted-light);}
+.rte-area h3{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--ink);margin:20px 0 10px;}
+.rte-area p{margin-bottom:14px;}
+.rte-area ul{padding-left:20px;margin-bottom:14px;display:flex;flex-direction:column;gap:6px;}
+.rte-area blockquote{background:linear-gradient(135deg,var(--rose-pale),var(--rose-pastel));border-left:4px solid var(--rose);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-style:italic;font-weight:600;}
+
+/* sidebar panel */
+.editor-sidebar{display:flex;flex-direction:column;gap:16px;}
+.side-card{background:var(--white);border:1px solid var(--rose-border-soft);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-sm);}
+.side-card-title{font-family:var(--font-display);font-size:13px;font-weight:800;color:var(--ink);margin-bottom:14px;letter-spacing:-.01em;}
+.icon-picker{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.icon-option{height:36px;border-radius:8px;border:1.5px solid var(--rose-border-soft);background:var(--rose-pale);font-size:18px;cursor:pointer;transition:all .15s;display:grid;place-items:center;}
+.icon-option:hover{border-color:var(--rose);transform:scale(1.06);}
+.icon-option.selected{border-color:var(--rose);background:var(--rose-pastel);box-shadow:0 2px 8px rgba(233,30,140,.2);}
+.cover-preview{width:100%;aspect-ratio:16/9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:48px;border:2px dashed var(--rose-border);transition:all .2s;margin-bottom:10px;}
+.lang-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.lang-tab{flex:1;height:32px;border-radius:8px;border:1.5px solid var(--rose-border-soft);background:var(--rose-pale);font-size:12px;font-weight:700;font-family:var(--font-display);color:var(--muted);cursor:pointer;transition:all .15s;}
+.lang-tab.active{border-color:var(--rose);color:var(--rose);background:var(--rose-pale);}
+
+/* toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+.toggle-label{font-size:13px;font-weight:600;color:var(--ink);}
+.toggle-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.toggle{width:40px;height:22px;border-radius:999px;background:#D1D5DB;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--rose);}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.15);}
+.toggle.on::after{transform:translateX(18px);}
+
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--white);border:1.5px solid var(--rose-border);border-radius:14px;padding:14px 20px;font-size:13px;font-weight:600;color:var(--ink);box-shadow:var(--shadow-lg);z-index:9999;display:flex;align-items:center;gap:10px;transform:translateX(120%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);}
+.toast.show{transform:translateX(0);}
+.toast.success{border-color:rgba(16,185,129,.3);}
+.toast.error{border-color:rgba(239,68,68,.3);}
+
+/* confirm dialog */
+.overlay{position:fixed;inset:0;background:rgba(31,10,32,.45);backdrop-filter:blur(4px);z-index:500;display:none;place-items:center;}
+.overlay.open{display:grid;}
+.confirm-box{background:var(--white);border-radius:var(--radius-lg);padding:32px;max-width:380px;width:90%;box-shadow:var(--shadow-lg);text-align:center;animation:boxIn .3s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes boxIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+.confirm-icon{font-size:40px;margin-bottom:12px;}
+.confirm-title{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+.confirm-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px;}
+.confirm-btns{display:flex;gap:10px;justify-content:center;}
+
+/* preview modal */
+.preview-overlay{position:fixed;inset:0;background:rgba(31,10,32,.6);backdrop-filter:blur(8px);z-index:600;display:none;place-items:start center;overflow-y:auto;padding:40px 20px;}
+.preview-overlay.open{display:grid;}
+.preview-box{background:var(--white);border-radius:var(--radius-lg);max-width:760px;width:100%;padding:36px;box-shadow:var(--shadow-lg);position:relative;animation:boxIn .3s ease both;}
+.preview-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:9px;border:1.5px solid var(--rose-border-soft);background:var(--white);font-size:16px;cursor:pointer;display:grid;place-items:center;transition:all .15s;}
+.preview-close:hover{background:var(--rose-pale);border-color:var(--rose);}
+.preview-cover{width:100%;aspect-ratio:16/7;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:80px;margin-bottom:20px;}
+.preview-body h3{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--ink);margin:20px 0 10px;}
+.preview-body p{font-size:14px;line-height:1.8;color:var(--ink-mid);margin-bottom:14px;}
+.preview-body ul{padding-left:20px;margin-bottom:14px;display:flex;flex-direction:column;gap:7px;font-size:14px;color:var(--ink-mid);}
+.preview-body blockquote{background:linear-gradient(135deg,var(--rose-pale),var(--rose-pastel));border-left:4px solid var(--rose);border-radius:0 12px 12px 0;padding:16px 20px;margin:18px 0;font-size:14px;font-weight:600;color:var(--ink);line-height:1.7;font-style:italic;}
+
+/* login screen */
+.login-screen{display:grid;place-items:center;min-height:100vh;background:linear-gradient(145deg,var(--rose-pale),#fff8fc);}
+.login-box{background:var(--white);border:1.5px solid var(--rose-border);border-radius:var(--radius-lg);padding:40px;max-width:400px;width:90%;box-shadow:var(--shadow-lg);text-align:center;}
+.login-icon{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--rose),var(--rose-mid));display:grid;place-items:center;font-size:26px;margin:0 auto 16px;box-shadow:0 6px 20px rgba(233,30,140,.35);}
+.login-title{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.login-field{text-align:left;margin-bottom:14px;}
+.login-field label{font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.04em;font-family:var(--font-display);display:block;margin-bottom:7px;}
+.login-field input{width:100%;padding:12px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--rose-border-soft);background:var(--rose-pale);font-size:14px;font-family:var(--font-body);color:var(--ink);outline:none;transition:border-color .2s;}
+.login-field input:focus{border-color:var(--rose);background:var(--white);}
+.login-btn{width:100%;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--rose),var(--rose-mid));color:#fff;border:none;font-size:14px;font-weight:700;font-family:var(--font-display);cursor:pointer;box-shadow:var(--shadow-md);transition:all .2s;margin-top:4px;}
+.login-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg);}
+.login-err{color:var(--red);font-size:12px;margin-top:10px;display:none;}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .main{padding:20px 16px;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .editor-grid{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-icon">🛡️</div>
+    <div class="login-title">Nexum Admin</div>
+    <div class="login-sub">Панель керування блогом</div>
+    <div class="login-field">
+      <label>Логін</label>
+      <input type="text" id="loginUser" placeholder="admin" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()"/>
+    </div>
+    <div class="login-field">
+      <label>Пароль</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+    </div>
+    <button class="login-btn" onclick="doAdminLogin()">Увійти →</button>
+    <div class="login-err" id="loginErr">❌ Невірні дані</div>
+    <div style="margin-top:20px;">
+      <a href="login.html" style="font-size:12px;color:var(--muted);text-decoration:none;">← Повернутись до входу</a>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp" style="display:none;">
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-icon">N</div>
+    Nexum
+    <span class="nav-badge">ADMIN</span>
+  </div>
+  <div class="nav-right">
+    <span class="admin-name" id="adminNameLabel"></span>
+    <button class="btn-nav-sm" onclick="goToSite()">🌐 Сайт</button>
+    <button class="btn-nav-sm" onclick="doLogout()">Вийти</button>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Навігація</div>
+    <button class="sidebar-link active" onclick="showView('dashboard')"><span class="si">📊</span>Дашборд<span class="sidebar-count" id="sc-total">0</span></button>
+    <button class="sidebar-link" onclick="showView('articles')"><span class="si">📝</span>Статті<span class="sidebar-count" id="sc-articles">0</span></button>
+    <button class="sidebar-link" onclick="showView('editor', null)"><span class="si">✏️</span>Нова стаття</button>
+    <div class="sidebar-section" style="margin-top:8px;">Категорії</div>
+    <button class="sidebar-link" onclick="filterByCat('product')"><span class="si">🚀</span>Продукт<span class="sidebar-count" id="sc-product">0</span></button>
+    <button class="sidebar-link" onclick="filterByCat('clinic')"><span class="si">🏥</span>Клініки<span class="sidebar-count" id="sc-clinic">0</span></button>
+    <button class="sidebar-link" onclick="filterByCat('healthtech')"><span class="si">💡</span>Healthtech<span class="sidebar-count" id="sc-healthtech">0</span></button>
+    <button class="sidebar-link" onclick="filterByCat('guide')"><span class="si">📖</span>Гайди<span class="sidebar-count" id="sc-guide">0</span></button>
+    <button class="sidebar-link" onclick="filterByCat('news')"><span class="si">📢</span>Новини<span class="sidebar-count" id="sc-news">0</span></button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard" class="view active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Дашборд</div>
+          <div class="page-subtitle">Огляд контенту блогу Nexum</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline" id="btnImportSeedDash" onclick="importDefaultArticles()">📥 Імпорт статей із сайту</button>
+          <button class="btn btn-primary" onclick="showView('editor',null)">✏️ Нова стаття</button>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="d-total">0</div><div class="stat-lbl">Всього статей</div></div>
+        <div class="stat-card"><div class="stat-num" id="d-featured">0</div><div class="stat-lbl">Featured</div></div>
+        <div class="stat-card"><div class="stat-num" id="d-cats">5</div><div class="stat-lbl">Категорій</div></div>
+        <div class="stat-card"><div class="stat-num" id="d-langs">2</div><div class="stat-lbl">Мови (UK / EN)</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <span style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--ink);">Останні статті</span>
+          <span style="flex:1"></span>
+          <button class="btn btn-primary btn-sm" onclick="showView('editor',null)">+ Додати</button>
+        </div>
+        <table>
+          <thead><tr><th></th><th>Назва (UK)</th><th>Категорія</th><th>Дата</th><th>Featured</th><th>Дії</th></tr></thead>
+          <tbody id="dashTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ARTICLES VIEW -->
+    <div id="view-articles" class="view">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Статті</div>
+          <div class="page-subtitle" id="articles-subtitle">Всі статті блогу</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline" id="btnImportSeedArticles" onclick="importDefaultArticles()">📥 Імпорт статей із сайту</button>
+          <button class="btn btn-primary" onclick="showView('editor',null)">✏️ Нова стаття</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" id="articleSearch" placeholder="🔍 Пошук статей..." oninput="renderArticlesTable()"/>
+          <select class="cat-filter" id="catFilter" onchange="renderArticlesTable()">
+            <option value="">Всі категорії</option>
+            <option value="product">🚀 Продукт</option>
+            <option value="clinic">🏥 Клініки</option>
+            <option value="healthtech">💡 Healthtech</option>
+            <option value="guide">📖 Гайди</option>
+            <option value="news">📢 Новини</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th></th><th>Назва</th><th>Категорія</th><th>Дата</th><th>Featured</th><th>Дії</th></tr></thead>
+          <tbody id="articlesTable"></tbody>
+        </table>
+        <div id="articlesEmpty" class="empty-state" style="display:none;">
+          <div class="empty-icon">📝</div>
+          <div class="empty-title">Статей не знайдено</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Спробуйте змінити фільтр, додайте нову статтю, або імпортуйте стандартні статті з сайту</p>
+          <button class="btn btn-outline btn-sm" onclick="importDefaultArticles()">📥 Імпортувати стандартні статті</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDITOR VIEW -->
+    <div id="view-editor" class="view">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="editorTitle">Нова стаття</div>
+          <div class="page-subtitle">Заповніть контент українською та англійською мовами</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-ghost" onclick="previewArticle()">👁 Прев'ю</button>
+          <button class="btn btn-outline" onclick="showView('articles')">Скасувати</button>
+          <button class="btn btn-primary" onclick="saveArticle()">💾 Зберегти</button>
+        </div>
+      </div>
+
+      <div class="editor-grid">
+        <div class="editor-main">
+          <!-- Meta -->
+          <div class="editor-section">
+            <div class="editor-section-title">Основне</div>
+            <div class="lang-tabs">
+              <button class="lang-tab active" id="edLangUK" onclick="switchEdLang('uk')">🇺🇦 Українська</button>
+              <button class="lang-tab" id="edLangEN" onclick="switchEdLang('en')">🇬🇧 English</button>
+            </div>
+            <div id="editorLangUK">
+              <div class="field"><span class="field-label">Заголовок (UK) *</span><input type="text" id="titleUK" placeholder="Назва статті українською"/></div>
+              <div class="field"><span class="field-label">Короткий опис (UK) *</span><textarea id="excerptUK" placeholder="Короткий опис для картки блогу (1-2 речення)" style="min-height:72px;"></textarea></div>
+            </div>
+            <div id="editorLangEN" style="display:none;">
+              <div class="field"><span class="field-label">Title (EN) *</span><input type="text" id="titleEN" placeholder="Article title in English"/></div>
+              <div class="field"><span class="field-label">Excerpt (EN) *</span><textarea id="excerptEN" placeholder="Short description for the blog card (1-2 sentences)" style="min-height:72px;"></textarea></div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="editor-section" style="padding:0;">
+            <div style="padding:16px 28px 12px;border-bottom:1px solid var(--rose-border-soft);">
+              <div class="editor-section-title" style="margin-bottom:8px;">Текст статті</div>
+              <div class="lang-tabs" style="margin-bottom:0;">
+                <button class="lang-tab active" id="bodyLangUK" onclick="switchBodyLang('uk')">🇺🇦 UK</button>
+                <button class="lang-tab" id="bodyLangEN" onclick="switchBodyLang('en')">🇬🇧 EN</button>
+              </div>
+            </div>
+            <div class="rte-toolbar">
+              <button class="rte-btn" title="Жирний" onclick="rteCmd('bold')"><b>B</b></button>
+              <button class="rte-btn" title="Курсив" onclick="rteCmd('italic')"><i>I</i></button>
+              <div class="rte-sep"></div>
+              <button class="rte-btn" title="Заголовок H3" onclick="rteCmd('formatBlock','h3')">H3</button>
+              <button class="rte-btn" title="Параграф" onclick="rteCmd('formatBlock','p')">¶</button>
+              <div class="rte-sep"></div>
+              <button class="rte-btn" title="Маркований список" onclick="rteCmd('insertUnorderedList')">• Список</button>
+              <button class="rte-btn" title="Цитата / highlight" onclick="insertBlockquote()">❝ Цитата</button>
+              <div class="rte-sep"></div>
+              <button class="rte-btn" title="Посилання" onclick="rteLink()">🔗</button>
+              <button class="rte-btn" title="Скасувати" onclick="rteCmd('undo')">↩</button>
+              <button class="rte-btn" title="Повторити" onclick="rteCmd('redo')">↪</button>
+            </div>
+            <div id="bodyEditorUK" class="rte-area" contenteditable="true" data-placeholder="Напишіть текст статті українською..."></div>
+            <div id="bodyEditorEN" class="rte-area" contenteditable="true" data-placeholder="Write article body in English..." style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="editor-sidebar">
+          <!-- Publish -->
+          <div class="side-card">
+            <div class="side-card-title">Публікація</div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Featured (головна)</div><div class="toggle-sub">Показати у великому блоці</div></div>
+              <button class="toggle" id="toggleFeatured" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Featured Side</div><div class="toggle-sub">Маленька карточка збоку</div></div>
+              <button class="toggle" id="toggleFeaturedSide" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+
+          <!-- Meta -->
+          <div class="side-card">
+            <div class="side-card-title">Мета</div>
+            <div class="field">
+              <span class="field-label">Категорія *</span>
+              <select id="artCat" onchange="updateCoverPreview()">
+                <option value="product">🚀 Продукт</option>
+                <option value="clinic">🏥 Клініки</option>
+                <option value="healthtech">💡 Healthtech</option>
+                <option value="guide">📖 Гайди</option>
+                <option value="news">📢 Новини</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field" style="margin-bottom:0;">
+                <span class="field-label">Дата (UK)</span>
+                <input type="text" id="artDateUK" placeholder="10 червня 2026"/>
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <span class="field-label">Date (EN)</span>
+                <input type="text" id="artDateEN" placeholder="June 10, 2026"/>
+              </div>
+            </div>
+            <div style="height:12px;"></div>
+            <div class="field-row">
+              <div class="field" style="margin-bottom:0;">
+                <span class="field-label">Читання (UK)</span>
+                <input type="text" id="artReadUK" placeholder="5 хв читання"/>
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <span class="field-label">Read time (EN)</span>
+                <input type="text" id="artReadEN" placeholder="5 min read"/>
+              </div>
+            </div>
+            <div style="height:12px;"></div>
+            <div class="field">
+              <span class="field-label">Автор (UK)</span>
+              <input type="text" id="artAuthorUK" placeholder="Команда Nexum" value="Команда Nexum"/>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <span class="field-label">Author (EN)</span>
+              <input type="text" id="artAuthorEN" placeholder="Nexum Team" value="Nexum Team"/>
+            </div>
+          </div>
+
+          <!-- Icon & cover -->
+          <div class="side-card">
+            <div class="side-card-title">Іконка та обкладинка</div>
+            <div class="cover-preview" id="coverPreview">🤖</div>
+            <div class="icon-picker" id="iconPicker">
+              <button class="icon-option selected" onclick="selectIcon(this,'🤖')">🤖</button>
+              <button class="icon-option" onclick="selectIcon(this,'🏥')">🏥</button>
+              <button class="icon-option" onclick="selectIcon(this,'💡')">💡</button>
+              <button class="icon-option" onclick="selectIcon(this,'📖')">📖</button>
+              <button class="icon-option" onclick="selectIcon(this,'📢')">📢</button>
+              <button class="icon-option" onclick="selectIcon(this,'⚙️')">⚙️</button>
+              <button class="icon-option" onclick="selectIcon(this,'📊')">📊</button>
+              <button class="icon-option" onclick="selectIcon(this,'🔬')">🔬</button>
+              <button class="icon-option" onclick="selectIcon(this,'💊')">💊</button>
+              <button class="icon-option" onclick="selectIcon(this,'🧬')">🧬</button>
+              <button class="icon-option" onclick="selectIcon(this,'🩺')">🩺</button>
+              <button class="icon-option" onclick="selectIcon(this,'🧠')">🧠</button>
+              <button class="icon-option" onclick="selectIcon(this,'❤️')">❤️</button>
+              <button class="icon-option" onclick="selectIcon(this,'🌍')">🌍</button>
+              <button class="icon-option" onclick="selectIcon(this,'🚀')">🚀</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</div><!-- /adminApp -->
+
+<!-- Confirm dialog -->
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Видалити статтю?</div>
+    <div class="confirm-desc">Цю дію не можна скасувати. Стаття буде видалена назавжди.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Скасувати</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Видалити</button>
+    </div>
+  </div>
+</div>
+
+<!-- Preview modal -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-box">
+    <button class="preview-close" onclick="closePreview()">✕</button>
+    <div class="preview-cover" id="previewCover"></div>
+    <div id="previewCat"></div>
+    <h2 id="previewTitle" style="font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-.04em;color:var(--ink);margin:12px 0 8px;"></h2>
+    <p id="previewExcerpt" style="font-size:14px;color:var(--muted);margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--rose-border-soft);"></p>
+    <div class="preview-body" id="previewBody"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const CAT_CONFIG = {
+  product:    { label:{uk:'🚀 Продукт',en:'🚀 Product'},    cls:'cat-product',    bg:'linear-gradient(135deg,#FFF0F8,#FFE4F3)' },
+  clinic:     { label:{uk:'🏥 Клініки',en:'🏥 Clinics'},    cls:'cat-clinic',     bg:'linear-gradient(135deg,#EEF2FF,#E0E7FF)' },
+  healthtech: { label:{uk:'💡 Healthtech',en:'💡 Healthtech'},cls:'cat-healthtech', bg:'linear-gradient(135deg,#ECFDF5,#D1FAE5)' },
+  guide:      { label:{uk:'📖 Гайди',en:'📖 Guides'},       cls:'cat-guide',      bg:'linear-gradient(135deg,#FFFBEB,#FEF3C7)' },
+  news:       { label:{uk:'📢 Новини',en:'📢 News'},        cls:'cat-news',       bg:'linear-gradient(135deg,#FEF2F2,#FEE2E2)' },
+};
+
+let articles = [];
+let editingId = null, editorLang = 'uk', bodyLang = 'uk';
+let deleteTarget = null, filterCat = '';
+let ADMIN_TOKEN = ''; // отримується після логіну з сервера
+
+/* ── LOGIN ── */
+async function doAdminLogin() {
+  const u   = document.getElementById('loginUser').value.trim();
+  const p   = document.getElementById('loginPass').value.trim();
+  const err = document.getElementById('loginErr');
+  err.style.display = 'none';
+  try {
+    const res  = await fetch('/api/blog/admin-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, password: p }),
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      ADMIN_TOKEN = data.secret || '';
+      sessionStorage.setItem('nexum_blog_admin',  '1');
+      sessionStorage.setItem('nexum_blog_name',   data.name || u);
+      sessionStorage.setItem('nexum_blog_secret', ADMIN_TOKEN);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminApp').style.display    = 'block';
+      document.getElementById('adminNameLabel').textContent = data.name || u;
+      await init();
+    } else {
+      err.style.display = 'block';
+      document.getElementById('loginPass').value = '';
+      document.getElementById('loginPass').animate(
+        [{transform:'translateX(0)'},{transform:'translateX(-6px)'},
+         {transform:'translateX(6px)'},{transform:'translateX(0)'}],
+        {duration:300,iterations:2}
+      );
+    }
+  } catch(e) {
+    err.textContent = '❌ Помилка з\'єднання';
+    err.style.display = 'block';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('nexum_blog_admin');
+  sessionStorage.removeItem('nexum_blog_name');
+  sessionStorage.removeItem('nexum_blog_secret');
+  location.reload();
+}
+
+function goToSite() { window.open('nexum.html','_blank'); }
+
+/* ── INIT ── */
+async function init() {
+  await loadArticles();
+  updateSidebar();
+  renderDashboard();
+}
+
+/* Автологін якщо сесія вже є */
+(async function bootstrap() {
+  if (sessionStorage.getItem('nexum_blog_admin') === '1') {
+    ADMIN_TOKEN = sessionStorage.getItem('nexum_blog_secret') || '';
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display    = 'block';
+    document.getElementById('adminNameLabel').textContent =
+      sessionStorage.getItem('nexum_blog_name') || 'admin';
+    await init();
+  }
+})();
+
+/* ── LOAD ARTICLES ── */
+async function loadArticles() {
+  try {
+    const res  = await fetch('/api/blog/articles');
+    const data = await res.json();
+    articles = Array.isArray(data) ? data : [];
+  } catch(e) {
+    console.error('[loadArticles]', e.message);
+    articles = [];
+  }
+}
+
+/* ── VIEWS ── */
+function showView(name, param) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.sidebar-link')[{dashboard:0,articles:1,editor:2}[name]]?.classList.add('active');
+  if (name === 'editor')    openEditor(param);
+  if (name === 'articles')  renderArticlesTable();
+  if (name === 'dashboard') renderDashboard();
+}
+
+function filterByCat(cat) {
+  filterCat = cat;
+  document.getElementById('catFilter').value = cat;
+  showView('articles');
+}
+
+function updateSidebar() {
+  document.getElementById('sc-total').textContent    = articles.length;
+  document.getElementById('sc-articles').textContent = articles.length;
+  document.getElementById('d-total').textContent     = articles.length;
+  document.getElementById('d-featured').textContent  = articles.filter(a=>a.featured).length;
+  ['product','clinic','healthtech','guide','news'].forEach(c => {
+    const el = document.getElementById('sc-'+c);
+    if (el) el.textContent = articles.filter(a=>a.cat===c).length;
+  });
+}
+
+function renderDashboard() {
+  updateSidebar();
+  const tbody = document.getElementById('dashTable');
+  const recent = [...articles].slice(0,8);
+  if (!recent.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">Ще немає статей</div><p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Імпортуйте стандартні статті з сайту або додайте нову</p><button class="btn btn-outline btn-sm" onclick="importDefaultArticles()">📥 Імпортувати стандартні статті</button></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = recent.map(a => rowHTML(a)).join('');
+}
+
+function renderArticlesTable() {
+  const search   = document.getElementById('articleSearch')?.value.toLowerCase().trim() || '';
+  const cat      = document.getElementById('catFilter')?.value || filterCat || '';
+  const filtered = articles.filter(a => {
+    const matchCat    = !cat || a.cat === cat;
+    const matchSearch = !search ||
+      (a.title?.uk||'').toLowerCase().includes(search) ||
+      (a.title?.en||'').toLowerCase().includes(search);
+    return matchCat && matchSearch;
+  });
+  const tbody = document.getElementById('articlesTable');
+  const empty = document.getElementById('articlesEmpty');
+  document.getElementById('articles-subtitle').textContent =
+    cat ? `Категорія: ${CAT_CONFIG[cat]?.label.uk||cat}` : `Всі статті (${articles.length})`;
+  if (!filtered.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = [...filtered].reverse().map(a => rowHTML(a)).join('');
+}
+
+function rowHTML(a) {
+  const cc = CAT_CONFIG[a.cat];
+  return `<tr>
+    <td><div class="article-icon-cell" style="background:${cc?.bg||'#fff'}">${a.icon||'📝'}</div></td>
+    <td><div class="article-title-cell">${a.title?.uk||''}</div><div class="article-excerpt-cell">${a.excerpt?.uk||''}</div></td>
+    <td><span class="cat-pill ${cc?.cls||''}">${cc?.label.uk||a.cat}</span></td>
+    <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${a.date?.uk||''}</td>
+    <td style="text-align:center;">${a.featured?'⭐':''} ${a.featuredSide?'📌':''}</td>
+    <td><div class="actions-cell">
+      <button class="btn btn-outline btn-sm btn-icon" onclick="previewById(${a.id})">👁</button>
+      <button class="btn btn-outline btn-sm btn-icon" onclick="showView('editor',${a.id})">✏️</button>
+      <button class="btn btn-danger  btn-sm btn-icon" onclick="askDelete(${a.id})">🗑</button>
+    </div></td>
+  </tr>`;
+}
+
+/* ── СТАНДАРТНІ СТАТТІ САЙТУ (SEED) ──────────────────────────────────────
+   Це ті самі 6 статей, які за замовчуванням «вшиті» у nexum.html
+   (масив BLOG_ARTICLES_STATIC) і показуються на сайті, поки база даних
+   порожня. Тут вони потрібні, щоб адмін міг одним натиском кнопки
+   «Імпорт статей із сайту» перенести їх у базу — після цього вони стають
+   звичайними статтями, які можна редагувати й видаляти як будь-які інші. */
+const SEED_ARTICLES = [
+  {
+    id: 1,
+    cat: 'product',
+    catLabel: { uk: '🚀 Продукт', en: '🚀 Product' },
+    catClass: 'cat-product',
+    icon: '🤖',
+    coverBg: 'linear-gradient(135deg, #FFF0F8, #FFE4F3)',
+    featured: true,
+    title: { uk: 'Як Nexum скорочує час на передвізитний збір даних на 40%', en: 'How Nexum Reduces Pre-Visit Data Collection Time by 40%' },
+    excerpt: { uk: 'Розповідаємо, як AI-асистент автоматизує анамнез і звільняє лікарів від паперової рутини ще до початку прийому.', en: 'We explain how the AI assistant automates anamnesis and frees doctors from paperwork before the appointment even begins.' },
+    author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+    authorInitial: 'N',
+    date: { uk: '10 червня 2026', en: 'June 10, 2026' },
+    readTime: { uk: '5 хв читання', en: '5 min read' },
+    body: {
+      uk: `<p>Лікарі витрачають в середньому 15–20 хвилин на збір базового анамнезу під час кожного прийому. Множте це на 20–30 пацієнтів на день — і ви отримаєте до 7 годин чистого часу щотижня, яке йде не на лікування, а на заповнення таблиць і перепитування про симптоми.</p>
+<h3>Де втрачається час?</h3>
+<p>Більшість клінік досі збирають анамнез вже під час прийому. Пацієнт приходить — лікар запитує про скарги, тривалість, хронічні захворювання, алергії та ліки. Це стандартна процедура, але вона займає дорогоцінний час консультації.</p>
+<blockquote>«Я витрачав перші 10 хвилин кожного прийому на те, щоб зрозуміти, навіщо людина взагалі прийшла. Nexum дав мені можливість починати одразу з клінічної частини.» — Лікар-терапевт, Київ</blockquote>
+<h3>Як Nexum вирішує це</h3>
+<p>Nexum надсилає пацієнту коротке посилання на опитування за 1–24 години до прийому. Пацієнт відповідає зручним для себе способом — природною мовою або обираючи варіанти. AI задає уточнювальні запитання автоматично.</p>
+<ul>
+<li>Збір базових скарг і симптомів до прийому</li>
+<li>Автоматичні уточнювальні запитання на основі відповідей</li>
+<li>Готовий структурований звіт для лікаря у форматі PDF/DOCX</li>
+<li>Інтеграція в наявний робочий процес без ІТ-команди</li>
+</ul>
+<h3>Результати бета-тестування</h3>
+<p>За даними бета-тесту з реальними клініками, лікарі відзначають скорочення часу на передвізитний збір даних у середньому на 38–42%. Це дозволяє або прийняти більше пацієнтів, або приділити більше часу кожному.</p>`,
+      en: `<p>Doctors spend an average of 15–20 minutes collecting basic anamnesis during each appointment. Multiply that by 20–30 patients per day and you get up to 7 hours weekly going not toward treatment, but toward filling out tables and asking about symptoms.</p>
+<h3>Where does time get lost?</h3>
+<p>Most clinics still collect anamnesis during the appointment itself. The patient arrives — the doctor asks about complaints, duration, chronic conditions, allergies, and medications. This is standard procedure, but it consumes precious consultation time.</p>
+<blockquote>"I spent the first 10 minutes of every appointment figuring out why the person came in at all. Nexum gave me the ability to start directly with the clinical part." — General Practitioner, Kyiv</blockquote>
+<h3>How Nexum Solves This</h3>
+<p>Nexum sends the patient a short survey link 1–24 hours before the appointment. The patient responds in a way that's convenient for them — in natural language or by selecting options. AI asks clarifying questions automatically.</p>
+<ul>
+<li>Collection of basic complaints and symptoms before the appointment</li>
+<li>Automatic clarifying questions based on responses</li>
+<li>Ready structured report for the doctor in PDF/DOCX format</li>
+<li>Integration into existing workflow without an IT team</li>
+</ul>
+<h3>Beta Testing Results</h3>
+<p>According to beta testing data with real clinics, doctors report a reduction in pre-visit data collection time by an average of 38–42%. This allows either receiving more patients or dedicating more time to each one.</p>`
+    }
+  },
+  {
+    id: 2,
+    cat: 'clinic',
+    catLabel: { uk: '🏥 Клініки', en: '🏥 Clinics' },
+    catClass: 'cat-clinic',
+    icon: '🏥',
+    coverBg: 'linear-gradient(135deg, #EEF2FF, #E0E7FF)',
+    featuredSide: true,
+    title: { uk: 'Кейс: як сімейна клініка скоротила паперову роботу за місяць', en: 'Case Study: How a Family Clinic Cut Paperwork in One Month' },
+    excerpt: { uk: 'Реальна історія клініки з Києва, яка впровадила Nexum і вже через 3 тижні побачила перші результати.', en: 'A real story of a Kyiv clinic that implemented Nexum and saw first results after just 3 weeks.' },
+    author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+    authorInitial: 'N',
+    date: { uk: '2 червня 2026', en: 'June 2, 2026' },
+    readTime: { uk: '4 хв читання', en: '4 min read' },
+    body: {
+      uk: `<p>Сімейна клініка в Києві з командою із 5 лікарів зіткнулась із типовою проблемою: лікарі витрачали занадто багато часу на початку кожного прийому, збираючи базові дані. Адміністратори не встигали підготувати картки. Черги розтягувались.</p>
+<h3>Ситуація до впровадження</h3>
+<p>Клініка приймала близько 80 пацієнтів на день. Кожен лікар в середньому витрачав 12–15 хвилин на початковий збір даних. Документація велась частково у паперовому вигляді, частково — в Excel-таблицях без стандарту.</p>
+<h3>Впровадження Nexum</h3>
+<p>Клініка підключилась до Nexum за 1 годину. Адміністратор налаштував шаблон опитування під кожну спеціальність. Пацієнти почали отримувати посилання за день до прийому.</p>
+<ul>
+<li>Перший тиждень: 60% пацієнтів заповнили опитування до прийому</li>
+<li>Другий тиждень: показник виріс до 78%</li>
+<li>Третій тиждень: 83% і стабільне зростання</li>
+</ul>
+<blockquote>«Ми були здивовані, наскільки швидко пацієнти адаптувались. Більшість сприйняли це як зручний сервіс, а не зайвий крок.» — Головний лікар клініки</blockquote>
+<h3>Результати через місяць</h3>
+<p>Середній час початкового збору даних під час прийому скоротився з 13 до 4 хвилин. Лікарі почали приймати на 2–3 пацієнти більше щоденно. Адміністративне навантаження знизилось на 35%.</p>`,
+      en: `<p>A family clinic in Kyiv with a team of 5 doctors faced a typical problem: doctors spent too much time at the start of each appointment collecting basic data. Administrators couldn't keep up with preparing charts. Queues stretched out.</p>
+<h3>The Situation Before Implementation</h3>
+<p>The clinic saw about 80 patients per day. Each doctor spent an average of 12–15 minutes on initial data collection. Documentation was kept partly on paper, partly in Excel spreadsheets without a standard.</p>
+<h3>Nexum Implementation</h3>
+<p>The clinic connected to Nexum in 1 hour. The administrator configured a survey template for each specialty. Patients began receiving links a day before their appointment.</p>
+<ul>
+<li>First week: 60% of patients completed the survey before the appointment</li>
+<li>Second week: the figure grew to 78%</li>
+<li>Third week: 83% and stable growth</li>
+</ul>
+<blockquote>"We were surprised how quickly patients adapted. Most perceived this as a convenient service, not an extra step." — Clinic's Chief Doctor</blockquote>
+<h3>Results After One Month</h3>
+<p>Average initial data collection time during appointments dropped from 13 to 4 minutes. Doctors began seeing 2–3 more patients daily. Administrative workload decreased by 35%.</p>`
+    }
+  },
+  {
+    id: 3,
+    cat: 'healthtech',
+    catLabel: { uk: '💡 Healthtech', en: '💡 Healthtech' },
+    catClass: 'cat-healthtech',
+    icon: '💡',
+    coverBg: 'linear-gradient(135deg, #ECFDF5, #D1FAE5)',
+    title: { uk: 'AI в медицині 2026: що насправді змінилось', en: 'AI in Medicine 2026: What Has Really Changed' },
+    excerpt: { uk: 'Огляд ключових тенденцій у медичних AI-технологіях, які вже впливають на щоденну практику лікарів.', en: 'An overview of key trends in medical AI technologies that are already impacting doctors\' daily practice.' },
+    author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+    authorInitial: 'N',
+    date: { uk: '28 травня 2026', en: 'May 28, 2026' },
+    readTime: { uk: '7 хв читання', en: '7 min read' },
+    body: {
+      uk: `<p>2026 рік став поворотним для медичного AI. Якщо ще три роки тому більшість рішень залишались у режимі пілотних проектів, сьогодні вони активно впроваджуються в реальну клінічну практику по всьому світу.</p>
+<h3>Три головних зміни</h3>
+<p>По-перше, AI перестав бути «чорною скринькою». Сучасні системи пояснюють свої рекомендації, що критично важливо для клінічного застосування. По-друге, фокус змістився з діагностики на підтримку адміністративних процесів. По-третє, вартість впровадження знизилась до рівня доступного для малих практик.</p>
+<h3>Передвізитний збір даних</h3>
+<p>Одним із найбільш швидко зростаючих сегментів є автоматизація передвізитного збору даних. Клініки по всьому світу шукають способи скоротити час на анамнез і зосередитись на клінічних рішеннях.</p>
+<blockquote>За даними Healthcare AI Report 2026, 67% приватних клінік планують впровадити AI-інструменти для збору даних до кінця 2026 року.</blockquote>
+<h3>Що це означає для лікарів</h3>
+<p>AI не замінює клінічне мислення — він вивільняє час для нього. Лікарі, які вже використовують такі інструменти, відзначають не лише підвищення ефективності, але й зниження когнітивного навантаження наприкінці робочого дня.</p>`,
+      en: `<p>2026 has become a turning point for medical AI. While just three years ago most solutions remained in pilot project mode, today they are actively being implemented in real clinical practice around the world.</p>
+<h3>Three Major Changes</h3>
+<p>First, AI has stopped being a "black box." Modern systems explain their recommendations, which is critical for clinical application. Second, the focus has shifted from diagnostics to supporting administrative processes. Third, implementation costs have dropped to a level accessible for small practices.</p>
+<h3>Pre-Visit Data Collection</h3>
+<p>One of the fastest-growing segments is automation of pre-visit data collection. Clinics worldwide are looking for ways to reduce anamnesis time and focus on clinical decisions.</p>
+<blockquote>According to Healthcare AI Report 2026, 67% of private clinics plan to implement AI data collection tools by the end of 2026.</blockquote>
+<h3>What This Means for Doctors</h3>
+<p>AI doesn't replace clinical thinking — it frees up time for it. Doctors who already use such tools note not only increased efficiency, but also reduced cognitive load at the end of the workday.</p>`
+    }
+  },
+  {
+    id: 4,
+    cat: 'guide',
+    catLabel: { uk: '📖 Гайди', en: '📖 Guides' },
+    catClass: 'cat-guide',
+    icon: '📖',
+    coverBg: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)',
+    title: { uk: 'Як запустити Nexum у клініці за 30 хвилин: покроковий гайд', en: 'How to Launch Nexum in Your Clinic in 30 Minutes: Step-by-Step Guide' },
+    excerpt: { uk: 'Детальна інструкція від реєстрації до першого готового анамнезу. Без ІТ-відділу і без зайвих складнощів.', en: 'Detailed instructions from registration to the first completed anamnesis. No IT department, no unnecessary complexity.' },
+    author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+    authorInitial: 'N',
+    date: { uk: '20 травня 2026', en: 'May 20, 2026' },
+    readTime: { uk: '6 хв читання', en: '6 min read' },
+    body: {
+      uk: `<p>Ми розробили Nexum так, щоб будь-яка клініка могла почати використовувати його без технічної команди та тривалого налаштування. Цей гайд проведе вас через увесь процес — від реєстрації до першого завершеного опитування пацієнта.</p>
+<h3>Крок 1: Реєстрація клініки (5 хвилин)</h3>
+<p>Перейдіть на nexum.health і оберіть тип реєстрації — клініка або індивідуальний лікар. Заповніть базові дані: назву, спеціалізацію, контактну особу. Після підтвердження ви отримаєте коди доступу для кожного лікаря.</p>
+<h3>Крок 2: Налаштування опитування (10 хвилин)</h3>
+<p>У кабінеті лікаря оберіть шаблон під свою спеціальність або налаштуйте власний. Визначте, які питання потрібні: базові скарги, тривалість симптомів, хронічні захворювання, алергії, поточні ліки.</p>
+<ul>
+<li>Обирайте з готових шаблонів під спеціальність</li>
+<li>Або створюйте власні питання</li>
+<li>Налаштовуйте логіку уточнювальних питань</li>
+</ul>
+<h3>Крок 3: Відправка пацієнту (2 хвилини)</h3>
+<p>Скопіюйте унікальне посилання на опитування та надішліть пацієнту зручним способом: SMS, Viber, Telegram або електронною поштою. Пацієнт відповідає зі свого телефону без реєстрації.</p>
+<h3>Крок 4: Отримання звіту (автоматично)</h3>
+<p>Після завершення опитування ви отримаєте готовий структурований звіт у PDF та DOCX форматах. Відкрийте його перед прийомом — і ви вже знаєте головне.</p>
+<blockquote>Перше опитування можна провести вже сьогодні. Просто зареєструйтесь і надішліть посилання наступному пацієнту.</blockquote>`,
+      en: `<p>We designed Nexum so that any clinic can start using it without a technical team or lengthy setup. This guide will walk you through the entire process — from registration to the first completed patient survey.</p>
+<h3>Step 1: Clinic Registration (5 minutes)</h3>
+<p>Go to nexum.health and choose your registration type — clinic or individual doctor. Fill in basic data: name, specialization, contact person. After confirmation, you'll receive access codes for each doctor.</p>
+<h3>Step 2: Survey Setup (10 minutes)</h3>
+<p>In the doctor's cabinet, choose a template for your specialty or configure your own. Determine what questions are needed: basic complaints, symptom duration, chronic conditions, allergies, current medications.</p>
+<ul>
+<li>Choose from ready-made templates by specialty</li>
+<li>Or create your own questions</li>
+<li>Configure the logic for clarifying questions</li>
+</ul>
+<h3>Step 3: Sending to the Patient (2 minutes)</h3>
+<p>Copy the unique survey link and send it to the patient in a convenient way: SMS, Viber, Telegram, or email. The patient responds from their phone without registration.</p>
+<h3>Step 4: Receiving the Report (Automatic)</h3>
+<p>After the survey is completed, you'll receive a ready structured report in PDF and DOCX formats. Open it before the appointment — and you already know what matters most.</p>
+<blockquote>The first survey can be conducted today. Just register and send a link to your next patient.</blockquote>`
+    }
+  },
+  {
+    id: 5,
+    cat: 'news',
+    catLabel: { uk: '📢 Новини', en: '📢 News' },
+    catClass: 'cat-news',
+    icon: '📢',
+    coverBg: 'linear-gradient(135deg, #FEF2F2, #FEE2E2)',
+    title: { uk: 'Nexum запускає бета-тест з першими клініками-партнерами', en: 'Nexum Launches Beta Test with First Partner Clinics' },
+    excerpt: { uk: 'Ми офіційно розпочали бета-тестування з реальними медичними командами. Ось що ми дізнались за перший місяць.', en: 'We have officially started beta testing with real medical teams. Here is what we learned in the first month.' },
+    author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+    authorInitial: 'N',
+    date: { uk: '15 травня 2026', en: 'May 15, 2026' },
+    readTime: { uk: '3 хв читання', en: '3 min read' },
+    body: {
+      uk: `<p>Ми раді оголосити, що Nexum офіційно розпочав бета-тестування із першими клініками-партнерами. Це важливий крок: ми переходимо від внутрішнього тестування до роботи з реальними медичними командами в реальних умовах.</p>
+<h3>Перші учасники бета-тесту</h3>
+<p>До першої хвилі увійшли кілька клінік різного розміру та спеціалізації — від індивідуальних практик до мультидисциплінарних центрів. Ми свідомо обрали різноманітних партнерів, щоб отримати широкий зріз зворотного зв'язку.</p>
+<h3>Що ми дізнались за перший місяць</h3>
+<p>Пацієнти охоче заповнюють опитування, якщо воно коротке та зрозуміле. Середній час завершення — 4–6 хвилин. Лікарі відзначають, що стартовий контекст перед прийомом суттєво змінює якість консультації.</p>
+<blockquote>Найбільший інсайт: пацієнти ставляться до AI-опитування серйозніше, ніж до паперових анкет. Вони відповідають детальніше і чесніше.</blockquote>
+<h3>Що далі</h3>
+<p>Ми відкриваємо реєстрацію для нових клінік. Якщо ви хочете приєднатись до бета-тесту та отримати доступ до продукту безкоштовно — реєструйтесь на сайті або пишіть нам у підтримку.</p>`,
+      en: `<p>We are pleased to announce that Nexum has officially started beta testing with our first partner clinics. This is an important step: we are moving from internal testing to working with real medical teams in real conditions.</p>
+<h3>First Beta Test Participants</h3>
+<p>The first wave includes several clinics of different sizes and specializations — from individual practices to multidisciplinary centers. We deliberately chose diverse partners to get a broad slice of feedback.</p>
+<h3>What We Learned in the First Month</h3>
+<p>Patients willingly complete surveys if they are short and understandable. Average completion time is 4–6 minutes. Doctors note that the starting context before the appointment significantly changes the quality of the consultation.</p>
+<blockquote>The biggest insight: patients take AI surveys more seriously than paper questionnaires. They respond in more detail and more honestly.</blockquote>
+<h3>What's Next</h3>
+<p>We are opening registration for new clinics. If you want to join the beta test and get free access to the product — register on the website or write to our support team.</p>`
+    }
+  },
+  {
+    id: 6,
+    cat: 'product',
+    catLabel: { uk: '🚀 Продукт', en: '🚀 Product' },
+    catClass: 'cat-product',
+    icon: '⚙️',
+    coverBg: 'linear-gradient(135deg, #FFF0F8, #FFE4F3)',
+    title: { uk: 'Nexum vs паперові анкети: порівняння двох підходів', en: 'Nexum vs Paper Questionnaires: Comparing Two Approaches' },
+    excerpt: { uk: 'Об\'єктивне порівняння традиційного паперового збору даних та AI-автоматизованого підходу з точки зору лікаря.', en: 'An objective comparison of traditional paper data collection and AI-automated approach from a doctor\'s perspective.' },
+    author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+    authorInitial: 'N',
+    date: { uk: '8 травня 2026', en: 'May 8, 2026' },
+    readTime: { uk: '5 хв читання', en: '5 min read' },
+    body: {
+      uk: `<p>Паперові анкети — це стандарт, до якого всі звикли. Але звичність не завжди означає ефективність. Давайте розглянемо обидва підходи чесно, без прикрас.</p>
+<h3>Паперові анкети: переваги та проблеми</h3>
+<p>Паперові анкети прості, доступні та не потребують технологій. Пацієнт заповнює їх у зоні очікування, адміністратор передає лікарю. Але є суттєві проблеми: нечіткий почерк, неповні відповіді, час на ручне введення даних і відсутність стандарту між лікарями.</p>
+<ul>
+<li>Нечіткий почерк і пропущені поля — у 40% випадків</li>
+<li>Час на ручне введення даних — 5–8 хвилин на пацієнта</li>
+<li>Неможливість задати уточнювальні питання автоматично</li>
+<li>Відсутність структурованого архіву</li>
+</ul>
+<h3>AI-підхід Nexum: що змінюється</h3>
+<p>Nexum дозволяє пацієнту відповідати природною мовою або обирати варіанти — так, як йому зручно. Система задає уточнювальні питання на основі відповідей. Результат — структурований звіт без ручного введення.</p>
+<blockquote>Ключова різниця: AI-опитування завершується структурованим звітом. Паперова анкета завершується аркушем паперу.</blockquote>
+<h3>Коли паперові анкети ще мають сенс</h3>
+<p>Для дуже літніх пацієнтів або тих, хто не користується смартфонами, паперовий варіант може залишатись доречним. Nexum не виключає такий підхід — це доповнення, а не заміна.</p>`,
+      en: `<p>Paper questionnaires are a standard everyone is used to. But familiarity doesn't always mean effectiveness. Let's look at both approaches honestly, without embellishment.</p>
+<h3>Paper Questionnaires: Advantages and Problems</h3>
+<p>Paper questionnaires are simple, accessible, and don't require technology. The patient fills them out in the waiting area, the administrator passes them to the doctor. But there are significant problems: unclear handwriting, incomplete answers, time for manual data entry, and lack of standard between doctors.</p>
+<ul>
+<li>Unclear handwriting and missed fields — in 40% of cases</li>
+<li>Time for manual data entry — 5–8 minutes per patient</li>
+<li>Inability to ask clarifying questions automatically</li>
+<li>No structured archive</li>
+</ul>
+<h3>Nexum's AI Approach: What Changes</h3>
+<p>Nexum allows the patient to respond in natural language or select options — whichever is convenient. The system asks clarifying questions based on responses. The result is a structured report without manual entry.</p>
+<blockquote>The key difference: an AI survey ends with a structured report. A paper questionnaire ends with a sheet of paper.</blockquote>
+<h3>When Paper Questionnaires Still Make Sense</h3>
+<p>For very elderly patients or those who don't use smartphones, the paper option may still be appropriate. Nexum doesn't exclude this approach — it's a supplement, not a replacement.</p>`
+    }
+  }
+];
+
+/* Імпорт стандартних статей сайту у базу даних.
+   Порівнюємо за заголовком (UK), щоб не створювати дублікати,
+   якщо частину статей уже імпортовано раніше. Після імпорту вони
+   зʼявляються у звичайному списку статей і повністю керовані —
+   тобто їх можна редагувати (заміняти вміст) та видаляти. */
+async function importDefaultArticles() {
+  const existingTitles = new Set(
+    articles.map(a => (a.title?.uk || '').trim().toLowerCase()).filter(Boolean)
+  );
+  const toImport = SEED_ARTICLES.filter(
+    s => !existingTitles.has((s.title.uk || '').trim().toLowerCase())
+  );
+  if (!toImport.length) {
+    showToast('ℹ️ Усі стандартні статті вже додані', '');
+    return;
+  }
+
+  const buttons = [document.getElementById('btnImportSeedDash'), document.getElementById('btnImportSeedArticles')]
+    .filter(Boolean);
+  buttons.forEach(b => { b.disabled = true; b.textContent = '⏳ Імпортуємо...'; });
+
+  let success = 0, failed = 0;
+  for (const seed of toImport) {
+    const { id, ...rest } = seed;
+    const payload = { ...rest, adminSecret: ADMIN_TOKEN };
+    try {
+      const res = await fetch('/api/blog/articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) success++; else failed++;
+    } catch (e) {
+      console.error('[importDefaultArticles]', e.message);
+      failed++;
+    }
+  }
+
+  await loadArticles();
+  updateSidebar();
+  renderArticlesTable();
+  renderDashboard();
+
+  buttons.forEach(b => { b.disabled = false; b.textContent = '📥 Імпорт статей із сайту'; });
+
+  if (success && !failed) showToast(`✅ Імпортовано ${success} статей`, 'success');
+  else if (success && failed) showToast(`⚠️ Імпортовано ${success}, не вдалось ${failed}`, 'error');
+  else showToast('❌ Не вдалося імпортувати статті. Перевірте з\'єднання з сервером', 'error');
+}
+
+/* ── EDITOR ── */
+let selectedIcon = '🤖';
+
+function openEditor(id) {
+  editingId = id; editorLang = 'uk'; bodyLang = 'uk';
+  document.getElementById('editorTitle').textContent = id ? 'Редагувати статтю' : 'Нова стаття';
+  switchEdLang('uk'); switchBodyLang('uk');
+  if (id) {
+    const a = articles.find(x => x.id == id);
+    if (!a) return;
+    document.getElementById('titleUK').value   = a.title?.uk   || '';
+    document.getElementById('titleEN').value   = a.title?.en   || '';
+    document.getElementById('excerptUK').value = a.excerpt?.uk || '';
+    document.getElementById('excerptEN').value = a.excerpt?.en || '';
+    document.getElementById('bodyEditorUK').innerHTML = a.body?.uk || '';
+    document.getElementById('bodyEditorEN').innerHTML = a.body?.en || '';
+    document.getElementById('artCat').value    = a.cat || 'product';
+    document.getElementById('artDateUK').value = a.date?.uk    || '';
+    document.getElementById('artDateEN').value = a.date?.en    || '';
+    document.getElementById('artReadUK').value = a.readTime?.uk || '';
+    document.getElementById('artReadEN').value = a.readTime?.en || '';
+    document.getElementById('artAuthorUK').value = a.author?.uk || 'Команда Nexum';
+    document.getElementById('artAuthorEN').value = a.author?.en || 'Nexum Team';
+    document.getElementById('toggleFeatured').classList.toggle('on',     !!a.featured);
+    document.getElementById('toggleFeaturedSide').classList.toggle('on', !!a.featuredSide);
+    selectIconSilent(a.icon || '🤖');
+  } else {
+    ['titleUK','titleEN','excerptUK','excerptEN','artDateUK','artDateEN','artReadUK','artReadEN']
+      .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('bodyEditorUK').innerHTML = '';
+    document.getElementById('bodyEditorEN').innerHTML = '';
+    document.getElementById('artCat').value = 'product';
+    document.getElementById('artAuthorUK').value = 'Команда Nexum';
+    document.getElementById('artAuthorEN').value = 'Nexum Team';
+    document.getElementById('toggleFeatured').classList.remove('on');
+    document.getElementById('toggleFeaturedSide').classList.remove('on');
+    selectIconSilent('🤖');
+  }
+  updateCoverPreview();
+}
+
+function switchEdLang(lang) {
+  editorLang = lang;
+  document.getElementById('edLangUK').classList.toggle('active', lang==='uk');
+  document.getElementById('edLangEN').classList.toggle('active', lang==='en');
+  document.getElementById('editorLangUK').style.display = lang==='uk'?'block':'none';
+  document.getElementById('editorLangEN').style.display = lang==='en'?'block':'none';
+}
+
+function switchBodyLang(lang) {
+  bodyLang = lang;
+  document.getElementById('bodyLangUK').classList.toggle('active', lang==='uk');
+  document.getElementById('bodyLangEN').classList.toggle('active', lang==='en');
+  document.getElementById('bodyEditorUK').style.display = lang==='uk'?'block':'none';
+  document.getElementById('bodyEditorEN').style.display = lang==='en'?'block':'none';
+}
+
+function rteCmd(cmd,val){ document.execCommand(cmd,false,val||null); getCurrentEditor()?.focus(); }
+function getCurrentEditor(){ return document.getElementById(bodyLang==='uk'?'bodyEditorUK':'bodyEditorEN'); }
+function insertBlockquote(){
+  const text=window.getSelection()?.toString()||'Ваша цитата тут...';
+  document.execCommand('insertHTML',false,`<blockquote>${text}</blockquote><p></p>`);
+  getCurrentEditor()?.focus();
+}
+function rteLink(){
+  const url=prompt('URL посилання:','https://');
+  if(url) document.execCommand('createLink',false,url);
+  getCurrentEditor()?.focus();
+}
+function selectIcon(btn,icon){
+  document.querySelectorAll('.icon-option').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected'); selectedIcon=icon; updateCoverPreview();
+}
+function selectIconSilent(icon){
+  selectedIcon=icon;
+  document.querySelectorAll('.icon-option').forEach(b=>b.classList.toggle('selected',b.textContent===icon));
+  updateCoverPreview();
+}
+function updateCoverPreview(){
+  const cc=CAT_CONFIG[document.getElementById('artCat').value];
+  const prev=document.getElementById('coverPreview');
+  prev.style.background=cc?.bg||'#FFF0F8';
+  prev.textContent=selectedIcon;
+}
+
+/* ── SAVE ── */
+async function saveArticle() {
+  const titleUK = document.getElementById('titleUK').value.trim();
+  const titleEN = document.getElementById('titleEN').value.trim();
+  if (!titleUK||!titleEN){ showToast('❌ Заповніть заголовок обома мовами','error'); return; }
+  const cat=document.getElementById('artCat').value;
+  const cc=CAT_CONFIG[cat];
+  const article = {
+    adminSecret:  ADMIN_TOKEN,
+    cat, catLabel:cc.label, catClass:cc.cls,
+    icon:selectedIcon, coverBg:cc.bg,
+    featured:     document.getElementById('toggleFeatured').classList.contains('on'),
+    featuredSide: document.getElementById('toggleFeaturedSide').classList.contains('on'),
+    title:   { uk:titleUK, en:titleEN },
+    excerpt: { uk:document.getElementById('excerptUK').value.trim(), en:document.getElementById('excerptEN').value.trim() },
+    author:  { uk:document.getElementById('artAuthorUK').value.trim()||'Команда Nexum', en:document.getElementById('artAuthorEN').value.trim()||'Nexum Team' },
+    authorInitial:'N',
+    date:     { uk:document.getElementById('artDateUK').value.trim(), en:document.getElementById('artDateEN').value.trim() },
+    readTime: { uk:document.getElementById('artReadUK').value.trim(), en:document.getElementById('artReadEN').value.trim() },
+    body:     { uk:document.getElementById('bodyEditorUK').innerHTML, en:document.getElementById('bodyEditorEN').innerHTML },
+  };
+  try {
+    const url    = editingId ? `/api/blog/articles/${editingId}` : '/api/blog/articles';
+    const method = editingId ? 'PUT' : 'POST';
+    const res    = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(article) });
+    const data   = await res.json();
+    if (!res.ok) throw new Error(data.error||'Save failed');
+    await loadArticles();
+    updateSidebar();
+    showToast(editingId?'✅ Статтю оновлено!':'✅ Статтю додано!','success');
+    setTimeout(()=>showView('articles'),800);
+  } catch(e) {
+    showToast('❌ Помилка: '+e.message,'error');
+  }
+}
+
+/* ── DELETE ── */
+function askDelete(id){ deleteTarget=id; document.getElementById('confirmOverlay').classList.add('open'); }
+function closeConfirm(){ deleteTarget=null; document.getElementById('confirmOverlay').classList.remove('open'); }
+
+async function confirmDelete() {
+  if (deleteTarget===null) return;
+  try {
+    const res = await fetch(
+      `/api/blog/articles/${deleteTarget}?secret=${encodeURIComponent(ADMIN_TOKEN)}`,
+      { method:'DELETE' }
+    );
+    if (!res.ok) throw new Error('Delete failed');
+    await loadArticles();
+    updateSidebar();
+    closeConfirm();
+    renderArticlesTable();
+    renderDashboard();
+    showToast('🗑️ Статтю видалено','success');
+  } catch(e) {
+    showToast('❌ Помилка видалення','error');
+    closeConfirm();
+  }
+}
+
+/* ── PREVIEW ── */
+function previewById(id){
+  const a=articles.find(x=>x.id==id); if(!a) return;
+  showPreviewData(a,'uk');
+}
+function previewArticle(){
+  const cat=document.getElementById('artCat').value;
+  const cc=CAT_CONFIG[cat];
+  showPreviewData({
+    icon:selectedIcon, coverBg:cc.bg, catLabel:cc.label, catClass:cc.cls,
+    title:  {uk:document.getElementById('titleUK').value,   en:document.getElementById('titleEN').value},
+    excerpt:{uk:document.getElementById('excerptUK').value, en:document.getElementById('excerptEN').value},
+    body:   {uk:document.getElementById('bodyEditorUK').innerHTML, en:document.getElementById('bodyEditorEN').innerHTML},
+  }, editorLang);
+}
+function showPreviewData(a,lang){
+  const cc=CAT_CONFIG[a.cat]||{label:a.catLabel,cls:a.catClass,bg:a.coverBg};
+  document.getElementById('previewCover').style.background = a.coverBg||cc?.bg;
+  document.getElementById('previewCover').textContent      = a.icon;
+  document.getElementById('previewCat').innerHTML =
+    `<span style="display:inline-flex;align-items:center;padding:5px 14px;border-radius:999px;
+      font-size:10.5px;font-weight:700;font-family:var(--font-display);margin-bottom:10px;"
+      class="${a.catClass||cc?.cls}">${(a.catLabel||cc?.label)?.[lang]||''}</span>`;
+  document.getElementById('previewTitle').textContent   = a.title?.[lang]  ||'';
+  document.getElementById('previewExcerpt').textContent = a.excerpt?.[lang]||'';
+  document.getElementById('previewBody').innerHTML      = a.body?.[lang]   ||'';
+  document.getElementById('previewOverlay').classList.add('open');
+}
+function closePreview(){ document.getElementById('previewOverlay').classList.remove('open'); }
+
+/* ── TOAST ── */
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+(type||'');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closePreview();closeConfirm();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){
+    e.preventDefault();
+    if(document.getElementById('view-editor').classList.contains('active')) saveArticle();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexum | AI Medical Assistant</title>
+  <meta name="description" content="Nexum automates anamnesis collection before the appointment.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .nav-arrow { font-size: 11px; opacity: 0.6; margin-left: 2px; }
+    :root {
+      --rose: #E91E8C; --rose-mid: #F04BA0; --rose-light: #FF80C0;
+      --rose-pale: #FFF0F8; --rose-pastel: #FFE4F3; --rose-soft: #FFDCEF;
+      --rose-border: rgba(233, 30, 140, 0.15); --rose-border-soft: rgba(233, 30, 140, 0.08);
+      --bg: #FFF8FC; --bg-card: #FFFFFF; --bg-section: #FFF3FA;
+      --ink: #1F0A20; --ink-mid: #4A2050; --muted: #9070A0; --muted-light: #C4A0D0; --white: #FFFFFF;
+      --radius-xl: 32px; --radius-lg: 24px; --radius-md: 16px; --radius-sm: 10px;
+      --shadow-xs: 0 2px 8px rgba(233, 30, 140, 0.06); --shadow-sm: 0 4px 16px rgba(233, 30, 140, 0.08);
+      --shadow-md: 0 8px 32px rgba(233, 30, 140, 0.10); --shadow-lg: 0 16px 56px rgba(233, 30, 140, 0.13);
+      --shadow-xl: 0 32px 80px rgba(233, 30, 140, 0.18);
+      --font-display: 'Bricolage Grotesque', sans-serif; --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); color: var(--ink); background: var(--bg); min-height: 100vh; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1240px, calc(100% - 40px)); margin: 0 auto; }
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255, 248, 252, 0.88); backdrop-filter: blur(24px); border-bottom: 1px solid var(--rose-border-soft); }
+    .navbar-inner { display: flex; align-items: center; gap: 32px; height: 72px; }
+    .brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .brand-icon { width: 40px; height: 40px; border-radius: 14px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #fff; box-shadow: 0 4px 14px rgba(233, 30, 140, 0.28); }
+    .brand-text { font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: -0.02em; color: var(--ink); }
+    .brand-sub { font-size: 11px; color: var(--muted); font-weight: 500; margin-top: 1px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; flex: 1; justify-content: center; }
+    .nav-links a { font-size: 14px; font-weight: 600; color: var(--muted); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--rose); }
+    .nav-links a.nav-active { color: var(--rose); }
+    .btn-nav { height: 40px; padding: 0 20px; border-radius: 12px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; font-family: var(--font-body); font-weight: 700; font-size: 13px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(233, 30, 140, 0.25); transition: all 0.2s; white-space: nowrap; display: inline-flex; align-items: center; }
+    .btn-nav:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(233, 30, 140, 0.32); }
+    .burger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; background: transparent; border: none; cursor: pointer; padding: 4px; margin-left: auto; border-radius: 8px; transition: background 0.2s; }
+    .burger:hover { background: var(--rose-pale); }
+    .burger span { display: block; height: 2px; width: 100%; background: var(--ink); border-radius: 2px; transition: all 0.3s; }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display: none; position: fixed; top: 72px; left: 0; right: 0; background: rgba(255, 248, 252, 0.97); backdrop-filter: blur(24px); border-bottom: 1px solid var(--rose-border-soft); padding: 20px 24px 24px; z-index: 99; box-shadow: var(--shadow-md); }
+    .mobile-menu.open { display: flex; flex-direction: column; gap: 4px; }
+    .mobile-menu a { font-size: 16px; font-weight: 600; color: var(--muted); padding: 12px 0; border-bottom: 1px solid var(--rose-border-soft); transition: color 0.2s; }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--rose); }
+    .mobile-menu .btn-nav-mob { margin-top: 12px; height: 48px; width: 100% !important; display: block !important; text-align: center !important; line-height: 48px; padding: 0 !important; border-bottom: none !important; border-radius: 14px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff !important; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: var(--shadow-md); font-family: var(--font-body); text-decoration: none; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; background: var(--rose-pale); border: 1px solid rgba(233, 30, 140, 0.18); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rose); font-family: var(--font-display); }
+    .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rose); animation: pulse 2.2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.75)} }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 28px; border-radius: var(--radius-md); border: 1.5px solid transparent; cursor: pointer; font-family: var(--font-body); font-weight: 700; font-size: 14px; transition: all 0.22s; white-space: nowrap; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; box-shadow: var(--shadow-md); }
+    .btn-primary:hover { box-shadow: 0 16px 40px rgba(233, 30, 140, 0.3); }
+    .btn-outline { background: var(--white); border-color: var(--rose-border); color: var(--rose); }
+    .btn-outline:hover { background: var(--rose-pale); border-color: rgba(233, 30, 140, 0.3); }
+    .section { padding: 100px 0; } .section-sm { padding: 72px 0; }
+    .section-head { text-align: center; max-width: 780px; margin: 0 auto; }
+    .section-head h2 { margin-top: 18px; } .section-head .lead { margin-top: 20px; }
+    h1 { font-family: var(--font-display); font-size: clamp(42px, 6.5vw, 72px); line-height: 1.0; letter-spacing: -0.04em; font-weight: 800; color: var(--ink); }
+    h2 { font-family: var(--font-display); font-size: clamp(30px, 4.2vw, 52px); line-height: 1.05; letter-spacing: -0.038em; font-weight: 800; color: var(--ink); }
+    h3 { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: var(--ink); }
+    .lead { font-size: 17px; line-height: 1.75; color: var(--muted); font-weight: 400; }
+    .copy { font-size: 14px; line-height: 1.8; color: var(--muted); }
+    .accent { color: var(--rose); }
+    .card { background: var(--white); border: 1px solid var(--rose-border-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--rose-border); }
+    .icon-box { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, var(--rose-pale), var(--rose-pastel)); border: 1px solid rgba(233, 30, 140, 0.15); display: grid; place-items: center; color: var(--rose); font-size: 20px; flex-shrink: 0; }
+    .hero { padding: 72px 0 80px; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 56px; align-items: start; }
+    .hero-copy .lead { margin-top: 24px; max-width: 520px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 40px; }
+    .stat-card { padding: 20px; border-radius: var(--radius-md); background: var(--white); border: 1px solid var(--rose-border-soft); box-shadow: var(--shadow-xs); }
+    .stat-num { font-family: var(--font-display); font-size: 32px; font-weight: 800; letter-spacing: -0.04em; background: linear-gradient(135deg, var(--rose), #D01070); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; }
+    .stat-label { margin-top: 8px; font-size: 12px; line-height: 1.55; color: var(--muted); font-weight: 500; }
+    .hero-visual { display: flex; flex-direction: column; gap: 16px; position: relative; }
+    .chat-wrap { background: var(--white); border-radius: var(--radius-xl); border: 1.5px solid var(--rose-border); box-shadow: var(--shadow-xl); overflow: hidden; filter: drop-shadow(0 24px 60px rgba(233,30,140,0.14)); }
+    .chat-bar { padding: 18px 22px; background: linear-gradient(135deg, #FFF0F8, #FFE4F3); border-bottom: 1px solid var(--rose-border-soft); display: flex; align-items: center; gap: 12px; }
+    .chat-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); display: grid; place-items: center; font-size: 16px; font-weight: 800; color: #fff; font-family: var(--font-display); flex-shrink: 0; box-shadow: 0 4px 12px rgba(233,30,140,0.3); }
+    .chat-name { font-size: 15px; font-weight: 700; color: var(--ink); font-family: var(--font-display); }
+    .chat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .live-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--rose); margin-left: auto; animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 0 3px rgba(233,30,140,0.2); }
+    .chat-progress-bar { height: 4px; background: var(--rose-pale); }
+    .chat-fill { height: 100%; background: linear-gradient(90deg, var(--rose), var(--rose-light)); transition: width 0.5s ease; border-radius: 2px; }
+    .chat-msgs { min-height: 320px; max-height: 400px; overflow-y: auto; padding: 20px 20px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+    .chat-msgs::-webkit-scrollbar { width: 0; }
+    .bub-bot { background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; border-radius: 16px 16px 16px 4px; padding: 12px 16px; font-size: 14px; line-height: 1.6; max-width: 88%; font-weight: 600; animation: bubIn .25s ease both; box-shadow: 0 6px 16px rgba(233, 30, 140, 0.28); align-self: flex-start; }
+    .bub-user { background: var(--rose-pale); border: 1px solid rgba(233, 30, 140, 0.1); color: var(--ink); border-radius: 16px 16px 4px 16px; padding: 12px 16px; font-size: 14px; line-height: 1.6; align-self: flex-end; max-width: 76%; animation: bubIn .25s ease both; }
+    @keyframes bubIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+    .opts-row { display: flex; flex-wrap: wrap; gap: 8px; animation: bubIn .3s ease both; }
+    .opt-btn { background: var(--white); border: 1.5px solid var(--rose-border); border-radius: 22px; padding: 8px 16px; font-size: 13px; color: var(--rose); cursor: pointer; font-family: var(--font-body); font-weight: 600; transition: all .15s; }
+    .opt-btn:hover { background: var(--rose-pale); border-color: rgba(233, 30, 140, 0.35); transform: translateY(-1px); }
+    .opt-btn.sel { background: linear-gradient(135deg, var(--rose), var(--rose-mid)); border-color: transparent; color: #fff; box-shadow: 0 4px 12px rgba(233,30,140,0.25); }
+    .scale-row { display: flex; gap: 6px; flex-wrap: wrap; animation: bubIn .25s ease both; }
+    .scale-btn { width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid var(--rose-border-soft); background: var(--rose-pale); color: var(--muted); font-size: 12px; cursor: pointer; font-family: var(--font-body); font-weight: 600; transition: all .15s; display: grid; place-items: center; }
+    .scale-btn:hover { border-color: var(--rose); color: var(--rose); background: var(--rose-pastel); transform: scale(1.08); }
+    .scale-btn.sel { background: linear-gradient(135deg, var(--rose), var(--rose-mid)); border-color: transparent; color: #fff; box-shadow: 0 4px 12px rgba(233,30,140,0.25); }
+    .typing-indicator { background: linear-gradient(135deg, var(--rose), var(--rose-mid)); border-radius: 16px 16px 16px 4px; padding: 13px 16px; display: flex; gap: 5px; width: fit-content; animation: bubIn .2s ease both; align-self: flex-start; }
+    .t-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.7); animation: tyAnim .85s infinite; }
+    .t-dot:nth-child(2){animation-delay:.13s} .t-dot:nth-child(3){animation-delay:.26s}
+    @keyframes tyAnim { 0%,100%{opacity:.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-4px)} }
+    .sum-box { background: var(--rose-pale); border: 1px solid rgba(233, 30, 140, 0.13); border-radius: 16px; padding: 16px; font-size: 13px; animation: bubIn .3s ease both; }
+    .sum-title { font-size: 13px; font-weight: 700; color: var(--rose); margin-bottom: 12px; font-family: var(--font-display); }
+    .sum-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(233, 30, 140, 0.07); gap: 8px; }
+    .sum-row:last-child { border-bottom: none; }
+    .sum-lbl { color: var(--muted); } .sum-val { color: var(--ink); font-weight: 600; } .sum-val.hi { color: var(--rose); }
+    .chat-footer { padding: 14px 20px 16px; border-top: 1px solid var(--rose-border-soft); background: var(--rose-pale); display: flex; flex-direction: column; gap: 10px; }
+    .chat-hint { font-size: 12px; color: var(--muted-light); text-align: center; transition: opacity 0.3s; }
+    .restart-btn { background: transparent; border: 1.5px solid var(--rose-border); color: var(--muted); border-radius: 12px; padding: 7px 18px; font-size: 12px; font-family: var(--font-body); cursor: pointer; transition: all .15s; align-self: center; }
+    .restart-btn:hover { border-color: var(--rose); color: var(--rose); }
+    .doc-card { background: var(--white); border: 1px solid var(--rose-border); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-size: 13px; animation: bubIn .3s ease both; box-shadow: var(--shadow-xs); }
+    .doc-av { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); display: grid; place-items: center; font-size: 16px; flex-shrink: 0; }
+    .doc-name { font-size: 13px; font-weight: 700; color: var(--ink); font-family: var(--font-display); }
+    .doc-status { color: var(--rose); font-size: 11px; display: flex; align-items: center; gap: 5px; margin-top: 3px; }
+    .doc-status::before { content: ''; width: 5px; height: 5px; background: var(--rose); border-radius: 50%; }
+    .dashboard-card { background: var(--white); border: 1px solid var(--rose-border-soft); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-sm); }
+    .dash-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    .dash-title { font-size: 14px; font-weight: 700; font-family: var(--font-display); color: var(--ink); }
+    .dash-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .ready-badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; background: var(--rose-pale); border: 1px solid rgba(233, 30, 140, 0.18); color: var(--rose); font-size: 11px; font-weight: 700; font-family: var(--font-display); white-space: nowrap; }
+    .ready-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--rose); animation: pulse 2s ease-in-out infinite; }
+    .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 56px; }
+    .how-card { padding: 28px 24px; border-radius: var(--radius-lg); background: var(--white); border: 1px solid var(--rose-border-soft); box-shadow: var(--shadow-xs); transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .how-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--rose-border); }
+    .step-num { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 13px; display: grid; place-items: center; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(233, 30, 140, 0.28); }
+    .how-card h3 { margin-bottom: 12px; font-size: 17px; }
+    .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
+    .product-card { padding: 32px 28px; border-radius: var(--radius-lg); background: var(--white); border: 1px solid var(--rose-border-soft); box-shadow: var(--shadow-xs); transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--rose-border); }
+    .product-card h3 { margin: 18px 0 14px; }
+    .for-tabs-wrap { position: relative; }
+    .for-tabs-track { display: flex; align-items: center; gap: 8px; width: fit-content; margin: 0 auto 40px; position: relative; }
+    .for-tab { padding: 10px 28px; border-radius: 10px; border: 1.5px solid var(--rose-border); background: var(--white); font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: var(--shadow-xs); }
+    .for-tab:hover { border-color: var(--rose); color: var(--rose); }
+    .for-tab.active { border-color: var(--rose); color: var(--rose); background: var(--rose-pale); box-shadow: 0 2px 10px rgba(233,30,140,0.12); }
+    .for-panel { display: none; animation: panelIn 0.35s ease both; }
+    .for-panel.active { display: block; }
+    @keyframes panelIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .for-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .for-feature-list { display: flex; flex-direction: column; gap: 18px; margin-top: 28px; }
+    .for-feature-item { display: flex; align-items: flex-start; gap: 14px; }
+    .for-feature-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .for-feature-item strong { display: block; font-size: 15px; font-family: var(--font-display); font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .for-feature-item p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .for-visual-card { background: var(--white); border: 1px solid var(--rose-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+    .clinic-dash { background: var(--white); border: 1.5px solid var(--rose-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+    .clinic-dash-header { padding: 18px 22px; background: linear-gradient(135deg, #fff0f8, #ffe4f3); border-bottom: 1px solid var(--rose-border-soft); }
+    .clinic-dash-title { font-family: var(--font-display); font-size: 14px; font-weight: 800; color: var(--ink); }
+    .clinic-dash-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .clinic-export-row { display: flex; gap: 8px; padding: 14px 22px; border-bottom: 1px solid var(--rose-border-soft); }
+    .clinic-export-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; border: 1.5px solid var(--rose-border); background: var(--white); font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; font-family: var(--font-display); transition: all 0.2s; }
+    .clinic-export-btn.active-export { border-color: var(--rose); color: var(--rose); background: var(--rose-pale); }
+    .clinic-visit-list { display: flex; flex-direction: column; }
+    .clinic-visit { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border-bottom: 1px solid var(--rose-border-soft); transition: background 0.2s; }
+    .clinic-visit:last-child { border-bottom: none; }
+    .clinic-visit.current-visit { background: linear-gradient(90deg, rgba(233,30,140,0.04), transparent); }
+    .clinic-visit-icon { font-size: 20px; flex-shrink: 0; }
+    .clinic-visit-info { flex: 1; }
+    .clinic-visit-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--rose); }
+    .clinic-visit-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .clinic-visit-badge { padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; font-family: var(--font-display); white-space: nowrap; }
+    .current-badge { background: rgba(34,197,94,0.12); color: #16a34a; border: 1px solid rgba(34,197,94,0.2); }
+    .prev-badge { background: var(--rose-pale); color: var(--muted); border: 1px solid var(--rose-border-soft); }
+    .clinic-doctors-row { display: flex; gap: 8px; padding: 14px 22px; flex-wrap: wrap; background: var(--rose-pale); border-top: 1px solid var(--rose-border-soft); }
+    .clinic-doctor-chip { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: var(--white); border: 1px solid var(--rose-border); font-size: 12px; font-weight: 600; color: var(--ink); font-family: var(--font-display); }
+    .add-chip { color: var(--rose); border-style: dashed; cursor: pointer; }
+    .investor-card { background: var(--white); border: 1px solid var(--rose-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+    .inv-metric-grid { display: grid; grid-template-columns: 1fr 1fr; }
+    .inv-metric { padding: 22px; border-right: 1px solid var(--rose-border-soft); border-bottom: 1px solid var(--rose-border-soft); }
+    .inv-metric:nth-child(2) { border-right: none; } .inv-metric:nth-child(3) { border-bottom: none; } .inv-metric:nth-child(4) { border-right: none; border-bottom: none; }
+    .inv-m-num { font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: -0.04em; background: linear-gradient(135deg, var(--rose), #D01070); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .inv-m-lbl { font-size: 11px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+    .inv-stage { padding: 16px 22px; border-top: 1px solid var(--rose-border-soft); background: var(--rose-pale); }
+    .inv-stage-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(233,30,140,0.55); font-family: var(--font-display); }
+    .inv-stage-val { font-size: 14px; font-weight: 700; color: var(--ink); margin-top: 5px; font-family: var(--font-display); }
+    .inv-cta-note { padding: 12px 22px; text-align: center; font-size: 12px; color: var(--muted); border-top: 1px solid var(--rose-border-soft); font-style: italic; }
+    .prof-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 28px; }
+    .panel-feature { padding: 44px; border-radius: var(--radius-xl); background: linear-gradient(145deg, #fff0f8 0%, #ffe4f3 60%, #ffd6ee 100%); border: 1px solid rgba(233, 30, 140, 0.18); box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+    .panel-feature::before { content: ''; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: radial-gradient(circle, rgba(233, 30, 140, 0.15), transparent 70%); pointer-events: none; }
+    .accordion-list { display: flex; flex-direction: column; gap: 14px; }
+    .acc-item { background: var(--white); border: 1px solid var(--rose-border-soft); border-radius: var(--radius-md); box-shadow: var(--shadow-xs); transition: all 0.22s; overflow: hidden; }
+    .acc-item.open { border-color: rgba(233, 30, 140, 0.22); box-shadow: var(--shadow-md); }
+    .acc-trigger { width: 100%; border: none; background: transparent; text-align: left; padding: 22px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .acc-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; font-family: var(--font-display); color: var(--ink); }
+    .acc-sub { margin-top: 4px; font-size: 13px; color: var(--muted); }
+    .acc-icon { width: 32px; height: 32px; border-radius: 10px; border: 1.5px solid var(--rose-border); display: grid; place-items: center; color: var(--rose); font-size: 18px; flex-shrink: 0; transition: all 0.2s; background: var(--rose-pale); }
+    .acc-item.open .acc-icon { background: var(--rose); border-color: var(--rose); color: #fff; }
+    .acc-body { display: none; padding: 0 24px 22px; border-top: 1px solid var(--rose-border-soft); }
+    .acc-body-text { margin-top: 16px; font-size: 14px; color: var(--muted); line-height: 1.8; }
+    .acc-item.open .acc-body { display: block; }
+    .acc-points { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .acc-point { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--ink-mid); line-height: 1.6; }
+    .acc-point::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--rose); margin-top: 8px; flex-shrink: 0; }
+    .faq-shell { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 28px; margin-top: 28px; }
+    .faq-intro-card { padding: 36px; border-radius: var(--radius-xl); background: linear-gradient(145deg, #fff0f8, #ffe4f3); border: 1px solid rgba(233, 30, 140, 0.15); box-shadow: var(--shadow-sm); height: fit-content; position: sticky; top: 88px; }
+    .cta-shell { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 44px; align-items: start; padding: 52px; border-radius: var(--radius-xl); background: linear-gradient(145deg, #fff0f8 0%, #ffe8f5 60%, #ffdcef 100%); border: 1px solid rgba(233, 30, 140, 0.18); box-shadow: var(--shadow-lg); }
+    .cta-steps { display: flex; flex-direction: column; gap: 18px; margin-top: 32px; }
+    .cta-step { display: flex; align-items: flex-start; gap: 16px; }
+    .cta-step-num { width: 32px; height: 32px; border-radius: 10px; background: var(--white); border: 1.5px solid rgba(233, 30, 140, 0.2); color: var(--rose); font-size: 12px; font-weight: 800; display: grid; place-items: center; flex-shrink: 0; font-family: var(--font-display); box-shadow: var(--shadow-xs); }
+    .cta-step-title { font-size: 14px; font-weight: 700; color: var(--ink); font-family: var(--font-display); }
+    .cta-step-desc { font-size: 13px; color: var(--muted); margin-top: 3px; }
+    .reg-form { border-radius: var(--radius-lg); background: var(--white); border: 1px solid var(--rose-border); box-shadow: var(--shadow-md); overflow: hidden; }
+    .reg-tabs { display: flex; border-bottom: 1px solid var(--rose-border-soft); }
+    .reg-tab { flex: 1; padding: 16px; text-align: center; background: transparent; border: none; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .2s; font-family: var(--font-display); }
+    .reg-tab.active { color: var(--rose); border-bottom-color: var(--rose); background: var(--rose-pale); }
+    .reg-progress { display: flex; gap: 6px; padding: 16px 22px 0; }
+    .rp { flex: 1; height: 3px; border-radius: 3px; background: var(--rose-border-soft); transition: background .3s; }
+    .rp.done { background: linear-gradient(90deg, var(--rose), var(--rose-light)); }
+    .reg-body { padding: 20px 22px 24px; }
+    .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .field-label { font-size: 12px; font-weight: 700; color: var(--ink); letter-spacing: .04em; font-family: var(--font-display); }
+    .field input, .field select { height: 48px; padding: 0 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--rose-border-soft); background: var(--rose-pale); color: var(--ink); outline: none; transition: border-color .2s, box-shadow .2s, background .2s; font-size: 14px; font-family: var(--font-body); }
+    .field input:focus, .field select:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.08); background: var(--white); }
+    .field input::placeholder { color: var(--muted-light); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .reg-actions { display: flex; gap: 10px; margin-top: 10px; }
+    .btn-back { width: 48px; height: 48px; border-radius: 12px; border: 1.5px solid var(--rose-border-soft); background: var(--white); color: var(--muted); font-size: 18px; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; transition: all .2s; }
+    .btn-back:hover { border-color: var(--rose); color: var(--rose); }
+    .btn-next { flex: 1; height: 48px; border-radius: 12px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; box-shadow: 0 4px 14px rgba(233, 30, 140, 0.28); font-family: var(--font-display); }
+    .btn-next:hover { box-shadow: 0 8px 22px rgba(233, 30, 140, 0.38); transform: translateY(-1px); }
+    .agree-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+    .agree-row input { margin-top: 3px; accent-color: var(--rose); cursor: pointer; }
+    .agree-row label { font-size: 12px; color: var(--muted); line-height: 1.6; cursor: pointer; }
+    .agree-row a { color: var(--rose); }
+    .reg-ok { padding: 40px 24px; text-align: center; }
+    .reg-ok-icon { font-size: 52px; margin-bottom: 16px; }
+    .reg-ok-title { font-size: 22px; font-weight: 800; letter-spacing: -.03em; color: var(--ink); margin-bottom: 12px; font-family: var(--font-display); }
+    .reg-ok-desc { font-size: 14px; color: var(--muted); line-height: 1.7; max-width: 280px; margin: 0 auto; }
+    .reg-ok-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; padding: 14px 28px; border-radius: 14px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; font-weight: 700; font-size: 14px; box-shadow: var(--shadow-md); transition: all .2s; font-family: var(--font-display); }
+    .reg-step { display: none; } .reg-step.active { display: block; }
+    .footer { padding: 28px 0 36px; border-top: 1px solid var(--rose-border-soft); background: var(--white); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .footer-copy { font-size: 13px; color: var(--muted); }
+    .socials { display: flex; align-items: center; gap: 16px; }
+    .socials a { font-size: 13px; font-weight: 600; color: var(--rose); transition: opacity .2s; }
+    .socials a:hover { opacity: .7; }
+    .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .js .reveal.visible { opacity: 1; transform: none; }
+    .support-shell { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 40px; align-items: start; }
+    .support-intro { padding: 36px; border-radius: var(--radius-xl); background: linear-gradient(145deg, #fff0f8, #ffe4f3); border: 1px solid rgba(233, 30, 140, 0.15); box-shadow: var(--shadow-sm); position: sticky; top: 88px; }
+    .support-contacts { display: flex; flex-direction: column; gap: 18px; margin-top: 32px; }
+    .support-contact-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px; background: rgba(255,255,255,0.65); border: 1px solid rgba(233, 30, 140, 0.1); border-radius: var(--radius-md); }
+    .support-contact-icon { font-size: 22px; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+    .support-contact-title { font-size: 14px; font-weight: 700; color: var(--ink); font-family: var(--font-display); }
+    .support-contact-desc { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+    .support-socials { display: flex; align-items: center; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    .support-social-link { font-size: 13px; font-weight: 700; color: var(--rose); transition: opacity .2s; }
+    .support-social-link:hover { opacity: .7; }
+    .support-form-wrap { background: var(--white); border: 1px solid var(--rose-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; }
+    .support-form-header { padding: 24px 28px 20px; background: linear-gradient(135deg, #fff0f8, #ffe4f3); border-bottom: 1px solid var(--rose-border-soft); }
+    .support-form-title { font-family: var(--font-display); font-size: 18px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+    .support-form-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .support-topics { display: flex; gap: 8px; flex-wrap: wrap; padding: 20px 28px 0; }
+    .stopic { padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--rose-border); background: var(--white); color: var(--muted); font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: var(--font-body); transition: all .18s; }
+    .stopic:hover { border-color: var(--rose); color: var(--rose); background: var(--rose-pale); }
+    .stopic.active { background: linear-gradient(135deg, var(--rose), var(--rose-mid)); border-color: transparent; color: #fff; box-shadow: 0 4px 12px rgba(233,30,140,0.22); }
+    .support-form-body { padding: 20px 28px 28px; }
+    .support-form-body .field textarea { width: 100%; min-height: 130px; padding: 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--rose-border-soft); background: var(--rose-pale); color: var(--ink); outline: none; resize: vertical; font-size: 14px; font-family: var(--font-body); line-height: 1.6; transition: border-color .2s, box-shadow .2s, background .2s; }
+    .support-form-body .field textarea:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.08); background: var(--white); }
+    .support-submit { width: 100%; height: 52px; border-radius: 14px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; border: none; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-md); transition: all .2s; font-family: var(--font-display); margin-top: 6px; letter-spacing: -0.01em; }
+    .support-submit:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+    .support-ok { padding: 56px 28px; text-align: center; }
+    .support-ok-icon { font-size: 56px; margin-bottom: 18px; }
+    .support-ok-title { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); margin-bottom: 12px; }
+    .support-ok-desc { font-size: 14px; color: var(--muted); line-height: 1.7; max-width: 320px; margin: 0 auto 24px; }
+    .support-ok-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 14px; background: transparent; border: 1.5px solid var(--rose-border); color: var(--rose); font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-display); transition: all .2s; }
+    .sub-tabs-track { display: flex; gap: 8px; margin-bottom: 32px; }
+    .sub-tab { padding: 8px 20px; border-radius: 10px; border: 1.5px solid var(--rose-border); background: var(--white); font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-xs); }
+    .sub-tab.active { border-color: var(--rose); color: var(--rose); background: var(--rose-pale); }
+    .sub-panel { display: none; } .sub-panel.active { display: block; }
+    .sc-bot { background: linear-gradient(135deg,var(--rose),var(--rose-mid)); color: #fff; border-radius: 16px 16px 16px 4px; padding: 12px 16px; font-size: 13px; align-self: flex-start; box-shadow: 0 4px 12px rgba(233,30,140,0.25); max-width: 80%; }
+    .sc-human { background: var(--rose-pale); border: 1px solid rgba(233,30,140,0.1); color: var(--ink); border-radius: 16px 16px 4px 16px; padding: 12px 16px; font-size: 13px; align-self: flex-end; max-width: 80%; }
+    .lang-toggle { display: flex; align-items: center; gap: 8px; margin-left: 8px; flex-shrink: 0; }
+    .lang-switch { display: flex; align-items: center; gap: 0; background: white; border: 1.5px solid var(--rose-border); border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+    .lang-btn { background: transparent; border: none; color: var(--muted); font-size: 11.5px; font-weight: 600; font-family: 'DM Mono', monospace; padding: 5px 11px; cursor: pointer; transition: all .15s; letter-spacing: .04em; }
+    .lang-btn:hover { color: var(--ink); }
+    .lang-btn.active { background: var(--rose); color: #fff; }
+    .lang-btn:first-child { border-right: 1.5px solid var(--rose-border); }
+
+    /* ===================== BLOG STYLES ===================== */
+    .blog-hero { padding: 72px 0 56px; background: linear-gradient(180deg, var(--bg-section) 0%, var(--bg) 100%); }
+    .blog-search-bar { display: flex; align-items: center; gap: 12px; max-width: 540px; margin: 32px auto 0; background: var(--white); border: 1.5px solid var(--rose-border); border-radius: 16px; padding: 8px 8px 8px 20px; box-shadow: var(--shadow-sm); }
+    .blog-search-bar input { flex: 1; border: none; outline: none; font-size: 14px; font-family: var(--font-body); color: var(--ink); background: transparent; }
+    .blog-search-bar input::placeholder { color: var(--muted-light); }
+    .blog-search-btn { height: 38px; padding: 0 18px; border-radius: 10px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font-display); transition: all .2s; white-space: nowrap; }
+    .blog-search-btn:hover { box-shadow: 0 6px 18px rgba(233,30,140,0.28); }
+    .blog-cats { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 24px; }
+    .blog-cat { padding: 7px 18px; border-radius: 999px; border: 1.5px solid var(--rose-border); background: var(--white); font-size: 12.5px; font-weight: 700; color: var(--muted); cursor: pointer; font-family: var(--font-display); transition: all .18s; box-shadow: var(--shadow-xs); }
+    .blog-cat:hover { border-color: var(--rose); color: var(--rose); }
+    .blog-cat.active { background: linear-gradient(135deg, var(--rose), var(--rose-mid)); border-color: transparent; color: #fff; box-shadow: 0 4px 14px rgba(233,30,140,0.22); }
+    .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 0; }
+    .blog-card { background: var(--white); border: 1px solid var(--rose-border-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; cursor: pointer; display: flex; flex-direction: column; }
+    .blog-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--rose-border); }
+    .blog-card-cover { width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; font-size: 52px; flex-shrink: 0; }
+    .blog-card-body { padding: 22px 24px 24px; flex: 1; display: flex; flex-direction: column; }
+    .blog-card-cat { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-display); margin-bottom: 12px; width: fit-content; }
+    .blog-card-title { font-family: var(--font-display); font-size: 18px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.25; color: var(--ink); margin-bottom: 10px; }
+    .blog-card-excerpt { font-size: 13px; color: var(--muted); line-height: 1.7; flex: 1; }
+    .blog-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rose-border-soft); }
+    .blog-card-meta { display: flex; align-items: center; gap: 8px; }
+    .blog-card-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); display: grid; place-items: center; font-size: 12px; color: #fff; font-weight: 700; font-family: var(--font-display); }
+    .blog-card-author { font-size: 12px; font-weight: 600; color: var(--ink); font-family: var(--font-display); }
+    .blog-card-date { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .blog-card-read { font-size: 12px; color: var(--rose); font-weight: 700; font-family: var(--font-display); display: flex; align-items: center; gap: 4px; }
+    .blog-featured { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; margin-bottom: 36px; }
+    .blog-featured-card { background: var(--white); border: 1px solid var(--rose-border-soft); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); overflow: hidden; transition: all 0.25s ease; cursor: pointer; }
+    .blog-featured-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--rose-border); }
+    .blog-featured-cover { width: 100%; aspect-ratio: 16/8; display: flex; align-items: center; justify-content: center; font-size: 80px; background: linear-gradient(135deg, var(--rose-pale), var(--rose-pastel)); }
+    .blog-featured-body { padding: 28px 32px 32px; }
+    .blog-featured-cat { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-display); margin-bottom: 14px; width: fit-content; }
+    .blog-featured-title { font-family: var(--font-display); font-size: clamp(20px, 2.8vw, 28px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; color: var(--ink); margin-bottom: 12px; }
+    .blog-featured-excerpt { font-size: 14px; color: var(--muted); line-height: 1.75; }
+    .blog-featured-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rose-border-soft); }
+    .blog-side { display: flex; flex-direction: column; gap: 16px; }
+    .blog-side-card { background: var(--white); border: 1px solid var(--rose-border-soft); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); overflow: hidden; transition: all 0.22s ease; cursor: pointer; display: flex; flex-direction: column; }
+    .blog-side-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--rose-border); }
+    .blog-side-cover { width: 100%; aspect-ratio: 16/7; display: flex; align-items: center; justify-content: center; font-size: 36px; background: linear-gradient(135deg, var(--rose-pale), var(--rose-pastel)); }
+    .blog-side-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+    .blog-side-cat { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-display); margin-bottom: 8px; width: fit-content; }
+    .blog-side-title { font-family: var(--font-display); font-size: 15px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.3; color: var(--ink); }
+    .blog-side-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .blog-side-date { font-size: 11px; color: var(--muted); }
+    .blog-side-read { font-size: 11px; color: var(--rose); font-weight: 700; font-family: var(--font-display); }
+    .blog-no-results { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .blog-no-results-icon { font-size: 48px; margin-bottom: 16px; }
+    .blog-no-results-text { font-size: 16px; font-family: var(--font-display); font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+
+    /* ARTICLE VIEW */
+    .article-back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; border: 1.5px solid var(--rose-border); background: var(--white); color: var(--rose); font-size: 13px; font-weight: 700; font-family: var(--font-display); cursor: pointer; transition: all .2s; margin-bottom: 32px; }
+    .article-back-btn:hover { background: var(--rose-pale); }
+    .article-shell { display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: start; }
+    .article-main { background: var(--white); border: 1px solid var(--rose-border-soft); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .article-cover { width: 100%; aspect-ratio: 16/7; display: flex; align-items: center; justify-content: center; font-size: 100px; }
+    .article-content { padding: 40px 44px 48px; }
+    .article-cat { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-display); margin-bottom: 16px; width: fit-content; }
+    .article-title { font-family: var(--font-display); font-size: clamp(26px, 4vw, 40px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; color: var(--ink); margin-bottom: 20px; }
+    .article-meta-bar { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid var(--rose-border-soft); border-bottom: 1px solid var(--rose-border-soft); margin-bottom: 32px; flex-wrap: wrap; }
+    .article-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+    .article-meta-item span { color: var(--ink); font-weight: 600; }
+    .article-body { font-size: 15px; line-height: 1.85; color: var(--ink-mid); }
+    .article-body h3 { font-family: var(--font-display); font-size: 20px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); margin: 32px 0 14px; }
+    .article-body p { margin-bottom: 18px; }
+    .article-body ul { padding-left: 20px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 8px; }
+    .article-body li { color: var(--ink-mid); }
+    .article-body li::marker { color: var(--rose); }
+    .article-body .article-highlight { background: linear-gradient(135deg, var(--rose-pale), var(--rose-pastel)); border-left: 4px solid var(--rose); border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 24px 0; font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.7; font-style: italic; }
+    .article-sidebar { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 88px; }
+    .article-sidebar-card { background: var(--white); border: 1px solid var(--rose-border-soft); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-xs); }
+    .article-sidebar-title { font-family: var(--font-display); font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 16px; letter-spacing: -0.02em; }
+    .article-related-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rose-border-soft); cursor: pointer; transition: background .15s; border-radius: 8px; }
+    .article-related-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .article-related-item:hover .article-related-title { color: var(--rose); }
+    .article-related-icon { font-size: 24px; flex-shrink: 0; width: 44px; height: 44px; border-radius: 10px; background: var(--rose-pale); display: grid; place-items: center; }
+    .article-related-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.4; transition: color .2s; }
+    .article-related-date { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .article-cta-card { background: linear-gradient(145deg, var(--rose-pale), var(--rose-pastel)); border: 1px solid rgba(233,30,140,0.18); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
+    .article-cta-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 10px; letter-spacing: -0.02em; }
+    .article-cta-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+    .article-cta-btn { display: block; width: 100%; height: 42px; border-radius: 12px; background: linear-gradient(135deg, var(--rose), var(--rose-mid)); color: #fff; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font-display); transition: all .2s; box-shadow: 0 4px 14px rgba(233,30,140,0.25); }
+    .article-cta-btn:hover { box-shadow: 0 8px 22px rgba(233,30,140,0.35); transform: translateY(-1px); }
+
+    /* Category color themes */
+    .cat-product { background: rgba(233,30,140,0.1); color: var(--rose); }
+    .cat-clinic { background: rgba(99,102,241,0.1); color: #6366f1; }
+    .cat-healthtech { background: rgba(16,185,129,0.1); color: #059669; }
+    .cat-guide { background: rgba(245,158,11,0.1); color: #d97706; }
+    .cat-news { background: rgba(239,68,68,0.1); color: #dc2626; }
+
+    @media (max-width: 1040px) {
+      .support-shell { grid-template-columns: 1fr; } .support-intro { position: static; }
+      .hero-grid, .prof-grid, .faq-shell, .cta-shell { grid-template-columns: 1fr; }
+      .how-grid, .product-grid { grid-template-columns: repeat(2, 1fr); }
+      .faq-intro-card { position: static; } .for-panel-grid { grid-template-columns: 1fr; gap: 32px; }
+      .blog-featured { grid-template-columns: 1fr; } .blog-grid { grid-template-columns: repeat(2, 1fr); }
+      .article-shell { grid-template-columns: 1fr; } .article-sidebar { position: static; }
+    }
+    @media (max-width: 720px) {
+      .section, .section-sm { padding: 64px 0; } .nav-links { display: none; } .btn-nav { display: none; }
+      .burger { display: flex; } .how-grid, .product-grid, .stats-row { grid-template-columns: 1fr; }
+      .cta-shell { padding: 28px; } .panel-feature { padding: 32px; } .field-row { grid-template-columns: 1fr; }
+      .hero { padding: 48px 0 56px; } .for-tab { padding: 8px 14px; font-size: 12px; }
+      .chat-msgs { min-height: 240px; max-height: 300px; } .lang-toggle { margin-left: 4px; } .lang-label { display: none; }
+      .blog-grid { grid-template-columns: 1fr; }
+      .article-content { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="container">
+      <div class="navbar-inner">
+        <a class="brand" href="#" onclick="showPage('main'); return false;">
+          <div class="brand-icon">N</div>
+          <div>
+            <div class="brand-text">Nexum</div>
+            <div class="brand-sub" data-uk="Медичний AI-асистент" data-en="Medical AI Assistant">Медичний AI-асистент</div>
+          </div>
+        </a>
+        <nav class="nav-links">
+          <a href="#" onclick="showPage('main'); return false;" data-uk="Головна" data-en="Home">Головна</a>
+          <a href="#" onclick="showForTab(0); return false;" data-uk="Для лікарів" data-en="For Doctors">Для лікарів</a>
+          <a href="#" onclick="showForTab(1); return false;" data-uk="Для інвесторів" data-en="For Investors">Для інвесторів</a>
+          <a href="#" onclick="showPage('blog'); return false;" data-uk="Блог" data-en="Blog">Блог</a>
+          <a href="#" onclick="showPage('faq'); return false;" data-uk='FAQ <span class="nav-arrow">&#8964;</span>' data-en='FAQ <span class="nav-arrow">&#8964;</span>'>FAQ <span class="nav-arrow">&#8964;</span></a>
+          <a href="#" onclick="showPage('support'); return false;" data-uk="Support" data-en="Support">Support</a>
+        </nav>
+        <div class="lang-switch">
+          <button class="lang-btn active" id="langUK" onclick="setLang('uk')">UK</button>
+          <button class="lang-btn" id="langEN" onclick="setLang('en')">EN</button>
+        </div>
+        <a href="#" class="btn-nav" onclick="goToCabinet(); return false;" data-uk="Вхід в кабінет →" data-en="Sign In →">Вхід в кабінет →</a>
+        <button class="burger" id="burgerBtn" aria-label="Menu" onclick="toggleMobileMenu()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="mobile-menu" id="mobileMenu">
+    <a href="#" onclick="showPage('main'); closeMobileMenu(); return false;" data-uk="Головна" data-en="Home">Головна</a>
+    <a href="#" onclick="showForTab(0); closeMobileMenu(); return false;" data-uk="Для лікарів" data-en="For Doctors">Для лікарів</a>
+    <a href="#" onclick="showForTab(1); closeMobileMenu(); return false;" data-uk="Для інвесторів" data-en="For Investors">Для інвесторів</a>
+    <a href="#" onclick="showPage('blog'); closeMobileMenu(); return false;" data-uk="Блог" data-en="Blog">Блог</a>
+    <a href="#" onclick="showPage('faq'); closeMobileMenu(); return false;" data-uk="FAQ" data-en="FAQ">FAQ</a>
+    <a href="#" onclick="showPage('support'); closeMobileMenu(); return false;" data-uk="Support" data-en="Support">Support</a>
+    <a href="https://nexum23222.onrender.com/login" class="btn-nav-mob" onclick="closeMobileMenu()" data-uk="Вхід в кабінет →" data-en="Sign In →">Вхід в кабінет →</a>
+  </nav>
+
+  <main id="top">
+
+    <!-- MAIN PAGE -->
+    <div id="page-main">
+      <section class="hero">
+        <div class="container">
+          <div class="hero-grid">
+            <div class="reveal">
+              <div class="pill"><span class="pill-dot"></span><span data-uk="Медичний AI-асистент" data-en="Medical AI Assistant">Медичний AI-асистент</span></div>
+              <h1 style="margin-top: 24px;" data-uk='Nexum: AI,<br>який слухає.<br><span class="accent">Лікарі,</span><br>які лікують.' data-en='Nexum: AI<br>that listens.<br><span class="accent">Doctors</span><br>that heal.'>
+                Nexum: AI,<br>який слухає.<br><span class="accent">Лікарі,</span><br>які лікують.
+              </h1>
+              <p class="lead" style="margin-top:24px; max-width:520px;" data-uk="Автоматизуйте збір анамнезу ще до початку прийому. Зменшуйте паперову рутину на 40% і зосереджуйтеся на клінічних рішеннях." data-en="Automate anamnesis collection before the appointment. Reduce paperwork by 40% and focus on clinical decisions.">Автоматизуйте збір анамнезу ще до початку прийому. Зменшуйте паперову рутину на 40% і зосереджуйтеся на клінічних рішеннях.</p>
+              <div class="hero-actions">
+                <a class="btn btn-primary" href="#beta" data-uk="Запросити бета-доступ" data-en="Request Beta Access">Запросити бета-доступ</a>
+                <a class="btn btn-outline" href="#product" data-uk="Переглянути продукт" data-en="View Product">Переглянути продукт</a>
+              </div>
+              <div class="stats-row">
+                <div class="stat-card"><div class="stat-num">40%</div><div class="stat-label" data-uk="менше паперової рутини до консультації" data-en="less paperwork before consultation">менше паперової рутини до консультації</div></div>
+                <div class="stat-card"><div class="stat-num">3–7 хв</div><div class="stat-label" data-uk="середній час проходження опитування" data-en="average survey completion time">середній час проходження опитування</div></div>
+                <div class="stat-card"><div class="stat-num">24/7</div><div class="stat-label" data-uk="доступність AI-збору даних для пацієнтів" data-en="AI data collection availability for patients">доступність AI-збору даних для пацієнтів</div></div>
+              </div>
+            </div>
+            <div class="hero-visual reveal">
+              <div class="chat-wrap">
+                <div class="chat-bar">
+                  <div class="chat-avatar">N</div>
+                  <div>
+                    <div class="chat-name">Nexum Bot</div>
+                    <div class="chat-sub" data-uk="Асистент · Клініка «Здоров'я»" data-en="Assistant · Health Clinic">Асистент · Клініка «Здоров'я»</div>
+                  </div>
+                  <div class="live-dot"></div>
+                </div>
+                <div class="chat-progress-bar"><div class="chat-fill" id="cdwFill" style="width:0%"></div></div>
+                <div class="chat-msgs" id="cdwMsgs"></div>
+                <div class="chat-footer">
+                  <div class="chat-hint" id="cdwHint" data-uk="Натисніть на варіант — спробуйте самі" data-en="Click an option — try it yourself">Натисніть на варіант — спробуйте самі</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="section" style="background: var(--bg-section);">
+        <div class="container">
+          <div class="section-head reveal">
+            <div class="pill"><span class="pill-dot"></span><span data-uk="Як це працює" data-en="How It Works">Як це працює</span></div>
+            <h2 style="margin-top: 20px;" data-uk="Покроковий процес від запрошення пацієнта до готового клінічного звіту." data-en="Step-by-step process from patient invitation to a ready clinical report.">Покроковий процес від запрошення пацієнта до готового клінічного звіту.</h2>
+            <p class="lead" data-uk="Nexum прибирає хаос з передвізитного етапу та дає лікарю готовий контекст ще до початку консультації." data-en="Nexum removes pre-visit chaos and gives the doctor ready context before the consultation starts.">Nexum прибирає хаос з передвізитного етапу та дає лікарю готовий контекст ще до початку консультації.</p>
+          </div>
+          <div class="how-grid">
+            <div class="how-card reveal"><div class="step-num">01</div><h3 data-uk="Пацієнт отримує посилання" data-en="Patient receives a link">Пацієнт отримує посилання</h3><p class="copy" style="margin-top: 12px;" data-uk="Клініка надсилає коротке цифрове опитування до прийому через зручний канал комунікації." data-en="The clinic sends a short digital survey before the visit via a convenient communication channel.">Клініка надсилає коротке цифрове опитування до прийому через зручний канал комунікації.</p></div>
+            <div class="how-card reveal"><div class="step-num">02</div><h3 data-uk="AI збирає анамнез" data-en="AI collects the anamnesis">AI збирає анамнез</h3><p class="copy" style="margin-top: 12px;" data-uk="Пацієнт описує симптоми звичайною мовою, а система задає уточнювальні запитання автоматично." data-en="The patient describes symptoms in plain language, and the system asks clarifying questions automatically.">Пацієнт описує симптоми звичайною мовою, а система задає уточнювальні запитання автоматично.</p></div>
+            <div class="how-card reveal"><div class="step-num">03</div><h3 data-uk="Формується звіт" data-en="Report is generated">Формується звіт</h3><p class="copy" style="margin-top: 12px;" data-uk="Nexum перетворює діалог у структурований медичний підсумок із ключовими деталями для лікаря." data-en="Nexum turns the conversation into a structured medical summary with key details for the doctor.">Nexum перетворює діалог у структурований медичний підсумок із ключовими деталями для лікаря.</p></div>
+            <div class="how-card reveal"><div class="step-num">04</div><h3 data-uk="Лікар бачить готові дані" data-en="Doctor sees ready data">Лікар бачить готові дані</h3><p class="copy" style="margin-top: 12px;" data-uk="Перед візитом лікар отримує готові дані у форматах PDF та DOCX для швидкого старту прийому." data-en="Before the visit, the doctor receives ready data in PDF and DOCX formats for a fast start.">Перед візитом лікар отримує готові дані у форматах PDF та DOCX для швидкого старту прийому.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="product" class="section">
+        <div class="container">
+          <div class="section-head reveal">
+            <div class="pill"><span class="pill-dot"></span><span data-uk="Проблема / Рішення" data-en="Problem / Solution">Проблема / Рішення</span></div>
+            <h2 style="margin-top: 20px;" data-uk="Перетворюйте розмови з пацієнтами на структурований медичний контекст." data-en="Turn patient conversations into structured medical context.">Перетворюйте розмови з пацієнтами на структурований медичний контекст.</h2>
+            <p class="lead" data-uk="Nexum стандартизує збір даних до візиту, генерацію звітів і передачу готового результату лікарю в одному інтерфейсі." data-en="Nexum standardizes pre-visit data collection, report generation, and ready result delivery to the doctor in one interface.">Nexum стандартизує збір даних до візиту, генерацію звітів і передачу готового результату лікарю в одному інтерфейсі.</p>
+          </div>
+          <div class="product-grid">
+            <div class="product-card reveal"><div class="icon-box">📋</div><h3 data-uk="Передвізитний анамнез" data-en="Pre-visit Anamnesis">Передвізитний анамнез</h3><p class="copy" data-uk="AI збирає скарги, симптоми й важливі уточнення природною мовою ще до початку консультації." data-en="AI collects complaints, symptoms, and key clarifications in natural language before the consultation begins.">AI збирає скарги, симптоми й важливі уточнення природною мовою ще до початку консультації.</p></div>
+            <div class="product-card reveal"><div class="icon-box">📊</div><h3 data-uk="Структуровані звіти" data-en="Structured Reports">Структуровані звіти</h3><p class="copy" data-uk="Кожна розмова перетворюється на готовий для лікаря підсумок із таймлайном симптомів і ключовими деталями." data-en="Every conversation becomes a ready summary with a symptom timeline and key details for the doctor.">Кожна розмова перетворюється на готовий для лікаря підсумок із таймлайном симптомів і ключовими деталями.</p></div>
+            <div class="product-card reveal"><div class="icon-box">📁</div><h3 data-uk="Готовий PDF / DOCX для лікаря" data-en="Ready PDF / DOCX for the Doctor">Готовий PDF / DOCX для лікаря</h3><p class="copy" data-uk="Після завершення опитування лікар отримує готові дані у форматах PDF та DOCX без ручного переписування." data-en="After the survey, the doctor receives ready data in PDF and DOCX formats without manual rewriting.">Після завершення опитування лікар отримує готові дані у форматах PDF та DOCX без ручного переписування.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" style="background: var(--bg-section);">
+        <div class="container">
+          <div class="prof-grid">
+            <div class="panel-feature reveal">
+              <div class="pill"><span class="pill-dot"></span><span data-uk="Для професіоналів" data-en="For Professionals">Для професіоналів</span></div>
+              <h2 style="margin-top: 24px;" data-uk='Створено для клінік, яким потрібні швидкість, <span class="accent">довіра</span> та чисті дані.' data-en='Built for clinics that need speed, <span class="accent">trust</span> and clean data.'>Створено для клінік, яким потрібні швидкість, <span class="accent">довіра</span> та чисті дані.</h2>
+              <p class="lead" style="margin-top: 20px;" data-uk="Від автоматизації збору даних до готових звітів: Nexum дає медичним командам надійний операційний шар перед кожним прийомом." data-en="From data collection automation to ready reports: Nexum gives medical teams a reliable operational layer before every appointment.">Від автоматизації збору даних до готових звітів: Nexum дає медичним командам надійний операційний шар перед кожним прийомом.</p>
+            </div>
+            <div class="accordion-list" id="profAccordion">
+              <div class="acc-item reveal"><button class="acc-trigger" type="button"><div><div class="acc-title" data-uk="Швидке впровадження" data-en="Fast Implementation">Швидке впровадження</div><div class="acc-sub" data-uk="Сценарії запуску без довгого технічного циклу та складного онбордингу." data-en="Launch scenarios without long technical cycles or complex onboarding.">Сценарії запуску без довгого технічного циклу та складного онбордингу.</div></div><div class="acc-icon">+</div></button><div class="acc-body"><p class="acc-body-text" data-uk="Nexum можна адаптувати під робочий процес клініки без перевантаження внутрішньої команди розробкою." data-en="Nexum can be adapted to the clinic's workflow without overloading the internal development team.">Nexum можна адаптувати під робочий процес клініки без перевантаження внутрішньої команди розробкою.</p><div class="acc-points"><div class="acc-point" data-uk="Швидкий старт для приватних практик і мультидисциплінарних клінік." data-en="Quick start for private practices and multidisciplinary clinics.">Швидкий старт для приватних практик і мультидисциплінарних клінік.</div><div class="acc-point" data-uk="Гнучке налаштування сценаріїв під спеціальність і тип прийому." data-en="Flexible scenario setup for specialty and appointment type.">Гнучке налаштування сценаріїв під спеціальність і тип прийому.</div></div></div></div>
+              <div class="acc-item reveal"><button class="acc-trigger" type="button"><div><div class="acc-title" data-uk="Якість клінічних даних" data-en="Clinical Data Quality">Якість клінічних даних</div><div class="acc-sub" data-uk="Структурований збір симптомів і уточнень ще до зустрічі з лікарем." data-en="Structured collection of symptoms and clarifications before the doctor visit.">Структурований збір симптомів і уточнень ще до зустрічі з лікарем.</div></div><div class="acc-icon">+</div></button><div class="acc-body"><p class="acc-body-text" data-uk="Система допомагає лікарю починати консультацію вже з готовим контекстом, а не з порожнього екрана." data-en="The system helps the doctor start the consultation with ready context, not a blank screen.">Система допомагає лікарю починати консультацію вже з готовим контекстом, а не з порожнього екрана.</p><div class="acc-points"><div class="acc-point" data-uk="Уточнювальні запитання формуються автоматично на основі симптомів." data-en="Clarifying questions are generated automatically based on symptoms.">Уточнювальні запитання формуються автоматично на основі симптомів.</div><div class="acc-point" data-uk="Фінальний звіт зводить діалог у читабельний медичний формат." data-en="The final report converts the dialogue into a readable medical format.">Фінальний звіт зводить діалог у читабельний медичний формат.</div></div></div></div>
+              <div class="acc-item reveal"><button class="acc-trigger" type="button"><div><div class="acc-title" data-uk="Готовий формат для роботи" data-en="Ready Format for Work">Готовий формат для роботи</div><div class="acc-sub" data-uk="Лікар одразу отримує результат у зрозумілому вигляді без ручного переписування." data-en="The doctor immediately receives the result in a clear format without manual rewriting.">Лікар одразу отримує результат у зрозумілому вигляді без ручного переписування.</div></div><div class="acc-icon">+</div></button><div class="acc-body"><p class="acc-body-text" data-uk="Готові дані можна переглядати та використовувати в повсякденній роботі як структурований XLSX-файл." data-en="Ready data can be viewed and used in daily work as a structured XLSX file.">Готові дані можна переглядати та використовувати в повсякденній роботі як структурований XLSX-файл.</p><div class="acc-points"><div class="acc-point" data-uk="Зрозумілий експорт для індивідуального лікаря або клініки." data-en="Clear export for an individual doctor or clinic.">Зрозумілий експорт для індивідуального лікаря або клініки.</div><div class="acc-point" data-uk="Швидкий доступ до симптомів, відповідей і медичного підсумку перед візитом." data-en="Quick access to symptoms, answers, and medical summary before the visit.">Швидкий доступ до симптомів, відповідей і медичного підсумку перед візитом.</div></div></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="beta" class="section" style="background: var(--bg-section); padding-top: 80px;">
+        <div class="container">
+          <div class="cta-shell reveal">
+            <div>
+              <div class="pill"><span class="pill-dot"></span><span data-uk="Реєстрація" data-en="Registration">Реєстрація</span></div>
+              <h2 style="margin-top: 24px;" data-uk='Підключіть AI-збір анамнезу до клініки <span class="accent">за 30 хвилин.</span>' data-en='Connect AI anamnesis collection to your clinic <span class="accent">in 30 minutes.</span>'>Підключіть AI-збір анамнезу до клініки <span class="accent">за 30 хвилин.</span></h2>
+              <p class="lead" style="margin-top: 20px;" data-uk="Від реєстрації до першого опитування — менше пів години. Лікарі входять за унікальним кодом." data-en="From registration to the first survey — less than half an hour. Doctors sign in with a unique code.">Від реєстрації до першого опитування — менше пів години. Лікарі входять за унікальним кодом.</p>
+              <div class="cta-steps">
+                <div class="cta-step"><div class="cta-step-num">1</div><div><div class="cta-step-title" data-uk="Заповніть анкету" data-en="Fill out the form">Заповніть анкету</div><div class="cta-step-desc" data-uk="Назва, спеціалізація, контакти клініки" data-en="Clinic name, specialization, contact details">Назва, спеціалізація, контакти клініки</div></div></div>
+                <div class="cta-step"><div class="cta-step-num">2</div><div><div class="cta-step-title" data-uk="Лікарі отримують коди" data-en="Doctors receive codes">Лікарі отримують коди</div><div class="cta-step-desc" data-uk="Унікальний код + пароль для кожного лікаря" data-en="Unique code + password for each doctor">Унікальний код + пароль для кожного лікаря</div></div></div>
+                <div class="cta-step"><div class="cta-step-num">3</div><div><div class="cta-step-title" data-uk="Вхід за кодом і старт" data-en="Sign in with code and start">Вхід за кодом і старт</div><div class="cta-step-desc" data-uk="Конструктор, пацієнти, аналітика — одразу" data-en="Builder, patients, analytics — right away">Конструктор, пацієнти, аналітика — одразу</div></div></div>
+                <div class="cta-step"><div class="cta-step-num">4</div><div><div class="cta-step-title" data-uk="Уже маєте акаунт?" data-en="Already have an account?">Уже маєте акаунт?</div><div class="cta-step-desc"><a href="https://nexum23222.onrender.com/login" style="color: var(--rose); font-weight: 700;" data-uk="Увійти в кабінет лікаря →" data-en="Sign in to doctor's cabinet →">Увійти в кабінет лікаря →</a></div></div></div>
+              </div>
+            </div>
+            <div class="reg-form">
+              <div class="reg-tabs">
+                <button class="reg-tab active" id="tab-clinic" onclick="switchTab('clinic')" data-uk="🏥 Клініка" data-en="🏥 Clinic">🏥 Клініка</button>
+                <button class="reg-tab" id="tab-doctor" onclick="switchTab('doctor')" data-uk="👨‍⚕️ Лікар" data-en="👨‍⚕️ Doctor">👨‍⚕️ Лікар</button>
+              </div>
+              <div class="reg-progress">
+                <div class="rp done" id="rp1"></div><div class="rp" id="rp2"></div><div class="rp" id="rp3"></div>
+              </div>
+              <div class="reg-body">
+                <div id="clinic-steps">
+                  <div class="reg-step active" id="cl-s1">
+                    <div class="field"><span class="field-label" data-uk="Назва клініки *" data-en="Clinic name *">Назва клініки *</span><input type="text" id="cl-name" data-uk="Медичний центр «Здоров'я»" data-en="Medical Center 'Health'" placeholder="Медичний центр «Здоров'я»"></div>
+                    <div class="field"><span class="field-label" data-uk="Спеціалізація *" data-en="Specialization *">Спеціалізація *</span>
+                      <select id="cl-spec">
+                        <option value="" data-uk="Оберіть..." data-en="Select...">Оберіть...</option>
+                        <option data-uk="Терапія / сімейна медицина" data-en="Therapy / Family medicine">Терапія / сімейна медицина</option>
+                        <option data-uk="Кардіологія" data-en="Cardiology">Кардіологія</option>
+                        <option data-uk="Гастроентерологія" data-en="Gastroenterology">Гастроентерологія</option>
+                        <option data-uk="Неврологія" data-en="Neurology">Неврологія</option>
+                        <option data-uk="Педіатрія" data-en="Pediatrics">Педіатрія</option>
+                        <option data-uk="Багатопрофільна" data-en="Multidisciplinary">Багатопрофільна</option>
+                      </select>
+                    </div>
+                    <div class="field-row">
+                      <div class="field" style="margin-bottom:0"><span class="field-label" data-uk="Місто *" data-en="City *">Місто *</span><input type="text" id="cl-city" data-uk="Київ" data-en="Kyiv" placeholder="Київ"></div>
+                      <div class="field" style="margin-bottom:0"><span class="field-label" data-uk="Лікарів" data-en="Doctors">Лікарів</span><select id="cl-count"><option>1–3</option><option>4–10</option><option>11–30</option><option>30+</option></select></div>
+                    </div>
+                    <div style="height:14px"></div>
+                    <div class="field"><span class="field-label" data-uk="Тарифний план" data-en="Pricing plan">Тарифний план</span><input type="text" value="Бета-тест" readonly style="background: var(--rose-pale); color: var(--rose); font-weight: 700; cursor: default; border-color: rgba(233,30,140,0.2);"></div>
+                    <div class="reg-actions"><button class="btn-next" onclick="clNext(2)" data-uk="Далі →" data-en="Next →">Далі →</button></div>
+                  </div>
+                  <div class="reg-step" id="cl-s2">
+                    <div class="field"><span class="field-label" data-uk="Відповідальна особа *" data-en="Contact person *">Відповідальна особа *</span><input type="text" id="cl-contact" data-uk="Олена Ткаченко" data-en="Elena Tkachenko" placeholder="Олена Ткаченко"></div>
+                    <div class="field"><span class="field-label" data-uk="Телефон *" data-en="Phone *">Телефон *</span><input type="tel" id="cl-phone" placeholder="+38 067 000 00 00"></div>
+                    <div class="field"><span class="field-label" data-uk="E-mail *" data-en="E-mail *">E-mail *</span><input type="email" id="cl-email" placeholder="clinic@example.com"></div>
+                    <div class="reg-actions"><button class="btn-back" onclick="clNext(1)">←</button><button class="btn-next" onclick="clNext(3)" data-uk="Далі →" data-en="Next →">Далі →</button></div>
+                  </div>
+                  <div class="reg-step" id="cl-s3">
+                    <div class="field"><span class="field-label" data-uk="Як дізнались про нас?" data-en="How did you hear about us?">Як дізнались про нас?</span>
+                      <select id="cl-source"><option value="" data-uk="Оберіть..." data-en="Select...">Оберіть...</option><option data-uk="Google" data-en="Google">Google</option><option data-uk="Рекомендація колеги" data-en="Colleague recommendation">Рекомендація колеги</option><option data-uk="Соцмережі" data-en="Social media">Соцмережі</option><option data-uk="Конференція" data-en="Conference">Конференція</option></select>
+                    </div>
+                    <div class="agree-row"><input type="checkbox" id="ag-cl" checked><label for="ag-cl" data-uk='Погоджуюсь з <a href="#">умовами використання</a> та <a href="#">політикою конфіденційності</a>' data-en='I agree to the <a href="#">terms of use</a> and <a href="#">privacy policy</a>'>Погоджуюсь з <a href="#">умовами використання</a> та <a href="#">політикою конфіденційності</a></label></div>
+                    <div class="reg-actions"><button class="btn-back" onclick="clNext(2)">←</button><button class="btn-next" onclick="submitReg()" data-uk="Надіслати ✓" data-en="Submit ✓">Надіслати ✓</button></div>
+                  </div>
+                </div>
+                <div id="doctor-steps" style="display:none;">
+                  <div class="reg-step active" id="dr-s1">
+                    <div class="field-row">
+                      <div class="field" style="margin-bottom:0"><span class="field-label" data-uk="Ім'я *" data-en="First name *">Ім'я *</span><input type="text" id="dr-fn" data-uk="Василь" data-en="John" placeholder="Василь"></div>
+                      <div class="field" style="margin-bottom:0"><span class="field-label" data-uk="Прізвище *" data-en="Last name *">Прізвище *</span><input type="text" id="dr-ln" data-uk="Ковальов" data-en="Smith" placeholder="Ковальов"></div>
+                    </div>
+                    <div style="height:14px"></div>
+                    <div class="field"><span class="field-label" data-uk="Спеціальність *" data-en="Specialty *">Спеціальність *</span>
+                      <select id="dr-spec"><option value="" data-uk="Оберіть..." data-en="Select...">Оберіть...</option><option data-uk="Терапевт" data-en="General Practitioner">Терапевт</option><option data-uk="Кардіолог" data-en="Cardiologist">Кардіолог</option><option data-uk="Гастроентеролог" data-en="Gastroenterologist">Гастроентеролог</option><option data-uk="Невролог" data-en="Neurologist">Невролог</option><option data-uk="Педіатр" data-en="Pediatrician">Педіатр</option><option data-uk="Психіатр" data-en="Psychiatrist">Психіатр</option></select>
+                    </div>
+                    <div class="field"><span class="field-label" data-uk="Клініка" data-en="Clinic">Клініка</span><input type="text" id="dr-clinic" data-uk="Або «Приватний кабінет»" data-en="Or 'Private Practice'" placeholder="Або «Приватний кабінет»"></div>
+                    <div class="field"><span class="field-label" data-uk="Тарифний план" data-en="Pricing plan">Тарифний план</span><input type="text" value="Бета-тест" readonly style="background: var(--rose-pale); color: var(--rose); font-weight: 700; cursor: default; border-color: rgba(233,30,140,0.2);"></div>
+                    <div class="reg-actions"><button class="btn-next" onclick="drNext(2)" data-uk="Далі →" data-en="Next →">Далі →</button></div>
+                  </div>
+                  <div class="reg-step" id="dr-s2">
+                    <div class="field"><span class="field-label" data-uk="Телефон *" data-en="Phone *">Телефон *</span><input type="tel" id="dr-phone" placeholder="+38 067 000 00 00"></div>
+                    <div class="field"><span class="field-label" data-uk="E-mail *" data-en="E-mail *">E-mail *</span><input type="email" id="dr-email" placeholder="doctor@example.com"></div>
+                    <div class="field"><span class="field-label" data-uk="Telegram" data-en="Telegram">Telegram</span><input type="text" id="dr-tg" placeholder="@username"></div>
+                    <div class="reg-actions"><button class="btn-back" onclick="drNext(1)">←</button><button class="btn-next" onclick="drNext(3)" data-uk="Далі →" data-en="Next →">Далі →</button></div>
+                  </div>
+                  <div class="reg-step" id="dr-s3">
+                    <div class="field"><span class="field-label" data-uk="Як дізнались про нас?" data-en="How did you hear about us?">Як дізнались про нас?</span>
+                      <select id="dr-source"><option value="" data-uk="Оберіть..." data-en="Select...">Оберіть...</option><option data-uk="Google" data-en="Google">Google</option><option data-uk="Рекомендація колеги" data-en="Colleague recommendation">Рекомендація колеги</option><option data-uk="Соцмережі" data-en="Social media">Соцмережі</option><option data-uk="Конференція" data-en="Conference">Конференція</option></select>
+                    </div>
+                    <div class="agree-row"><input type="checkbox" id="ag-dr" checked><label for="ag-dr" data-uk='Погоджуюсь з <a href="#">умовами використання</a> та <a href="#">політикою конфіденційності</a>' data-en='I agree to the <a href="#">terms of use</a> and <a href="#">privacy policy</a>'>Погоджуюсь з <a href="#">умовами використання</a> та <a href="#">політикою конфіденційності</a></label></div>
+                    <div class="reg-actions"><button class="btn-back" onclick="drNext(2)">←</button><button class="btn-next" onclick="submitReg()" data-uk="Надіслати ✓" data-en="Submit ✓">Надіслати ✓</button></div>
+                  </div>
+                </div>
+                <div class="reg-ok" id="reg-ok" style="display:none;">
+                  <div class="reg-ok-icon">🎉</div>
+                  <div class="reg-ok-title" data-uk="Заявку отримано!" data-en="Application received!">Заявку отримано!</div>
+                  <div class="reg-ok-desc" data-uk="Ми зв'яжемось з вами найближчим часом і надішлемо коди для входу лікарів." data-en="We will contact you shortly and send login codes for your doctors.">Ми зв'яжемось з вами найближчим часом і надішлемо коди для входу лікарів.</div>
+                  <a href="https://nexum23222.onrender.com/login" class="reg-ok-link" data-uk="Увійти в кабінет →" data-en="Sign In →">Увійти в кабінет →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- DOCTORS PAGE -->
+    <div id="page-doctors" style="display:none;">
+      <section class="section" style="background: var(--bg-section);">
+        <div class="container">
+          <div class="section-head reveal">
+            <div class="pill"><span class="pill-dot"></span><span data-uk="Для лікарів" data-en="For Doctors">Для лікарів</span></div>
+            <h2 style="margin-top: 20px;" data-uk="Почніть прийом з готовим контекстом, а не з порожнього екрана." data-en="Start your appointment with ready context, not a blank screen.">Почніть прийом з готовим контекстом, а не з порожнього екрана.</h2>
+            <p class="lead" data-uk="Nexum збирає анамнез до вашого візиту — ви входите в кабінет вже знаючи головне." data-en="Nexum collects the anamnesis before your visit — you enter the office already knowing what matters.">Nexum збирає анамнез до вашого візиту — ви входите в кабінет вже знаючи головне.</p>
+          </div>
+          <div class="for-panel-grid" style="margin-top: 56px; gap: 64px;">
+            <div class="for-panel-copy">
+              <div class="for-feature-list" style="margin-top:0;">
+                <div class="for-feature-item"><span class="for-feature-icon">⚡</span><div><strong data-uk="Швидкий старт" data-en="Quick Start">Швидкий старт</strong><p data-uk="Запустіть бот для пацієнтів за 30 хвилин без ІТ-команди." data-en="Launch the patient bot in 30 minutes without an IT team.">Запустіть бот для пацієнтів за 30 хвилин без ІТ-команди.</p></div></div>
+                <div class="for-feature-item"><span class="for-feature-icon">📋</span><div><strong data-uk="Готовий XLSX перед прийомом" data-en="Ready XLSX Before the Appointment">Готовий XLSX перед прийомом</strong><p data-uk="Скарги, симптоми, тривалість — все зібрано і структуровано." data-en="Complaints, symptoms, duration — all collected and structured.">Скарги, симптоми, тривалість — все зібрано і структуровано.</p></div></div>
+                <div class="for-feature-item"><span class="for-feature-icon">🔗</span><div><strong data-uk="Одне посилання для пацієнта" data-en="One Link for the Patient">Одне посилання для пацієнта</strong><p data-uk="Пацієнт заповнює опитування зі свого телефону — без реєстрацій." data-en="The patient fills out the survey from their phone — no registration needed.">Пацієнт заповнює опитування зі свого телефону — без реєстрацій.</p></div></div>
+              </div>
+              <a class="btn btn-primary" href="#" onclick="goToRegistration(); return false;" style="margin-top: 28px;" data-uk="Спробувати безкоштовно" data-en="Try for Free">Спробувати безкоштовно</a>
+            </div>
+            <div>
+              <div class="chat-wrap">
+                <div class="chat-bar"><div class="chat-avatar">N</div><div><div class="chat-name">Nexum Bot</div><div class="chat-sub" data-uk="Збір анамнезу · Онлайн" data-en="Anamnesis Collection · Online">Збір анамнезу · Онлайн</div></div><div class="ready-badge" style="margin-left:auto;" data-uk="Активний" data-en="Active">Активний</div></div>
+                <div style="display:flex;flex-direction:column;gap:10px;padding:20px;max-height:280px;overflow-y:auto;">
+                  <div class="sc-bot" data-uk="Доброго дня! Яка основна причина вашого звернення сьогодні?" data-en="Good day! What is the main reason for your visit today?">Доброго дня! Яка основна причина вашого звернення сьогодні?</div>
+                  <div class="sc-human" data-uk="Болить голова вже третій день, і підвищений тиск." data-en="I've had a headache for three days, and high blood pressure.">Болить голова вже третій день, і підвищений тиск.</div>
+                  <div class="sc-bot" data-uk="Зрозуміло. Оцініть інтенсивність болю від 1 до 10?" data-en="I see. Rate the pain intensity from 1 to 10?">Зрозуміло. Оцініть інтенсивність болю від 1 до 10?</div>
+                  <div class="sc-human" data-uk="Десь на 7. Болить скронями, пульсуючий біль." data-en="About 7. Temples hurt, pulsating pain.">Десь на 7. Болить скронями, пульсуючий біль.</div>
+                </div>
+                <div style="padding:14px 20px;border-top:1px solid var(--rose-border-soft);background:var(--rose-pale);font-size:11px;color:var(--muted);text-align:center;" data-uk="✅ Анамнез зібрано · Лікар отримав XLSX-звіт" data-en="✅ Anamnesis collected · Doctor received XLSX report">✅ Анамнез зібрано · Лікар отримав XLSX-звіт</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- INVESTORS PAGE -->
+    <div id="page-investors" style="display:none;">
+      <section class="section" style="background: var(--bg-section);">
+        <div class="container">
+          <div class="section-head reveal">
+            <div class="pill"><span class="pill-dot"></span><span data-uk="Для інвесторів" data-en="For Investors">Для інвесторів</span></div>
+            <h2 style="margin-top: 20px;" data-uk="Healthtech із реальним застосуванням і зростаючою базою клінік." data-en="Healthtech with real application and a growing clinic base.">Healthtech із реальним застосуванням і зростаючою базою клінік.</h2>
+            <p class="lead" data-uk="Nexum — це B2B SaaS для медицини з готовою монетизаційною моделлю." data-en="Nexum is a B2B SaaS for healthcare with a ready monetization model.">Nexum — це B2B SaaS для медицини з готовою монетизаційною моделлю.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 56px;">
+            <div class="stat-card"><div class="stat-num">€2.1B</div><div class="stat-label" data-uk="Ринок digital health UA+DACH" data-en="Digital health market UA+DACH">Ринок digital health UA+DACH</div></div>
+            <div class="stat-card"><div class="stat-num">67%</div><div class="stat-label" data-uk="Клінік без цифрового передзбору" data-en="Clinics without digital pre-collection">Клінік без цифрового передзбору</div></div>
+            <div class="stat-card"><div class="stat-num">3×</div><div class="stat-label" data-uk="Повернення лікарів після першого місяця" data-en="Doctor retention after first month">Повернення лікарів після першого місяця</div></div>
+            <div class="stat-card"><div class="stat-num">€49+</div><div class="stat-label" data-uk="Середній ARPU / лікар / міс." data-en="Average ARPU / doctor / month">Середній ARPU / лікар / міс.</div></div>
+          </div>
+          <div style="text-align: center; margin-top: 56px;"><a class="btn btn-primary" href="#" onclick="showPage('support'); return false;" data-uk="Зв'язатися з командою →" data-en="Contact the Team →">Зв'язатися з командою →</a></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- FOR PAGE -->
+    <div id="page-for" style="display:none;"></div>
+
+    <!-- BLOG PAGE -->
+    <div id="page-blog" style="display:none;">
+      <div id="blog-list-view">
+        <section class="blog-hero">
+          <div class="container">
+            <div class="section-head reveal">
+              <div class="pill"><span class="pill-dot"></span><span data-uk="Блог Nexum" data-en="Nexum Blog">Блог Nexum</span></div>
+              <h2 style="margin-top: 18px;" data-uk='Думки та матеріали про <span class="accent">медичні AI-технології</span> та майбутнє клінік.' data-en='Insights on <span class="accent">medical AI</span> and the future of clinics.'>Думки та матеріали про <span class="accent">медичні AI-технології</span> та майбутнє клінік.</h2>
+              <div class="blog-search-bar">
+                <input type="text" id="blogSearchInput" data-uk="Пошук статей..." data-en="Search articles..." placeholder="Пошук статей..." oninput="filterBlog()">
+                <button class="blog-search-btn" data-uk="Знайти" data-en="Search">Знайти</button>
+              </div>
+              <div class="blog-cats" id="blogCats">
+                <button class="blog-cat active" onclick="setBlogCat('all', this)" data-uk="Всі" data-en="All">Всі</button>
+                <button class="blog-cat" onclick="setBlogCat('product', this)" data-uk="🚀 Продукт" data-en="🚀 Product">🚀 Продукт</button>
+                <button class="blog-cat" onclick="setBlogCat('clinic', this)" data-uk="🏥 Клініки" data-en="🏥 Clinics">🏥 Клініки</button>
+                <button class="blog-cat" onclick="setBlogCat('healthtech', this)" data-uk="💡 Healthtech" data-en="💡 Healthtech">💡 Healthtech</button>
+                <button class="blog-cat" onclick="setBlogCat('guide', this)" data-uk="📖 Гайди" data-en="📖 Guides">📖 Гайди</button>
+                <button class="blog-cat" onclick="setBlogCat('news', this)" data-uk="📢 Новини" data-en="📢 News">📢 Новини</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="section-sm" style="padding-top: 0;">
+          <div class="container">
+            <div id="blogFeaturedSection" class="blog-featured reveal"></div>
+            <div id="blogGrid" class="blog-grid reveal"></div>
+            <div id="blogNoResults" class="blog-no-results" style="display:none;">
+              <div class="blog-no-results-icon">🔍</div>
+              <div class="blog-no-results-text" data-uk="Статей не знайдено" data-en="No articles found">Статей не знайдено</div>
+              <p class="copy" data-uk="Спробуйте інший запит або оберіть іншу категорію." data-en="Try a different search query or select another category.">Спробуйте інший запит або оберіть іншу категорію.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ARTICLE VIEW -->
+      <div id="blog-article-view" style="display:none;">
+        <section class="section-sm">
+          <div class="container">
+            <button class="article-back-btn" onclick="showBlogList()">← <span data-uk="Назад до блогу" data-en="Back to Blog">Назад до блогу</span></button>
+            <div class="article-shell">
+              <div class="article-main">
+                <div class="article-cover" id="articleCover"></div>
+                <div class="article-content">
+                  <div class="article-cat" id="articleCat"></div>
+                  <h1 class="article-title" id="articleTitle"></h1>
+                  <div class="article-meta-bar" id="articleMeta"></div>
+                  <div class="article-body" id="articleBody"></div>
+                </div>
+              </div>
+              <div class="article-sidebar">
+                <div class="article-sidebar-card">
+                  <div class="article-sidebar-title" data-uk="Читайте також" data-en="Also Read">Читайте також</div>
+                  <div id="articleRelated"></div>
+                </div>
+                <div class="article-cta-card">
+                  <div class="article-cta-title" data-uk="Спробуйте Nexum безкоштовно" data-en="Try Nexum for Free">Спробуйте Nexum безкоштовно</div>
+                  <div class="article-cta-desc" data-uk="Автоматизуйте збір анамнезу у своїй клініці за 30 хвилин." data-en="Automate anamnesis collection in your clinic in 30 minutes.">Автоматизуйте збір анамнезу у своїй клініці за 30 хвилин.</div>
+                  <button class="article-cta-btn" onclick="goToRegistration()" data-uk="Зареєструватись →" data-en="Register →">Зареєструватись →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- FAQ PAGE -->
+    <div id="page-faq" style="display:none;">
+      <section id="faq" class="section">
+        <div class="container">
+          <div class="faq-shell">
+            <div>
+              <div class="faq-intro-card">
+                <div class="pill"><span class="pill-dot"></span><span data-uk="FAQ" data-en="FAQ">FAQ</span></div>
+                <h2 style="margin-top: 20px;" data-uk="Часті запитання від клінік перед запуском." data-en="Frequently asked questions from clinics before launch.">Часті запитання від клінік перед запуском.</h2>
+                <p class="lead" style="margin-top: 18px;" data-uk="Ми зібрали ключові питання, які найчастіше виникають у медичних команд перед підключенням Nexum." data-en="We collected the key questions that most often arise in medical teams before connecting Nexum.">Ми зібрали ключові питання, які найчастіше виникають у медичних команд перед підключенням Nexum.</p>
+              </div>
+            </div>
+            <div class="accordion-list">
+              <div class="acc-item"><button class="acc-trigger" type="button"><div><div class="acc-title" data-uk="Nexum допомагає лікарю, а не замінює його опитування" data-en="Nexum assists the doctor — it doesn't replace their own examination">Nexum допомагає лікарю, а не замінює його опитування</div><div class="acc-sub" data-uk="Ми збираємо лише частину скарг і анамнезу. Лікар обов'язково доопитує пацієнта особисто." data-en="We collect only part of the complaints and history. The doctor must personally conduct a follow-up interview.">Ми збираємо лише частину скарг і анамнезу. Лікар обов'язково доопитує пацієнта особисто.</div></div><div class="acc-icon">+</div></button><div class="acc-body"><p class="acc-body-text" data-uk="Nexum — це інструмент підготовки, а не заміна клінічного діалогу." data-en="Nexum is a preparation tool, not a replacement for clinical dialogue.">Nexum — це інструмент підготовки, а не заміна клінічного діалогу.</p></div></div>
+              <div class="acc-item"><button class="acc-trigger" type="button"><div><div class="acc-title" data-uk="Чи замінює Nexum лікаря?" data-en="Does Nexum replace a doctor?">Чи замінює Nexum лікаря?</div><div class="acc-sub" data-uk="Ні, система готує контекст, але не приймає клінічних рішень." data-en="No, the system prepares context but makes no clinical decisions.">Ні, система готує контекст, але не приймає клінічних рішень.</div></div><div class="acc-icon">+</div></button><div class="acc-body"><p class="acc-body-text" data-uk="Nexum автоматизує підготовчий етап. Діагностика та рішення повністю залишаються за лікарем." data-en="Nexum automates the preparatory stage. Diagnosis and decisions remain entirely with the doctor.">Nexum автоматизує підготовчий етап. Діагностика та рішення повністю залишаються за лікарем.</p></div></div>
+              <div class="acc-item"><button class="acc-trigger" type="button"><div><div class="acc-title" data-uk="Скільки часу займає запуск?" data-en="How long does launch take?">Скільки часу займає запуск?</div><div class="acc-sub" data-uk="Базовий сценарій можна запустити дуже швидко." data-en="The basic scenario can be launched very quickly.">Базовий сценарій можна запустити дуже швидко.</div></div><div class="acc-icon">+</div></button><div class="acc-body"><p class="acc-body-text" data-uk="У більшості випадків запуск складається з налаштування сценарію та підключення доступів для команди." data-en="In most cases, launch consists of setting up the scenario and connecting access for the team.">У більшості випадків запуск складається з налаштування сценарію та підключення доступів для команди.</p></div></div>
+              <div class="acc-item"><button class="acc-trigger" type="button"><div><div class="acc-title" data-uk="Чи можна адаптувати сценарій під клініку?" data-en="Can the scenario be adapted for the clinic?">Чи можна адаптувати сценарій під клініку?</div><div class="acc-sub" data-uk="Так, Nexum має сенс саме тоді, коли відображає ваш реальний процес." data-en="Yes, Nexum makes sense precisely when it reflects your real process.">Так, Nexum має сенс саме тоді, коли відображає ваш реальний процес.</div></div><div class="acc-icon">+</div></button><div class="acc-body"><p class="acc-body-text" data-uk="Ми можемо змінювати логіку опитування, спеціалізовані питання та формат звіту відповідно до вашої спеціальності." data-en="We can change the survey logic, specialized questions, and report format according to your specialty.">Ми можемо змінювати логіку опитування, спеціалізовані питання та формат звіту відповідно до вашої спеціальності.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SUPPORT PAGE -->
+    <div id="page-support" style="display:none;">
+      <section class="section" style="background: var(--bg-section);">
+        <div class="container">
+          <div class="support-shell">
+            <div class="support-intro">
+              <div class="pill"><span class="pill-dot"></span><span data-uk="Підтримка" data-en="Support">Підтримка</span></div>
+              <h2 style="margin-top: 20px;" data-uk='Маєте питання?<br>Ми <span class="accent">на зв\'язку.</span>' data-en='Have questions?<br>We are <span class="accent">here for you.</span>'>Маєте питання?<br>Ми <span class="accent">на зв'язку.</span></h2>
+              <p class="lead" style="margin-top: 18px;" data-uk="Напишіть нам — відповімо протягом одного робочого дня." data-en="Write to us — we'll respond within one business day.">Напишіть нам — відповімо протягом одного робочого дня.</p>
+              <div class="support-contacts">
+                <div class="support-contact-item"><div class="support-contact-icon">💬</div><div><div class="support-contact-title" data-uk="Загальні питання" data-en="General Questions">Загальні питання</div><div class="support-contact-desc" data-uk="Про продукт, можливості, бета-доступ" data-en="About the product, features, beta access">Про продукт, можливості, бета-доступ</div></div></div>
+                <div class="support-contact-item"><div class="support-contact-icon">🛠</div><div><div class="support-contact-title" data-uk="Технічна підтримка" data-en="Technical Support">Технічна підтримка</div><div class="support-contact-desc" data-uk="Проблеми з роботою, налаштуванням" data-en="Issues with functionality or setup">Проблеми з роботою, налаштуванням</div></div></div>
+                <div class="support-contact-item"><div class="support-contact-icon">🤝</div><div><div class="support-contact-title" data-uk="Партнерство" data-en="Partnership">Партнерство</div><div class="support-contact-desc" data-uk="Клініки, інтеграції, спільні проекти" data-en="Clinics, integrations, joint projects">Клініки, інтеграції, спільні проекти</div></div></div>
+              </div>
+              <div class="support-socials">
+                <span style="font-size:13px; color:var(--muted); font-weight:600;" data-uk="Також у соцмережах:" data-en="Also on social media:">Також у соцмережах:</span>
+                <a href="https://www.instagram.com/nexum_health/" target="_blank" rel="noreferrer" class="support-social-link">Instagram</a>
+                <a href="https://www.threads.com/@nexum_health" target="_blank" rel="noreferrer" class="support-social-link">Threads</a>
+              </div>
+            </div>
+            <div class="support-form-wrap">
+              <div class="support-form-header">
+                <div class="support-form-title" data-uk="Надіслати повідомлення" data-en="Send a Message">Надіслати повідомлення</div>
+                <div class="support-form-sub" data-uk="Заповніть форму — ми відповімо на вашу пошту" data-en="Fill out the form — we'll reply to your email">Заповніть форму — ми відповімо на вашу пошту</div>
+              </div>
+              <div class="support-topics">
+                <button class="stopic active" onclick="selectTopic(this,'General question')" data-uk="💬 Загальне" data-en="💬 General">💬 Загальне</button>
+                <button class="stopic" onclick="selectTopic(this,'Technical issue')" data-uk="🛠 Техпідтримка" data-en="🛠 Tech Support">🛠 Техпідтримка</button>
+                <button class="stopic" onclick="selectTopic(this,'Partnership')" data-uk="🤝 Партнерство" data-en="🤝 Partnership">🤝 Партнерство</button>
+                <button class="stopic" onclick="selectTopic(this,'Other')" data-uk="✉️ Інше" data-en="✉️ Other">✉️ Інше</button>
+              </div>
+              <input type="hidden" id="sp-topic" value="General question">
+              <div class="support-form-body" id="supportFormBody">
+                <div class="field-row">
+                  <div class="field" style="margin-bottom:0"><span class="field-label" data-uk="Ім'я *" data-en="Name *">Ім'я *</span><input type="text" id="sp-name" data-uk="Ваше ім'я" data-en="Your name" placeholder="Ваше ім'я"></div>
+                  <div class="field" style="margin-bottom:0"><span class="field-label" data-uk="E-mail *" data-en="E-mail *">E-mail *</span><input type="email" id="sp-email" placeholder="your@email.com"></div>
+                </div>
+                <div style="height:14px"></div>
+                <div class="field"><span class="field-label" data-uk="Повідомлення *" data-en="Message *">Повідомлення *</span><textarea id="sp-msg" data-uk="Опишіть ваше питання або проблему детально..." data-en="Describe your question or issue in detail..." placeholder="Опишіть ваше питання або проблему детально..."></textarea></div>
+                <button class="support-submit" onclick="submitSupport()" data-uk="Надіслати повідомлення →" data-en="Send Message →">Надіслати повідомлення →</button>
+              </div>
+              <div class="support-ok" id="supportOk" style="display:none;">
+                <div class="support-ok-icon">✅</div>
+                <div class="support-ok-title" data-uk="Повідомлення надіслано!" data-en="Message Sent!">Повідомлення надіслано!</div>
+                <div class="support-ok-desc" data-uk="Дякуємо за звернення. Відповімо протягом одного робочого дня." data-en="Thank you for reaching out. We will respond within one business day.">Дякуємо за звернення. Відповімо протягом одного робочого дня.</div>
+                <button class="support-ok-btn" onclick="resetSupport()" data-uk="Надіслати ще одне" data-en="Send Another">Надіслати ще одне</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <span class="footer-copy" data-uk="Nexum створений для безпечного та сучасного медичного передзбору даних." data-en="Nexum is built for safe and modern medical pre-collection of data.">Nexum створений для безпечного та сучасного медичного передзбору даних.</span>
+        <div class="socials">
+          <span style="font-size: 13px; color: var(--muted);" data-uk="Соцмережі:" data-en="Social media:">Соцмережі:</span>
+          <a href="https://www.instagram.com/nexum_health/" target="_blank" rel="noreferrer">Instagram</a>
+          <a href="https://www.threads.com/@nexum_health" target="_blank" rel="noreferrer">Threads</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ===================== BLOG DATA ===================== */
+const BLOG_ARTICLES_STATIC = [
+      {
+        id: 1,
+        cat: 'product',
+        catLabel: { uk: '🚀 Продукт', en: '🚀 Product' },
+        catClass: 'cat-product',
+        icon: '🤖',
+        coverBg: 'linear-gradient(135deg, #FFF0F8, #FFE4F3)',
+        featured: true,
+        title: { uk: 'Як Nexum скорочує час на передвізитний збір даних на 40%', en: 'How Nexum Reduces Pre-Visit Data Collection Time by 40%' },
+        excerpt: { uk: 'Розповідаємо, як AI-асистент автоматизує анамнез і звільняє лікарів від паперової рутини ще до початку прийому.', en: 'We explain how the AI assistant automates anamnesis and frees doctors from paperwork before the appointment even begins.' },
+        author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+        authorInitial: 'N',
+        date: { uk: '10 червня 2026', en: 'June 10, 2026' },
+        readTime: { uk: '5 хв читання', en: '5 min read' },
+        body: {
+          uk: `<p>Лікарі витрачають в середньому 15–20 хвилин на збір базового анамнезу під час кожного прийому. Множте це на 20–30 пацієнтів на день — і ви отримаєте до 7 годин чистого часу щотижня, яке йде не на лікування, а на заповнення таблиць і перепитування про симптоми.</p>
+<h3>Де втрачається час?</h3>
+<p>Більшість клінік досі збирають анамнез вже під час прийому. Пацієнт приходить — лікар запитує про скарги, тривалість, хронічні захворювання, алергії та ліки. Це стандартна процедура, але вона займає дорогоцінний час консультації.</p>
+<div class="article-highlight">«Я витрачав перші 10 хвилин кожного прийому на те, щоб зрозуміти, навіщо людина взагалі прийшла. Nexum дав мені можливість починати одразу з клінічної частини.» — Лікар-терапевт, Київ</div>
+<h3>Як Nexum вирішує це</h3>
+<p>Nexum надсилає пацієнту коротке посилання на опитування за 1–24 години до прийому. Пацієнт відповідає зручним для себе способом — природною мовою або обираючи варіанти. AI задає уточнювальні запитання автоматично.</p>
+<ul>
+<li>Збір базових скарг і симптомів до прийому</li>
+<li>Автоматичні уточнювальні запитання на основі відповідей</li>
+<li>Готовий структурований звіт для лікаря у форматі PDF/DOCX</li>
+<li>Інтеграція в наявний робочий процес без ІТ-команди</li>
+</ul>
+<h3>Результати бета-тестування</h3>
+<p>За даними бета-тесту з реальними клініками, лікарі відзначають скорочення часу на передвізитний збір даних у середньому на 38–42%. Це дозволяє або прийняти більше пацієнтів, або приділити більше часу кожному.</p>`,
+          en: `<p>Doctors spend an average of 15–20 minutes collecting basic anamnesis during each appointment. Multiply that by 20–30 patients per day and you get up to 7 hours weekly going not toward treatment, but toward filling out tables and asking about symptoms.</p>
+<h3>Where does time get lost?</h3>
+<p>Most clinics still collect anamnesis during the appointment itself. The patient arrives — the doctor asks about complaints, duration, chronic conditions, allergies, and medications. This is standard procedure, but it consumes precious consultation time.</p>
+<div class="article-highlight">"I spent the first 10 minutes of every appointment figuring out why the person came in at all. Nexum gave me the ability to start directly with the clinical part." — General Practitioner, Kyiv</div>
+<h3>How Nexum Solves This</h3>
+<p>Nexum sends the patient a short survey link 1–24 hours before the appointment. The patient responds in a way that's convenient for them — in natural language or by selecting options. AI asks clarifying questions automatically.</p>
+<ul>
+<li>Collection of basic complaints and symptoms before the appointment</li>
+<li>Automatic clarifying questions based on responses</li>
+<li>Ready structured report for the doctor in PDF/DOCX format</li>
+<li>Integration into existing workflow without an IT team</li>
+</ul>
+<h3>Beta Testing Results</h3>
+<p>According to beta testing data with real clinics, doctors report a reduction in pre-visit data collection time by an average of 38–42%. This allows either receiving more patients or dedicating more time to each one.</p>`
+        }
+      },
+      {
+        id: 2,
+        cat: 'clinic',
+        catLabel: { uk: '🏥 Клініки', en: '🏥 Clinics' },
+        catClass: 'cat-clinic',
+        icon: '🏥',
+        coverBg: 'linear-gradient(135deg, #EEF2FF, #E0E7FF)',
+        featured: true,
+        featuredSide: true,
+        title: { uk: 'Кейс: як сімейна клініка скоротила паперову роботу за місяць', en: 'Case Study: How a Family Clinic Cut Paperwork in One Month' },
+        excerpt: { uk: 'Реальна історія клініки з Києва, яка впровадила Nexum і вже через 3 тижні побачила перші результати.', en: 'A real story of a Kyiv clinic that implemented Nexum and saw first results after just 3 weeks.' },
+        author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+        authorInitial: 'N',
+        date: { uk: '2 червня 2026', en: 'June 2, 2026' },
+        readTime: { uk: '4 хв читання', en: '4 min read' },
+        body: {
+          uk: `<p>Сімейна клініка в Києві з командою із 5 лікарів зіткнулась із типовою проблемою: лікарі витрачали занадто багато часу на початку кожного прийому, збираючи базові дані. Адміністратори не встигали підготувати картки. Черги розтягувались.</p>
+<h3>Ситуація до впровадження</h3>
+<p>Клініка приймала близько 80 пацієнтів на день. Кожен лікар в середньому витрачав 12–15 хвилин на початковий збір даних. Документація велась частково у паперовому вигляді, частково — в Excel-таблицях без стандарту.</p>
+<h3>Впровадження Nexum</h3>
+<p>Клініка підключилась до Nexum за 1 годину. Адміністратор налаштував шаблон опитування під кожну спеціальність. Пацієнти почали отримувати посилання за день до прийому.</p>
+<ul>
+<li>Перший тиждень: 60% пацієнтів заповнили опитування до прийому</li>
+<li>Другий тиждень: показник виріс до 78%</li>
+<li>Третій тиждень: 83% і стабільне зростання</li>
+</ul>
+<div class="article-highlight">«Ми були здивовані, наскільки швидко пацієнти адаптувались. Більшість сприйняли це як зручний сервіс, а не зайвий крок.» — Головний лікар клініки</div>
+<h3>Результати через місяць</h3>
+<p>Середній час початкового збору даних під час прийому скоротився з 13 до 4 хвилин. Лікарі почали приймати на 2–3 пацієнти більше щоденно. Адміністративне навантаження знизилось на 35%.</p>`,
+          en: `<p>A family clinic in Kyiv with a team of 5 doctors faced a typical problem: doctors spent too much time at the start of each appointment collecting basic data. Administrators couldn't keep up with preparing charts. Queues stretched out.</p>
+<h3>The Situation Before Implementation</h3>
+<p>The clinic saw about 80 patients per day. Each doctor spent an average of 12–15 minutes on initial data collection. Documentation was kept partly on paper, partly in Excel spreadsheets without a standard.</p>
+<h3>Nexum Implementation</h3>
+<p>The clinic connected to Nexum in 1 hour. The administrator configured a survey template for each specialty. Patients began receiving links a day before their appointment.</p>
+<ul>
+<li>First week: 60% of patients completed the survey before the appointment</li>
+<li>Second week: the figure grew to 78%</li>
+<li>Third week: 83% and stable growth</li>
+</ul>
+<div class="article-highlight">"We were surprised how quickly patients adapted. Most perceived this as a convenient service, not an extra step." — Clinic's Chief Doctor</div>
+<h3>Results After One Month</h3>
+<p>Average initial data collection time during appointments dropped from 13 to 4 minutes. Doctors began seeing 2–3 more patients daily. Administrative workload decreased by 35%.</p>`
+        }
+      },
+      {
+        id: 3,
+        cat: 'healthtech',
+        catLabel: { uk: '💡 Healthtech', en: '💡 Healthtech' },
+        catClass: 'cat-healthtech',
+        icon: '💡',
+        coverBg: 'linear-gradient(135deg, #ECFDF5, #D1FAE5)',
+        title: { uk: 'AI в медицині 2026: що насправді змінилось', en: 'AI in Medicine 2026: What Has Really Changed' },
+        excerpt: { uk: 'Огляд ключових тенденцій у медичних AI-технологіях, які вже впливають на щоденну практику лікарів.', en: 'An overview of key trends in medical AI technologies that are already impacting doctors\' daily practice.' },
+        author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+        authorInitial: 'N',
+        date: { uk: '28 травня 2026', en: 'May 28, 2026' },
+        readTime: { uk: '7 хв читання', en: '7 min read' },
+        body: {
+          uk: `<p>2026 рік став поворотним для медичного AI. Якщо ще три роки тому більшість рішень залишались у режимі пілотних проектів, сьогодні вони активно впроваджуються в реальну клінічну практику по всьому світу.</p>
+<h3>Три головних зміни</h3>
+<p>По-перше, AI перестав бути «чорною скринькою». Сучасні системи пояснюють свої рекомендації, що критично важливо для клінічного застосування. По-друге, фокус змістився з діагностики на підтримку адміністративних процесів. По-третє, вартість впровадження знизилась до рівня доступного для малих практик.</p>
+<h3>Передвізитний збір даних</h3>
+<p>Одним із найбільш швидко зростаючих сегментів є автоматизація передвізитного збору даних. Клініки по всьому світу шукають способи скоротити час на анамнез і зосередитись на клінічних рішеннях.</p>
+<div class="article-highlight">За даними Healthcare AI Report 2026, 67% приватних клінік планують впровадити AI-інструменти для збору даних до кінця 2026 року.</div>
+<h3>Що це означає для лікарів</h3>
+<p>AI не замінює клінічне мислення — він вивільняє час для нього. Лікарі, які вже використовують такі інструменти, відзначають не лише підвищення ефективності, але й зниження когнітивного навантаження наприкінці робочого дня.</p>`,
+          en: `<p>2026 has become a turning point for medical AI. While just three years ago most solutions remained in pilot project mode, today they are actively being implemented in real clinical practice around the world.</p>
+<h3>Three Major Changes</h3>
+<p>First, AI has stopped being a "black box." Modern systems explain their recommendations, which is critical for clinical application. Second, the focus has shifted from diagnostics to supporting administrative processes. Third, implementation costs have dropped to a level accessible for small practices.</p>
+<h3>Pre-Visit Data Collection</h3>
+<p>One of the fastest-growing segments is automation of pre-visit data collection. Clinics worldwide are looking for ways to reduce anamnesis time and focus on clinical decisions.</p>
+<div class="article-highlight">According to Healthcare AI Report 2026, 67% of private clinics plan to implement AI data collection tools by the end of 2026.</div>
+<h3>What This Means for Doctors</h3>
+<p>AI doesn't replace clinical thinking — it frees up time for it. Doctors who already use such tools note not only increased efficiency, but also reduced cognitive load at the end of the workday.</p>`
+        }
+      },
+      {
+        id: 4,
+        cat: 'guide',
+        catLabel: { uk: '📖 Гайди', en: '📖 Guides' },
+        catClass: 'cat-guide',
+        icon: '📖',
+        coverBg: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)',
+        title: { uk: 'Як запустити Nexum у клініці за 30 хвилин: покроковий гайд', en: 'How to Launch Nexum in Your Clinic in 30 Minutes: Step-by-Step Guide' },
+        excerpt: { uk: 'Детальна інструкція від реєстрації до першого готового анамнезу. Без ІТ-відділу і без зайвих складнощів.', en: 'Detailed instructions from registration to the first completed anamnesis. No IT department, no unnecessary complexity.' },
+        author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+        authorInitial: 'N',
+        date: { uk: '20 травня 2026', en: 'May 20, 2026' },
+        readTime: { uk: '6 хв читання', en: '6 min read' },
+        body: {
+          uk: `<p>Ми розробили Nexum так, щоб будь-яка клініка могла почати використовувати його без технічної команди та тривалого налаштування. Цей гайд проведе вас через увесь процес — від реєстрації до першого завершеного опитування пацієнта.</p>
+<h3>Крок 1: Реєстрація клініки (5 хвилин)</h3>
+<p>Перейдіть на nexum.health і оберіть тип реєстрації — клініка або індивідуальний лікар. Заповніть базові дані: назву, спеціалізацію, контактну особу. Після підтвердження ви отримаєте коди доступу для кожного лікаря.</p>
+<h3>Крок 2: Налаштування опитування (10 хвилин)</h3>
+<p>У кабінеті лікаря оберіть шаблон під свою спеціальність або налаштуйте власний. Визначте, які питання потрібні: базові скарги, тривалість симптомів, хронічні захворювання, алергії, поточні ліки.</p>
+<ul>
+<li>Обирайте з готових шаблонів під спеціальність</li>
+<li>Або створюйте власні питання</li>
+<li>Налаштовуйте логіку уточнювальних питань</li>
+</ul>
+<h3>Крок 3: Відправка пацієнту (2 хвилини)</h3>
+<p>Скопіюйте унікальне посилання на опитування та надішліть пацієнту зручним способом: SMS, Viber, Telegram або електронною поштою. Пацієнт відповідає зі свого телефону без реєстрації.</p>
+<h3>Крок 4: Отримання звіту (автоматично)</h3>
+<p>Після завершення опитування ви отримаєте готовий структурований звіт у PDF та DOCX форматах. Відкрийте його перед прийомом — і ви вже знаєте головне.</p>
+<div class="article-highlight">Перше опитування можна провести вже сьогодні. Просто зареєструйтесь і надішліть посилання наступному пацієнту.</div>`,
+          en: `<p>We designed Nexum so that any clinic can start using it without a technical team or lengthy setup. This guide will walk you through the entire process — from registration to the first completed patient survey.</p>
+<h3>Step 1: Clinic Registration (5 minutes)</h3>
+<p>Go to nexum.health and choose your registration type — clinic or individual doctor. Fill in basic data: name, specialization, contact person. After confirmation, you'll receive access codes for each doctor.</p>
+<h3>Step 2: Survey Setup (10 minutes)</h3>
+<p>In the doctor's cabinet, choose a template for your specialty or configure your own. Determine what questions are needed: basic complaints, symptom duration, chronic conditions, allergies, current medications.</p>
+<ul>
+<li>Choose from ready-made templates by specialty</li>
+<li>Or create your own questions</li>
+<li>Configure the logic for clarifying questions</li>
+</ul>
+<h3>Step 3: Sending to the Patient (2 minutes)</h3>
+<p>Copy the unique survey link and send it to the patient in a convenient way: SMS, Viber, Telegram, or email. The patient responds from their phone without registration.</p>
+<h3>Step 4: Receiving the Report (Automatic)</h3>
+<p>After the survey is completed, you'll receive a ready structured report in PDF and DOCX formats. Open it before the appointment — and you already know what matters most.</p>
+<div class="article-highlight">The first survey can be conducted today. Just register and send a link to your next patient.</div>`
+        }
+      },
+      {
+        id: 5,
+        cat: 'news',
+        catLabel: { uk: '📢 Новини', en: '📢 News' },
+        catClass: 'cat-news',
+        icon: '📢',
+        coverBg: 'linear-gradient(135deg, #FEF2F2, #FEE2E2)',
+        title: { uk: 'Nexum запускає бета-тест з першими клініками-партнерами', en: 'Nexum Launches Beta Test with First Partner Clinics' },
+        excerpt: { uk: 'Ми офіційно розпочали бета-тестування з реальними медичними командами. Ось що ми дізнались за перший місяць.', en: 'We have officially started beta testing with real medical teams. Here is what we learned in the first month.' },
+        author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+        authorInitial: 'N',
+        date: { uk: '15 травня 2026', en: 'May 15, 2026' },
+        readTime: { uk: '3 хв читання', en: '3 min read' },
+        body: {
+          uk: `<p>Ми раді оголосити, що Nexum офіційно розпочав бета-тестування із першими клініками-партнерами. Це важливий крок: ми переходимо від внутрішнього тестування до роботи з реальними медичними командами в реальних умовах.</p>
+<h3>Перші учасники бета-тесту</h3>
+<p>До першої хвилі увійшли кілька клінік різного розміру та спеціалізації — від індивідуальних практик до мультидисциплінарних центрів. Ми свідомо обрали різноманітних партнерів, щоб отримати широкий зріз зворотного зв'язку.</p>
+<h3>Що ми дізнались за перший місяць</h3>
+<p>Пацієнти охоче заповнюють опитування, якщо воно коротке та зрозуміле. Середній час завершення — 4–6 хвилин. Лікарі відзначають, що стартовий контекст перед прийомом суттєво змінює якість консультації.</p>
+<div class="article-highlight">Найбільший інсайт: пацієнти ставляться до AI-опитування серйозніше, ніж до паперових анкет. Вони відповідають детальніше і чесніше.</div>
+<h3>Що далі</h3>
+<p>Ми відкриваємо реєстрацію для нових клінік. Якщо ви хочете приєднатись до бета-тесту та отримати доступ до продукту безкоштовно — реєструйтесь на сайті або пишіть нам у підтримку.</p>`,
+          en: `<p>We are pleased to announce that Nexum has officially started beta testing with our first partner clinics. This is an important step: we are moving from internal testing to working with real medical teams in real conditions.</p>
+<h3>First Beta Test Participants</h3>
+<p>The first wave includes several clinics of different sizes and specializations — from individual practices to multidisciplinary centers. We deliberately chose diverse partners to get a broad slice of feedback.</p>
+<h3>What We Learned in the First Month</h3>
+<p>Patients willingly complete surveys if they are short and understandable. Average completion time is 4–6 minutes. Doctors note that the starting context before the appointment significantly changes the quality of the consultation.</p>
+<div class="article-highlight">The biggest insight: patients take AI surveys more seriously than paper questionnaires. They respond in more detail and more honestly.</div>
+<h3>What's Next</h3>
+<p>We are opening registration for new clinics. If you want to join the beta test and get free access to the product — register on the website or write to our support team.</p>`
+        }
+      },
+      {
+        id: 6,
+        cat: 'product',
+        catLabel: { uk: '🚀 Продукт', en: '🚀 Product' },
+        catClass: 'cat-product',
+        icon: '⚙️',
+        coverBg: 'linear-gradient(135deg, #FFF0F8, #FFE4F3)',
+        title: { uk: 'Nexum vs паперові анкети: порівняння двох підходів', en: 'Nexum vs Paper Questionnaires: Comparing Two Approaches' },
+        excerpt: { uk: 'Об\'єктивне порівняння традиційного паперового збору даних та AI-автоматизованого підходу з точки зору лікаря.', en: 'An objective comparison of traditional paper data collection and AI-automated approach from a doctor\'s perspective.' },
+        author: { uk: 'Команда Nexum', en: 'Nexum Team' },
+        authorInitial: 'N',
+        date: { uk: '8 травня 2026', en: 'May 8, 2026' },
+        readTime: { uk: '5 хв читання', en: '5 min read' },
+        body: {
+          uk: `<p>Паперові анкети — це стандарт, до якого всі звикли. Але звичність не завжди означає ефективність. Давайте розглянемо обидва підходи чесно, без прикрас.</p>
+<h3>Паперові анкети: переваги та проблеми</h3>
+<p>Паперові анкети прості, доступні та не потребують технологій. Пацієнт заповнює їх у зоні очікування, адміністратор передає лікарю. Але є суттєві проблеми: нечіткий почерк, неповні відповіді, час на ручне введення даних і відсутність стандарту між лікарями.</p>
+<ul>
+<li>Нечіткий почерк і пропущені поля — у 40% випадків</li>
+<li>Час на ручне введення даних — 5–8 хвилин на пацієнта</li>
+<li>Неможливість задати уточнювальні питання автоматично</li>
+<li>Відсутність структурованого архіву</li>
+</ul>
+<h3>AI-підхід Nexum: що змінюється</h3>
+<p>Nexum дозволяє пацієнту відповідати природною мовою або обирати варіанти — так, як йому зручно. Система задає уточнювальні питання на основі відповідей. Результат — структурований звіт без ручного введення.</p>
+<div class="article-highlight">Ключова різниця: AI-опитування завершується структурованим звітом. Паперова анкета завершується аркушем паперу.</div>
+<h3>Коли паперові анкети ще мають сенс</h3>
+<p>Для дуже літніх пацієнтів або тих, хто не користується смартфонами, паперовий варіант може залишатись доречним. Nexum не виключає такий підхід — це доповнення, а не заміна.</p>`,
+          en: `<p>Paper questionnaires are a standard everyone is used to. But familiarity doesn't always mean effectiveness. Let's look at both approaches honestly, without embellishment.</p>
+<h3>Paper Questionnaires: Advantages and Problems</h3>
+<p>Paper questionnaires are simple, accessible, and don't require technology. The patient fills them out in the waiting area, the administrator passes them to the doctor. But there are significant problems: unclear handwriting, incomplete answers, time for manual data entry, and lack of standard between doctors.</p>
+<ul>
+<li>Unclear handwriting and missed fields — in 40% of cases</li>
+<li>Time for manual data entry — 5–8 minutes per patient</li>
+<li>Inability to ask clarifying questions automatically</li>
+<li>No structured archive</li>
+</ul>
+<h3>Nexum's AI Approach: What Changes</h3>
+<p>Nexum allows the patient to respond in natural language or select options — whichever is convenient. The system asks clarifying questions based on responses. The result is a structured report without manual entry.</p>
+<div class="article-highlight">The key difference: an AI survey ends with a structured report. A paper questionnaire ends with a sheet of paper.</div>
+<h3>When Paper Questionnaires Still Make Sense</h3>
+<p>For very elderly patients or those who don't use smartphones, the paper option may still be appropriate. Nexum doesn't exclude this approach — it's a supplement, not a replacement.</p>`
+        }
+      }
+    ];
+// Динамічний масив — заповнюється з API
+let BLOG_ARTICLES = [];
+
+async function loadBlogArticles() {
+  try {
+    const res = await fetch('/api/blog/articles');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const raw = (Array.isArray(data) && data.length > 0) ? data : BLOG_ARTICLES_STATIC;
+    // Дедуплікація за id — захист від дублів, які іноді віддає API
+    const seen = new Set();
+    BLOG_ARTICLES = raw.filter(a => {
+      if (seen.has(a.id)) return false;
+      seen.add(a.id);
+      return true;
+    });
+  } catch(e) {
+    console.error('[loadBlogArticles]', e.message);
+    BLOG_ARTICLES = BLOG_ARTICLES_STATIC;
+  }
+}
+    let currentBlogCat = 'all';
+    let currentLang = 'uk';
+    let currentArticleId = null;
+
+    function renderBlog() {
+      const search = (document.getElementById('blogSearchInput')?.value || '').toLowerCase().trim();
+      const filtered = BLOG_ARTICLES.filter(a => {
+        const matchCat = currentBlogCat === 'all' || a.cat === currentBlogCat;
+        const title = a.title[currentLang].toLowerCase();
+        const excerpt = a.excerpt[currentLang].toLowerCase();
+        const matchSearch = !search || title.includes(search) || excerpt.includes(search);
+        return matchCat && matchSearch;
+      });
+
+      const featuredSection = document.getElementById('blogFeaturedSection');
+      const grid = document.getElementById('blogGrid');
+      const noResults = document.getElementById('blogNoResults');
+
+      if (filtered.length === 0) {
+        featuredSection.innerHTML = '';
+        grid.innerHTML = '';
+        noResults.style.display = 'block';
+        return;
+      }
+      noResults.style.display = 'none';
+
+      // Featured: show featured cards on top when no filter/search
+      const showFeatured = currentBlogCat === 'all' && !search;
+      const featuredCards = filtered.filter(a => a.featured && !a.featuredSide);
+      const featuredSide = filtered.filter(a => a.featuredSide);
+      const regularCards = showFeatured ? filtered.filter(a => !a.featured && !a.featuredSide) : filtered;
+
+      if (showFeatured && featuredCards.length > 0) {
+        const main = featuredCards[0];
+        const sides = featuredSide.slice(0, 2);
+        featuredSection.innerHTML = `
+          <div class="blog-featured">
+            <div class="blog-featured-card" onclick="openArticle(${main.id})">
+              <div class="blog-featured-cover" style="background:${main.coverBg}">${main.icon}</div>
+              <div class="blog-featured-body">
+                <div class="blog-featured-cat ${main.catClass}">${main.catLabel[currentLang]}</div>
+                <div class="blog-featured-title">${main.title[currentLang]}</div>
+                <div class="blog-featured-excerpt">${main.excerpt[currentLang]}</div>
+                <div class="blog-featured-footer">
+                  <div class="blog-card-meta">
+                    <div class="blog-card-avatar">${main.authorInitial}</div>
+                    <div><div class="blog-card-author">${main.author[currentLang]}</div><div class="blog-card-date">${main.date[currentLang]}</div></div>
+                  </div>
+                  <div class="blog-card-read">${main.readTime[currentLang]} →</div>
+                </div>
+              </div>
+            </div>
+            <div class="blog-side">
+              ${sides.map(a => `
+                <div class="blog-side-card" onclick="openArticle(${a.id})">
+                  <div class="blog-side-cover" style="background:${a.coverBg}">${a.icon}</div>
+                  <div class="blog-side-body">
+                    <div class="blog-side-cat ${a.catClass}">${a.catLabel[currentLang]}</div>
+                    <div class="blog-side-title">${a.title[currentLang]}</div>
+                    <div class="blog-side-footer">
+                      <div class="blog-side-date">${a.date[currentLang]}</div>
+                      <div class="blog-side-read">${a.readTime[currentLang]} →</div>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>`;
+      } else {
+        featuredSection.innerHTML = '';
+      }
+
+      const cards = showFeatured ? regularCards : filtered;
+      grid.innerHTML = cards.map(a => `
+        <div class="blog-card" onclick="openArticle(${a.id})">
+          <div class="blog-card-cover" style="background:${a.coverBg}">${a.icon}</div>
+          <div class="blog-card-body">
+            <div class="blog-card-cat ${a.catClass}">${a.catLabel[currentLang]}</div>
+            <div class="blog-card-title">${a.title[currentLang]}</div>
+            <div class="blog-card-excerpt">${a.excerpt[currentLang]}</div>
+            <div class="blog-card-footer">
+              <div class="blog-card-meta">
+                <div class="blog-card-avatar">${a.authorInitial}</div>
+                <div><div class="blog-card-author">${a.author[currentLang]}</div><div class="blog-card-date">${a.date[currentLang]}</div></div>
+              </div>
+              <div class="blog-card-read">${a.readTime[currentLang]} →</div>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    function setBlogCat(cat, btn) {
+      currentBlogCat = cat;
+      document.querySelectorAll('.blog-cat').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderBlog();
+    }
+
+    function filterBlog() { renderBlog(); }
+
+    function openArticle(id) {
+      const article = BLOG_ARTICLES.find(a => a.id === id);
+      if (!article) return;
+      currentArticleId = id;
+
+      document.getElementById('blog-list-view').style.display = 'none';
+      document.getElementById('blog-article-view').style.display = 'block';
+
+      document.getElementById('articleCover').style.background = article.coverBg;
+      document.getElementById('articleCover').textContent = article.icon;
+      document.getElementById('articleCat').className = 'article-cat ' + article.catClass;
+      document.getElementById('articleCat').textContent = article.catLabel[currentLang];
+      document.getElementById('articleTitle').textContent = article.title[currentLang];
+      document.getElementById('articleMeta').innerHTML = `
+        <div class="article-meta-item">👤 <span>${article.author[currentLang]}</span></div>
+        <div class="article-meta-item">📅 <span>${article.date[currentLang]}</span></div>
+        <div class="article-meta-item">⏱ <span>${article.readTime[currentLang]}</span></div>`;
+      document.getElementById('articleBody').innerHTML = article.body[currentLang];
+
+      const related = BLOG_ARTICLES.filter(a => a.id !== id).slice(0, 3);
+      document.getElementById('articleRelated').innerHTML = related.map(a => `
+        <div class="article-related-item" onclick="openArticle(${a.id})">
+          <div class="article-related-icon" style="background:${a.coverBg}">${a.icon}</div>
+          <div><div class="article-related-title">${a.title[currentLang]}</div><div class="article-related-date">${a.date[currentLang]}</div></div>
+        </div>`).join('');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showBlogList() {
+      document.getElementById('blog-list-view').style.display = 'block';
+      document.getElementById('blog-article-view').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ===================== PAGE ROUTING ===================== */
+    function showPage(page) {
+      const pages = ['main','faq','support','for','doctors','investors','blog'];
+      pages.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (!el) return;
+        if (page === p) {
+          el.style.display = 'block'; el.style.opacity = '0';
+          requestAnimationFrame(() => { el.style.transition = 'opacity 0.3s ease'; el.style.opacity = '1'; });
+        } else { el.style.display = 'none'; el.style.opacity = ''; el.style.transition = ''; }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.querySelectorAll('#page-' + page + ' .reveal').forEach(el => el.classList.add('visible'));
+      document.querySelectorAll('.acc-item').forEach(el => el.classList.remove('open'));
+     if (page === 'blog') {
+  showBlogList();
+  loadBlogArticles().then(() => renderBlog());
+}
+    }
+
+    /* ===================== ORIGINAL LOGIC ===================== */
+    (function() {
+      const btn = document.querySelector('.btn-nav');
+      if (!btn) return;
+      const sessionAuth = sessionStorage.getItem('nexum_auth') || sessionStorage.getItem('nexum_mod_code');
+      const savedName = localStorage.getItem('nexum_user_name');
+      const hasRemember = localStorage.getItem('nexum_remember') === '1' && localStorage.getItem('nexum_remember_code');
+      if ((sessionAuth || hasRemember) && savedName) {
+        btn.innerHTML = '👤 ' + savedName.split(' ')[0] + ' →';
+      } else {
+        btn.textContent = 'Sign In →';
+      }
+    })();
+
+    function selectTopic(btn, val) {
+      document.querySelectorAll('.stopic').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('sp-topic').value = val;
+    }
+    function submitSupport() {
+      const name = document.getElementById('sp-name');
+      const email = document.getElementById('sp-email');
+      const msg = document.getElementById('sp-msg');
+      let ok = true;
+      [name, email, msg].forEach(el => {
+        const empty = !el.value.trim();
+        el.style.borderColor = empty ? '#ef4444' : ''; el.style.boxShadow = empty ? '0 0 0 3px rgba(239,68,68,0.12)' : '';
+        if (empty) { ok = false; el.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:260,iterations:2}); }
+      });
+      if (!ok) return;
+      const topic = document.getElementById('sp-topic').value;
+      const lines = ['💬 <b>Support Request — Nexum</b>','',`📌 <b>Topic:</b> ${topic}`,`📅 <b>Time:</b> ${new Date().toLocaleString('en-US')}`,``,`👤 <b>Name:</b> ${name.value.trim()}`,`📧 <b>Email:</b> ${email.value.trim()}`,``,`📝 <b>Message:</b>`,msg.value.trim()].join('\n');
+      fetch('https://nexum23222.onrender.com/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:lines})}).catch(()=>{});
+      document.getElementById('supportFormBody').style.display = 'none';
+      document.getElementById('supportOk').style.display = 'block';
+    }
+    function resetSupport() {
+      ['sp-name','sp-email','sp-msg'].forEach(id => { const el=document.getElementById(id); el.value=''; el.style.borderColor=''; el.style.boxShadow=''; });
+      document.querySelectorAll('.stopic').forEach((b,i) => b.classList.toggle('active', i===0));
+      document.getElementById('sp-topic').value = 'General question';
+      document.getElementById('supportFormBody').style.display = 'block';
+      document.getElementById('supportOk').style.display = 'none';
+    }
+    function toggleMobileMenu() {
+      document.getElementById('burgerBtn').classList.toggle('open');
+      document.getElementById('mobileMenu').classList.toggle('open');
+    }
+    function closeMobileMenu() {
+      document.getElementById('burgerBtn').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+    }
+    document.documentElement.classList.add('js');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(n => obs.observe(n));
+    document.querySelectorAll('.acc-trigger').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.acc-item');
+        const list = item.closest('.accordion-list');
+        if (list) list.querySelectorAll('.acc-item').forEach(e => { if (e !== item) { e.classList.remove('open'); const ic=e.querySelector('.acc-icon'); if(ic) ic.textContent='+'; } });
+        item.classList.toggle('open');
+        const icon = btn.querySelector('.acc-icon');
+        if (icon) icon.textContent = item.classList.contains('open') ? '−' : '+';
+      });
+    });
+
+    let currentTab = 'clinic', clStep = 1, drStep = 1;
+    function clearFormFields(prefix) {
+      document.querySelectorAll('#' + prefix + '-steps input:not([readonly]), #' + prefix + '-steps select').forEach(el => {
+        if (el.type === 'checkbox') el.checked = true;
+        else { el.value = ''; el.style.borderColor = ''; el.style.boxShadow = ''; }
+      });
+    }
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('tab-clinic').classList.toggle('active', tab === 'clinic');
+      document.getElementById('tab-doctor').classList.toggle('active', tab === 'doctor');
+      document.getElementById('clinic-steps').style.display = tab === 'clinic' ? 'block' : 'none';
+      document.getElementById('doctor-steps').style.display = tab === 'doctor' ? 'block' : 'none';
+      document.getElementById('reg-ok').style.display = 'none';
+      clStep = 1; drStep = 1;
+      clearFormFields('cl'); clearFormFields('dr');
+      showClStep(1); showDrStep(1); updateProgress(1);
+    }
+    function showClStep(s) { document.querySelectorAll('#clinic-steps .reg-step').forEach(el => el.classList.remove('active')); const el=document.getElementById('cl-s'+s); if(el) el.classList.add('active'); }
+    function showDrStep(s) { document.querySelectorAll('#doctor-steps .reg-step').forEach(el => el.classList.remove('active')); const el=document.getElementById('dr-s'+s); if(el) el.classList.add('active'); }
+    function updateProgress(s) { for(let i=1;i<=3;i++) document.getElementById('rp'+i).classList.toggle('done', i<=s); }
+    function validate(fields) {
+      let ok=true;
+      fields.forEach(({id}) => {
+        const el=document.getElementById(id); if(!el) return;
+        const empty=!el.value||!el.value.trim();
+        el.style.borderColor=empty?'#ef4444':''; el.style.boxShadow=empty?'0 0 0 3px rgba(239,68,68,0.12)':'';
+        if(empty){ok=false;el.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:260,iterations:2});}
+        else{el.style.borderColor='';el.style.boxShadow='';}
+      });
+      return ok;
+    }
+    document.addEventListener('input', e => { if(e.target.matches('input, select')){e.target.style.borderColor='';e.target.style.boxShadow='';} });
+    function clNext(s) { if(s>clStep){if(clStep===1&&!validate([{id:'cl-name'},{id:'cl-spec'},{id:'cl-city'}]))return;if(clStep===2&&!validate([{id:'cl-contact'},{id:'cl-phone'},{id:'cl-email'}]))return;} clStep=s;showClStep(s);updateProgress(s); }
+    function drNext(s) { if(s>drStep){if(drStep===1&&!validate([{id:'dr-fn'},{id:'dr-ln'},{id:'dr-spec'}]))return;if(drStep===2&&!validate([{id:'dr-phone'},{id:'dr-email'}]))return;} drStep=s;showDrStep(s);updateProgress(s); }
+    function submitReg() {
+      const agId = currentTab==='clinic'?'ag-cl':'ag-dr';
+      const cb=document.getElementById(agId);
+      if(cb&&!cb.checked){cb.parentElement.style.outline='2px solid #ef4444';cb.parentElement.style.borderRadius='6px';setTimeout(()=>{cb.parentElement.style.outline='';},2000);return;}
+      const isClinic=currentTab==='clinic';
+      let fields={};
+      if(isClinic){fields={name:document.getElementById('cl-name')?.value||'',spec:document.getElementById('cl-spec')?.value||'',city:document.getElementById('cl-city')?.value||'',count:document.getElementById('cl-count')?.value||'',contact:document.getElementById('cl-contact')?.value||'',phone:document.getElementById('cl-phone')?.value||'',email:document.getElementById('cl-email')?.value||'',source:document.getElementById('cl-source')?.value||''};}
+      else{fields={name:(document.getElementById('dr-fn')?.value||'')+' '+(document.getElementById('dr-ln')?.value||''),spec:document.getElementById('dr-spec')?.value||'',clinic:document.getElementById('dr-clinic')?.value||'',phone:document.getElementById('dr-phone')?.value||'',email:document.getElementById('dr-email')?.value||'',tg:document.getElementById('dr-tg')?.value||'',source:document.getElementById('dr-source')?.value||''};}
+      const type=isClinic?'🏥 Clinic':'👨‍⚕️ Doctor';
+      const lines=['🏥 <b>New application from Nexum website</b>','',`📋 <b>Type:</b> ${type}`,`📅 <b>Time:</b> ${new Date().toLocaleString('en-US')}`,'', ...(isClinic?[`🏢 <b>Clinic:</b> ${fields.name}`,`🩺 <b>Specialization:</b> ${fields.spec}`,`📍 <b>City:</b> ${fields.city}`,`👥 <b>Doctors:</b> ${fields.count}`,`👤 <b>Contact:</b> ${fields.contact}`,`📞 <b>Phone:</b> ${fields.phone}`,`📧 <b>Email:</b> ${fields.email}`,`🔍 <b>Source:</b> ${fields.source}`]:[`👤 <b>Doctor:</b> ${fields.name}`,`🩺 <b>Specialty:</b> ${fields.spec}`,`🏢 <b>Clinic:</b> ${fields.clinic}`,`📞 <b>Phone:</b> ${fields.phone}`,`📧 <b>Email:</b> ${fields.email}`,`💬 <b>Telegram:</b> ${fields.tg}`,`🔍 <b>Source:</b> ${fields.source}`])].join('\n');
+      fetch('https://nexum23222.onrender.com/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:lines})}).catch(()=>{});
+      document.getElementById('clinic-steps').style.display='none';
+      document.getElementById('doctor-steps').style.display='none';
+      document.getElementById('reg-ok').style.display='block';
+      updateProgress(3);
+    }
+
+    /* INTERACTIVE CHAT DEMO */
+    (function(){
+      const msgs=document.getElementById('cdwMsgs');
+      const hint=document.getElementById('cdwHint');
+      const fill=document.getElementById('cdwFill');
+      if(!msgs) return;
+      let step=0, ans={};
+      const steps=[
+        {type:'auto',items:[{b:"Good day! I'll help you prepare for your appointment. 👋"},{b:"What's your name?"},{u:'Oksana Koval'}],next:1,p:0},
+        {type:'opts',bot:'Oksana, what is the main reason for your visit?',key:'c',opts:[['🤕 Headache','Headache'],['❤️ Blood pressure / heart','Blood pressure'],['🤒 Fever','Fever'],['💊 Other','Other']],p:22},
+        {type:'opts',bot:'How long have you had {c}?',key:'d',opts:[['First time today','1 day'],['A few days','2–5 days'],['Over a week','> 7 days'],['Chronic','Chronic']],p:44},
+        {type:'scale',bot:'Rate the pain intensity from 1 to 10:',key:'p',p:66},
+        {type:'opts',bot:'Do you have any medication allergies?',key:'a',opts:[['No','None'],['Yes — penicillin','Penicillin'],['Yes — other','Other'],["Don't know",'Unknown']],p:88},
+        {type:'sum',p:100},
+      ];
+      function setP(v){fill.style.width=v+'%';}
+      function scroll(){requestAnimationFrame(()=>{msgs.scrollTop=msgs.scrollHeight;});}
+      function bot(text){const d=document.createElement('div');d.className='bub-bot';d.textContent=text;msgs.appendChild(d);scroll();}
+      function user(text){const d=document.createElement('div');d.className='bub-user';d.textContent=text;msgs.appendChild(d);scroll();}
+      function typing(cb){const t=document.createElement('div');t.className='typing-indicator';t.innerHTML='<div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>';msgs.appendChild(t);scroll();setTimeout(()=>{msgs.removeChild(t);cb();scroll();},750);}
+      function runStep(idx){
+        step=idx; const s=steps[idx]; if(!s) return;
+        setP(s.p);
+        if(s.type==='auto') playAuto(s.items,0,()=>runStep(s.next));
+        else if(s.type==='opts') typing(()=>{bot(s.bot.replace('{c}',ans.c||'symptom'));addOpts(s);});
+        else if(s.type==='scale') typing(()=>{bot(s.bot);addScale(s);});
+        else if(s.type==='sum') typing(()=>{bot('Thank you, Oksana! Here is what I prepared for your doctor:');setTimeout(()=>{addSummary();hint.textContent='✅ Anamnesis ready — doctor can see this now';},350);});
+      }
+      function playAuto(items,i,cb){if(i>=items.length){setTimeout(cb,250);return;}const m=items[i];setTimeout(()=>{m.b?bot(m.b):user(m.u);playAuto(items,i+1,cb);},i===0?180:500);}
+      function addOpts(s){const w=document.createElement('div');w.className='opts-row';s.opts.forEach(([label,val])=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=label;b.onclick=()=>{hint.style.opacity='0';w.querySelectorAll('.opt-btn').forEach(x=>x.disabled=true);b.classList.add('sel');ans[s.key]=val;setTimeout(()=>{user(label);setTimeout(()=>runStep(step+1),380);},150);};w.appendChild(b);});msgs.appendChild(w);scroll();}
+      function addScale(s){const w=document.createElement('div');w.className='scale-row';for(let i=1;i<=10;i++){const b=document.createElement('button');b.className='scale-btn';b.textContent=i;b.onclick=()=>{hint.style.opacity='0';w.querySelectorAll('.scale-btn').forEach(x=>x.disabled=true);b.classList.add('sel');ans[s.key]=i;setTimeout(()=>{user('Pain level: '+i+'/10');setTimeout(()=>runStep(step+1),380);},150);};w.appendChild(b);}msgs.appendChild(w);scroll();}
+      function addSummary(){
+        const pain=ans.p||'—';const pc=pain>=7?'#ef4444':pain>=4?'#f97316':'var(--rose)';const av=ans.a&&ans.a!=='None'?'#ef4444':'var(--rose)';
+        const card=document.createElement('div');card.className='sum-box';
+        card.innerHTML=`<div class="sum-title">📋 Anamnesis collected</div><div class="sum-row"><span class="sum-lbl">Patient</span><span class="sum-val">Oksana Koval</span></div><div class="sum-row"><span class="sum-lbl">Complaint</span><span class="sum-val hi">${ans.c||'—'}</span></div><div class="sum-row"><span class="sum-lbl">Duration</span><span class="sum-val">${ans.d||'—'}</span></div><div class="sum-row"><span class="sum-lbl">Pain</span><span class="sum-val" style="color:${pc}">${pain}/10</span></div><div class="sum-row"><span class="sum-lbl">Allergy</span><span class="sum-val" style="color:${av}">${ans.a||'—'}</span></div>`;
+        msgs.appendChild(card);
+        setTimeout(()=>{
+          const doc=document.createElement('div');doc.className='doc-card';
+          doc.innerHTML='<div class="doc-av">👨‍⚕️</div><div><div class="doc-name">Dr. Koval L.O.</div><div class="doc-status">Anamnesis received, ready for the appointment</div></div>';
+          msgs.appendChild(doc);
+          const r=document.createElement('button');r.className='restart-btn';r.textContent='↺ Try again';
+          r.onclick=()=>{msgs.innerHTML='';step=0;ans={};fill.style.width='0%';hint.style.opacity='1';hint.textContent='Click an option — try it yourself';runStep(0);};
+          msgs.appendChild(r);scroll();
+        },500);
+        scroll();
+      }
+      runStep(0);
+    })();
+
+    function showForTab(idx) {
+      if (idx === 1) { showPage('investors'); }
+      else { showPage('doctors'); }
+    }
+    function goToRegistration() {
+      const pages = ['main','faq','support','for','doctors','investors','blog'];
+      pages.forEach(p => { const el=document.getElementById('page-'+p); if(el){el.style.display='none'; el.style.opacity=''; el.style.transition='';} });
+      const main = document.getElementById('page-main');
+      main.style.display = 'block'; main.style.opacity = '0';
+      const beta = document.getElementById('beta');
+      beta.scrollIntoView({ behavior: 'instant', block: 'start' });
+      requestAnimationFrame(() => { main.style.transition = 'opacity 0.4s ease'; main.style.opacity = '1'; });
+      document.querySelectorAll('#page-main .reveal').forEach(el => el.classList.add('visible'));
+      document.querySelectorAll('.acc-item').forEach(el => el.classList.remove('open'));
+    }
+    function goToCabinet() {
+      const base = 'https://nexum23222.onrender.com';
+      const modCode = sessionStorage.getItem('nexum_mod_code') || localStorage.getItem('nexum_mod_code');
+      if (modCode) { window.location.href = base + '/moderator.html'; return; }
+      const authCode = sessionStorage.getItem('nexum_auth');
+      if (authCode) { window.location.href = base + '/dashboard.html'; return; }
+      window.location.href = base + '/login';
+    }
+
+    /* LANG SWITCH — updates blog too */
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById('langUK').classList.toggle('active', lang === 'uk');
+      document.getElementById('langEN').classList.toggle('active', lang === 'en');
+      document.querySelectorAll('[data-uk]').forEach(el => {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.placeholder = lang === 'en' ? (el.dataset.en || el.placeholder) : el.dataset.uk;
+        } else if (el.tagName === 'OPTION') {
+          el.textContent = lang === 'en' ? (el.dataset.en || el.textContent) : el.dataset.uk;
+        } else {
+          el.innerHTML = lang === 'en' ? (el.dataset.en || el.innerHTML) : el.dataset.uk;
+        }
+      });
+      document.documentElement.lang = lang === 'en' ? 'en' : 'uk';
+      // Re-render blog if it's open
+      if (document.getElementById('page-blog').style.display !== 'none') {
+        if (currentArticleId) {
+          openArticle(currentArticleId);
+        } else {
+          renderBlog();
+        }
+      }
+    }
+
+    (function(){
+      const device = /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop';
+      fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page: location.pathname || '/', referrer: document.referrer || '', device }) }).catch(()=>{});
+    })();
+  </script>
+</body>
+</html>

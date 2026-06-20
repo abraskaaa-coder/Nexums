@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Nexum — Медична анкета</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#FDF0F3;--bg2:#FAE6EB;--surface:#FFFFFF;--surface2:#FDF0F3;--surface3:#FAE8ED;
+  --border:#F0D0D8;--border2:#E8BDC8;--text:#2D1A22;--text2:#8A5A6A;
+  --accent:#C2365A;--accent2:#E85C82;--accent-bg:#FDE8ED;--accent-light:#FBD5DF;
+  --green:#2BAE7E;--green-bg:#E8FAF3;
+  --tg-blue:#27AAE1;--tg-bg:rgba(39,170,225,0.08);
+  --em-red:#E8185A;--cab-green:#00B87A;--cab-bg:rgba(0,184,122,0.08);
+  --radius:14px;--radius-sm:9px;
+  --font:'DM Sans',sans-serif;--font-display:'DM Serif Display',serif;
+}
+.progress-bar-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px 10px;flex-shrink:0;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.04em;margin-bottom:5px;}
+.progress-track{height:5px;background:var(--accent-light);border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);border-radius:10px;transition:width .4s ease;width:0%;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font);}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;position:sticky;top:0;z-index:100;gap:10px;}
+.logo-text{font-family:var(--font-display);font-size:18px;color:var(--accent);letter-spacing:4px;}
+.screen{display:none;flex:1;flex-direction:column;}
+.screen.active{display:flex;}
+
+  .doctor-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 10px 4px 4px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; margin-left: auto;
+}
+.doctor-badge-photo {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent-bg); border: 1.5px solid var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0; font-size: 11px;
+  font-weight: 700; color: var(--accent);
+}
+.doctor-badge-photo img { width: 100%; height: 100%; object-fit: cover; }
+.doctor-badge-name { font-size: 12px; font-weight: 500; color: var(--text2); max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ── Intake ── */
+#intakeScreen{align-items:center;padding:24px 16px 40px;overflow-y:auto;}
+.intake-wrap{width:100%;max-width:560px;}
+.intake-info{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;padding:12px 14px;background:var(--accent-bg);border-left:3px solid var(--accent-light);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.sep{height:1px;background:var(--border);margin:0 0 20px;}
+.field-group{margin-bottom:14px;}
+.field-group label{display:block;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.label-hint{display:block;font-size:10px;font-weight:400;opacity:.6;text-transform:none;margin-top:1px;}
+.req{color:var(--accent);}
+.input-group{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;transition:.2s;}
+.input-group:focus-within{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(194,54,90,.1);}
+.input-icon{color:var(--text2);flex-shrink:0;opacity:.7;}
+.input-group input{flex:1;border:none;background:transparent;outline:none;padding:12px 0;font-size:14px;color:var(--text);}
+.input-group input::placeholder{color:var(--text2);opacity:.6;}
+input[type="date"]{-webkit-appearance:none;appearance:none;}
+input[type="number"]{-moz-appearance:textfield;}
+input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.consent-block{margin:16px 0 6px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);}
+.consent-row{display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+.consent-checkbox{appearance:none;-webkit-appearance:none;width:20px;height:20px;min-width:20px;border:2px solid var(--border2);border-radius:5px;background:var(--surface);cursor:pointer;transition:.2s;position:relative;margin-top:1px;}
+.consent-checkbox:checked{background:var(--accent);border-color:var(--accent);}
+.consent-checkbox:checked::after{content:'';position:absolute;left:4px;top:1px;width:8px;height:12px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg);}
+.consent-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.consent-link{color:var(--accent);text-decoration:underline;cursor:pointer;font-weight:500;background:none;border:none;font-size:13px;font-family:var(--font);padding:0;}
+.consent-link:hover{color:var(--accent2);}
+.consent-error{font-size:11px;color:var(--accent);margin-top:8px;display:none;}
+.btn-primary{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:14px;font-size:14px;font-weight:500;cursor:pointer;transition:.2s;box-shadow:0 2px 12px rgba(194,54,90,.2);margin-top:6px;}
+.btn-primary:hover{background:var(--accent2);box-shadow:0 4px 18px rgba(194,54,90,.3);}
+.btn-primary:active{transform:scale(.98);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── DELIVERY SCREEN ── */
+#deliveryScreen{align-items:center;overflow-y:auto;padding-bottom:40px;}
+.delivery-wrap{width:100%;max-width:480px;padding:24px 16px 8px;}
+.delivery-hero{text-align:center;margin-bottom:28px;}
+.delivery-icon-wrap{
+  width:68px;height:68px;border-radius:50%;
+  background:var(--accent-bg);border:2px solid var(--accent-light);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+}
+.delivery-title{font-family:var(--font-display);font-size:22px;color:var(--text);margin-bottom:8px;line-height:1.2;}
+.delivery-sub{font-size:13px;color:var(--text2);line-height:1.6;max-width:300px;margin:0 auto;}
+
+/* Channel cards */
+.channel-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.channel-card{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  cursor:pointer;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+  position:relative;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.channel-card:hover{border-color:var(--border2);box-shadow:0 2px 12px rgba(194,54,90,.08);}
+.channel-card.selected{
+  border-color:var(--accent);
+  background:var(--accent-bg);
+  box-shadow:0 4px 18px rgba(194,54,90,.15);
+}
+.channel-card-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  font-size:20px;
+}
+.channel-card-icon.tg{background:rgba(39,170,225,0.12);}
+.channel-card-icon.em{background:rgba(232,24,90,0.10);}
+.channel-card-icon.cab{background:rgba(0,184,122,0.10);}
+.channel-card-body{flex:1;}
+.channel-card-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.channel-card-desc{font-size:12px;color:var(--text2);}
+.channel-radio{
+  width:20px;height:20px;min-width:20px;border-radius:50%;
+  border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  transition:.2s;flex-shrink:0;
+}
+.channel-card.selected .channel-radio{border-color:var(--accent);}
+.channel-radio-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent);
+  transform:scale(0);transition:transform .15s ease;
+}
+.channel-card.selected .channel-radio-dot{transform:scale(1);}
+
+/* Extra inputs */
+.channel-extra{
+  overflow:hidden;max-height:0;
+  transition:max-height .3s ease,opacity .3s ease,margin .3s ease;
+  opacity:0;margin-top:0;
+}
+.channel-extra.visible{max-height:200px;opacity:1;margin-top:10px;}
+.channel-extra-inner{
+  padding:12px 14px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+}
+.channel-extra-inner p{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
+.channel-extra-inner .input-group{margin-top:0;}
+
+/* Chosen badge */
+.chosen-channel-badge{
+  display:none;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:20px;
+  font-size:12px;font-weight:600;margin-bottom:12px;
+}
+.chosen-channel-badge.tg{background:var(--tg-bg);color:var(--tg-blue);border:1px solid rgba(39,170,225,.25);}
+.chosen-channel-badge.em{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-light);}
+.chosen-channel-badge.cab{background:var(--cab-bg);color:var(--cab-green);border:1px solid rgba(0,184,122,.25);}
+
+/* Tg autofill badge */
+.tg-autofill-badge{
+  display:flex;align-items:center;gap:8px;
+  background:var(--tg-bg);border:1.5px solid rgba(39,170,225,.3);
+  border-radius:10px;padding:10px 14px;
+  margin-bottom:10px;font-size:13px;color:#1a5a7a;
+}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(45,26,34,.45);align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:640px;max-height:88vh;display:flex;flex-direction:column;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;border-radius:2px;background:var(--border2);margin:12px auto 0;flex-shrink:0;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-title{font-size:16px;font-weight:600;color:var(--text);}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;display:flex;align-items:center;border-radius:6px;transition:.15s;}
+.modal-close:hover{background:var(--accent-bg);color:var(--accent);}
+.modal-body{overflow-y:auto;padding:20px;flex:1;}
+.modal-body h2{font-size:14px;font-weight:600;color:var(--text);margin:20px 0 8px;}
+.modal-body h2:first-child{margin-top:0;}
+.modal-body p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px;}
+.modal-body ul{font-size:13px;color:var(--text2);line-height:1.7;padding-left:18px;margin-bottom:10px;}
+.modal-body li{margin-bottom:4px;}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);flex-shrink:0;}
+
+/* Photo panel */
+.photo-panel{display:none;position:fixed;inset:0;z-index:200;background:rgba(45,26,34,.45);align-items:flex-end;justify-content:center;}
+.photo-panel.open{display:flex;}
+.photo-panel-sheet{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:640px;max-height:70vh;display:flex;flex-direction:column;animation:slideUp .25s ease;}
+.photo-panel-handle{width:40px;height:4px;border-radius:2px;background:var(--border2);margin:12px auto 0;flex-shrink:0;}
+.photo-panel-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.photo-panel-title{font-size:15px;font-weight:600;color:var(--text);}
+.photo-panel-close{background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;display:flex;align-items:center;border-radius:6px;}
+.photo-panel-close:hover{background:var(--accent-bg);color:var(--accent);}
+.photo-panel-body{overflow-y:auto;padding:16px;flex:1;}
+.photo-upload-area{border:2px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:.2s;background:var(--surface2);}
+.photo-upload-area:hover,.photo-upload-area.drag{border-color:var(--accent);background:var(--accent-bg);}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.photo-thumb{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--surface3);}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;}
+.photo-thumb .del-photo{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.photo-uploading{opacity:.5;pointer-events:none;}
+.upload-progress{font-size:12px;color:var(--text2);margin-top:8px;min-height:18px;}
+.photo-panel-footer{padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0;}
+.photo-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;background:var(--accent);color:#fff;border-radius:9px;font-size:10px;font-weight:700;padding:0 5px;position:absolute;top:-6px;right:-6px;pointer-events:none;}
+
+/* Chat */
+#chatScreen{height:calc(100vh - 52px);}
+.chat-header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.chat-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-bg);border:1.5px solid var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chat-name{font-size:14px;font-weight:600;color:var(--text);}
+.chat-status{font-size:11px;color:var(--green);display:flex;align-items:center;gap:5px;}
+.chat-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
+
+/* Delivery badge in chat header */
+.chat-delivery-badge{
+  margin-left:auto;
+  display:flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:12px;
+  white-space:nowrap;
+}
+.chat-delivery-badge.tg{background:var(--tg-bg);color:var(--tg-blue);}
+.chat-delivery-badge.em{background:var(--accent-bg);color:var(--accent);}
+.chat-delivery-badge.cab{background:var(--cab-bg);color:var(--cab-green);}
+
+.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--bg);}
+.msg{display:flex;align-items:flex-end;gap:8px;}
+.msg.bot{align-self:flex-start;}
+.msg.user{flex-direction:row-reverse;align-self:flex-end;}
+.msg-av{width:28px;height:28px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.msg-av.user-av{background:var(--accent);font-size:10px;font-weight:700;color:#fff;border:none;}
+.msg-bubble{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.6;max-width:78%;}
+.msg.bot .msg-bubble{background:var(--surface);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px;}
+.msg.user .msg-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px;}
+.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.quick-btn{background:var(--accent-bg);border:1px solid var(--accent-light);color:var(--accent);border-radius:20px;padding:6px 14px;font-size:13px;font-family:var(--font);cursor:pointer;transition:.2s;}
+.quick-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.quick-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Pain scale */
+.pain-scale-wrap{margin-top:12px;padding:16px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);max-width:340px;}
+.pain-scale-title{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px;text-align:center;}
+.pain-scale-emoji{font-size:26px;text-align:center;margin-bottom:8px;transition:transform .2s;min-height:36px;line-height:36px;}
+.pain-scale-label{font-size:12px;color:var(--text2);text-align:center;margin-bottom:12px;min-height:18px;font-weight:500;transition:color .2s;}
+.pain-scale-dots{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:10px;}
+.pain-dot{flex:1;height:36px;border-radius:8px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);transition:all .15s;user-select:none;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;}
+.pain-dot:hover{border-color:var(--accent-light);background:var(--accent-bg);transform:translateY(-2px);box-shadow:0 4px 12px rgba(194,54,90,.15);}
+.pain-dot.selected{color:#fff;border-color:transparent;transform:translateY(-2px) scale(1.08);box-shadow:0 4px 16px rgba(194,54,90,.35);}
+.pain-dot[data-v="1"].selected{background:#2BAE7E;}.pain-dot[data-v="2"].selected{background:#52C07A;}.pain-dot[data-v="3"].selected{background:#7DC06F;}.pain-dot[data-v="4"].selected{background:#A8C458;}.pain-dot[data-v="5"].selected{background:#CFC247;}.pain-dot[data-v="6"].selected{background:#E0A93A;}.pain-dot[data-v="7"].selected{background:#E88A2D;}.pain-dot[data-v="8"].selected{background:#E56A20;}.pain-dot[data-v="9"].selected{background:#D94B15;}.pain-dot[data-v="10"].selected{background:#C2365A;}
+.pain-scale-range{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:2px;padding:0 2px;}
+.pain-confirm-btn{width:100%;margin-top:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:11px;font-size:14px;font-weight:500;font-family:var(--font);cursor:pointer;transition:.2s;opacity:.4;box-shadow:0 2px 10px rgba(194,54,90,.2);}
+.pain-confirm-btn:not(:disabled){opacity:1;}
+.pain-confirm-btn:not(:disabled):hover{background:var(--accent2);}
+
+/* Input area */
+.input-area{background:var(--surface);border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;}
+.chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:14px;color:var(--text);font-family:var(--font);outline:none;resize:none;max-height:120px;line-height:1.5;transition:.2s;}
+.chat-input:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(194,54,90,.1);}
+.chat-input::placeholder{color:var(--text2);opacity:.6;}
+.attach-btn{width:40px;height:40px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:.2s;position:relative;}
+.attach-btn:hover{background:var(--accent-bg);border-color:var(--accent-light);color:var(--accent);}
+.attach-btn.has-photos{background:var(--accent-bg);border-color:var(--accent-light);color:var(--accent);}
+.send-btn{width:40px;height:40px;border-radius:50%;background:var(--accent);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 2px 10px rgba(194,54,90,.25);transition:.2s;}
+.send-btn:hover{background:var(--accent2);}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Complete */
+#completeScreen{align-items:center;justify-content:center;}
+.complete-box{text-align:center;padding:40px 32px;max-width:380px;}
+.done-icon{width:72px;height:72px;border-radius:50%;background:var(--green-bg);border:2.5px solid rgba(43,174,126,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.complete-title{font-family:var(--font-display);font-size:24px;color:var(--text);margin-bottom:8px;}
+.complete-sub{font-size:14px;color:var(--text2);line-height:1.7;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--accent-light);border-radius:4px;}
+@media(max-width:400px){.row2{grid-template-columns:1fr;}.msg-bubble{max-width:88%;}.pain-dot{height:30px;font-size:11px;}}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+@keyframes scaleIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <svg width="28" height="28" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="80,20 124,44 124,96 80,120 36,96 36,44" fill="#FDE8ED" stroke="#F0BDC8" stroke-width="1"/>
+      <polygon points="80,30 114,50 114,90 80,110 46,90 46,50" fill="#FAD5DF" stroke="#EBA8B8" stroke-width="1"/>
+      <polygon points="80,42 104,56 104,84 80,98 56,84 56,56" fill="#fff" stroke="#F0C8D4" stroke-width="1"/>
+      <rect x="73" y="54" width="14" height="32" rx="2" fill="#C2365A" opacity=".95"/>
+      <rect x="65" y="62" width="30" height="16" rx="2" fill="#C2365A" opacity=".95"/>
+    </svg>
+    <span class="logo-text">NEXUM</span>
+  </div>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+    <div class="doctor-badge" id="doctorBadge" style="display:none;">
+      <div class="doctor-badge-photo" id="doctorBadgePhoto"></div>
+      <span class="doctor-badge-name" id="doctorBadgeName"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal-overlay" id="privacyModal" onclick="handleModalOverlayClick(event)">
+  <div class="modal-sheet" id="modalSheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Політика конфіденційності</span>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="acceptAndClose()" id="modalAcceptBtn" style="margin-top:0">Погоджуюсь ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Photo Panel -->
+<div class="photo-panel" id="photoPanel" onclick="handlePhotoPanelOverlayClick(event)">
+  <div class="photo-panel-sheet" id="photoPanelSheet">
+    <div class="photo-panel-handle"></div>
+    <div class="photo-panel-header">
+      <span class="photo-panel-title" id="photoPanelTitle">📎 Фото</span>
+      <button class="photo-panel-close" onclick="closePhotoPanel()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="photo-panel-body">
+      <div style="background:linear-gradient(135deg,#FDE8ED,#FAD5DF);border:1px solid #F0BDC8;border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+  <div style="display:flex;align-items:flex-start;gap:10px;">
+    <div style="font-size:22px;flex-shrink:0;">📸</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:#2D1A22;margin-bottom:4px;" id="photoTipTitle">Як зробити якісне фото</div>
+      <ul style="font-size:12px;color:#8A5A6A;line-height:1.7;padding-left:16px;margin:0;">
+        <li id="photoTip1">Текст на фото має бути чітким та читабельним</li>
+        <li id="photoTip2">Фотографуйте при хорошому освітленні</li>
+        <li id="photoTip3">Тримайте камеру рівно, без нахилу</li>
+      </ul>
+      <div style="margin-top:8px;padding:8px 10px;background:rgba(194,54,90,0.08);border-left:3px solid #C2365A;border-radius:0 8px 8px 0;font-size:12px;color:#C2365A;font-weight:500;" id="photoTipWarn">
+        ⚠️ Якщо фото нечіткі — будь ласка, візьміть оригінали документів на прийом
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="photo-upload-area" id="photoDropArea"
+        onclick="document.getElementById('photoFileInput').click()"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="handlePhotoDrop(event)">
+        <div style="font-size:28px;margin-bottom:8px">🖼️</div>
+        <div style="font-size:13px;color:var(--text2)" id="photoDropLabel">Натисніть або перетягніть фото</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px">JPG, PNG, WEBP · до 10MB</div>
+      </div>
+      <input type="file" id="photoFileInput" accept="image/*" multiple style="display:none" onchange="handlePhotoSelect(this.files)"/>
+      <div class="photo-grid" id="photoGrid"></div>
+      <div class="upload-progress" id="uploadProgress"></div>
+    </div>
+    <div class="photo-panel-footer">
+      <button class="btn-primary" onclick="closePhotoPanel()" style="margin-top:0" id="photoDoneBtn">Готово ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ INTAKE SCREEN ══════════ -->
+<div class="screen active" id="intakeScreen">
+  <div class="intake-wrap">
+    <div class="intake-info" id="intakeInfo">Ці дані будуть включені в медичну картку для лікаря.</div>
+    <div class="sep"></div>
+    <div class="field-group">
+      <label id="lblName">ПІБ <span class="req">*</span></label>
+      <div class="input-group">
+        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <input id="inpFullName" placeholder="Іваненко Іван Іванович"/>
+      </div>
+    </div>
+    <div class="field-group">
+      <label id="lblPhone">Телефон <span class="req">*</span></label>
+      <div class="input-group">
+        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>
+        <input id="inpPhone" type="tel" placeholder="+380 XX XXX XX XX"/>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Email</label>
+      <div class="input-group">
+        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <input id="inpEmail" type="email" placeholder="example@email.com"/>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field-group">
+        <label id="lblDob">Дата народження</label>
+        <div class="input-group">
+          <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <input id="inpDob" type="date"/>
+        </div>
+      </div>
+      <div class="field-group">
+        <label id="lblAge">Вік (роки)</label>
+        <div class="input-group">
+          <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <input id="inpAge" type="number" placeholder="25" min="0" max="120"/>
+        </div>
+      </div>
+    </div>
+    <div class="row2" style="margin-top:10px">
+      <div class="field-group">
+        <label id="lblHeight">Зріст (см)</label>
+        <div class="input-group">
+          <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><polyline points="6,8 12,2 18,8"/><polyline points="6,16 12,22 18,16"/></svg>
+          <input id="inpHeight" type="number" placeholder="170" min="50" max="250"/>
+        </div>
+      </div>
+      <div class="field-group">
+        <label id="lblWeight">Вага (кг)</label>
+        <div class="input-group">
+          <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h12l2 6H4L6 2z"/><rect x="3" y="8" width="18" height="14" rx="2"/></svg>
+          <input id="inpWeight" type="number" placeholder="70" min="1" max="300"/>
+        </div>
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:10px">
+      <label>
+        <span id="lblContact">ФІО особи, що спілкується з ботом</span>
+        <span class="label-hint" id="contactHint">Якщо це дитина — вкажіть ПІБ батька або матері</span>
+      </label>
+      <div class="input-group">
+        <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <input id="inpContact" placeholder="Іваненко Марія Петрівна"/>
+      </div>
+    </div>
+    <div class="consent-block" id="consentBlock">
+      <label class="consent-row" for="consentCheck">
+        <input type="checkbox" class="consent-checkbox" id="consentCheck"/>
+        <span class="consent-text" id="consentText">
+          Я надаю згоду на обробку моїх персональних даних відповідно до
+          <button class="consent-link" id="privacyLink" onclick="openModal(event)">Політики конфіденційності</button>
+        </span>
+      </label>
+      <div class="consent-error" id="consentError">Будь ласка, надайте згоду на обробку персональних даних</div>
+    </div>
+    <button class="btn-primary" id="btnProceed" onclick="proceedToDelivery()">Далі →</button>
+  </div>
+</div>
+
+<!-- ══════════ DELIVERY SCREEN ══════════ -->
+<div class="screen" id="deliveryScreen">
+  <div class="delivery-wrap">
+    <!-- Back button -->
+    <button onclick="showScreen('intakeScreen')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;padding:0;margin-bottom:20px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span id="lblBack">Назад</span>
+    </button>
+
+    <div class="delivery-hero">
+      <div class="delivery-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C2365A" stroke-width="1.8" stroke-linecap="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="delivery-title" id="deliveryTitle">Куди надіслати протокол?</div>
+      <div class="delivery-sub" id="deliverySub">Оберіть зручний спосіб отримання медичного протоколу від лікаря після прийому.</div>
+    </div>
+
+    <div class="channel-list">
+      <!-- Email -->
+      <div class="channel-card" data-channel="email" onclick="selectChannel('email')">
+        <div class="channel-card-icon em">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8185A" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div class="channel-card-body">
+          <div class="channel-card-name" id="chEmName">Електронна пошта</div>
+          <div class="channel-card-desc" id="chEmDesc">PDF-протокол на вашу адресу</div>
+        </div>
+        <div class="channel-radio"><div class="channel-radio-dot"></div></div>
+      </div>
+      <!-- Email extra -->
+      <div class="channel-extra" id="extraEmail">
+        <div class="channel-extra-inner">
+          <p id="emailHint" style="font-size:12px;color:var(--text2);margin-bottom:8px;">Введіть email для отримання протоколу</p>
+          <div class="input-group" style="background:var(--surface);">
+            <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input id="inpDeliveryEmail" type="email" placeholder="example@email.com"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cabinet -->
+      <div class="channel-card" data-channel="cabinet" onclick="selectChannel('cabinet')">
+        <div class="channel-card-icon cab">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00B87A" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="channel-card-body">
+          <div class="channel-card-name" id="chCabName">Кабінет пацієнта</div>
+          <div class="channel-card-desc" id="chCabDesc">Збереження в особистому кабінеті</div>
+        </div>
+        <div class="channel-radio"><div class="channel-radio-dot"></div></div>
+      </div>
+      <!-- Cabinet extra -->
+      <div class="channel-extra" id="extraCabinet">
+        <div class="channel-extra-inner">
+          <p id="cabinetHint" style="font-size:12px;color:var(--text2);margin-bottom:8px;">Введіть номер телефону для входу в кабінет</p>
+          <div class="input-group" style="background:var(--surface);">
+            <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>
+            <input id="inpDeliveryCabinetPhone" type="tel" placeholder="+380 XX XXX XX XX"/>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /channel-list -->
+
+    <button class="btn-primary" id="btnDeliveryNext" onclick="proceedToChat()" disabled>
+      <span id="lblDeliveryNext">Продовжити</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ CHAT SCREEN ══════════ -->
+<div class="screen" id="chatScreen">
+  <div class="chat-header">
+    <div class="chat-avatar">
+      <svg width="20" height="20" viewBox="0 0 36 36" fill="none">
+        <path d="M6 18 Q10 8 18 8 Q26 8 30 18 Q26 28 18 28 Q10 28 6 18Z" stroke="#C2365A" stroke-width="2" fill="none"/>
+        <path d="M12 18 Q15 13 18 18 Q21 23 24 18" stroke="#C2365A" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="chat-name">Nexum</div>
+      <div class="chat-status" id="chatStatusText">Онлайн</div>
+    </div>
+    <!-- delivery badge in header -->
+    <div class="chat-delivery-badge" id="chatDeliveryBadge" style="display:none"></div>
+  </div>
+  <div class="progress-bar-wrap" id="progressBarWrap" style="display:none">
+    <div class="progress-label">
+      <span id="progressLabelText">Прогрес опитування</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+  <div class="messages" id="messages"></div>
+  <div class="input-area">
+    <button class="attach-btn" id="attachBtn" onclick="openPhotoPanel()" title="Додати фото">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      <span class="photo-badge" id="photoBadge" style="display:none">0</span>
+    </button>
+    <textarea class="chat-input" id="chatInput" placeholder="Введіть відповідь..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"
+      oninput="autoResize(this)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMsg()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ COMPLETE SCREEN ══════════ -->
+<div class="screen" id="completeScreen">
+  <div class="complete-box">
+    <div class="done-icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2BAE7E" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </div>
+    <div class="complete-title" id="completeTitle">Дякуємо!</div>
+    <div class="complete-sub" id="completeSub">Ваші дані передані лікарю.<br>Очікуйте на зв'язок найближчим часом.</div>
+  </div>
+</div>
+
+<script>
+function fixText(s){
+  if(s===null||s===undefined)return'';
+  return String(s).replace(/\uFFFD/g,'').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,'').normalize('NFC');
+}
+
+let lang='uk';
+let uploadedPhotos=[];
+let patientData={};
+let token='';
+let questionsData=[];
+let currentQIdx=0;
+let answers={};
+let _followUpQ=null;
+let surveyStartTime=null;
+let surveyKey='therapy';
+let surveyName='';
+let telegramUserId='';
+let selectedChannel=null;
+let aiPrompt = '';
+let aiHistory = [];
+let aiMode = false;
+// Auto-detect Telegram user
+if(window.Telegram?.WebApp?.initDataUnsafe?.user){
+  const tgUser=window.Telegram.WebApp.initDataUnsafe.user;
+  telegramUserId=String(tgUser.id||'');
+  if(tgUser.id){
+   setTimeout(() => {
+  const badge = document.getElementById('tgAutofillBadge');
+  const nameEl = document.getElementById('tgAutofillName');
+  const input = document.getElementById('inpTelegramId');
+  const wrap = document.getElementById('tgManualWrap');
+
+  if (badge) badge.style.display = 'flex';
+  if (nameEl) nameEl.textContent = tgUser.first_name || '';
+  if (input) input.value = String(tgUser.id);
+  if (wrap) wrap.style.display = 'none';
+}, 100);
+  }
+}
+
+/* ─── DELIVERY CHANNEL ─── */
+function selectChannel(channel){
+  selectedChannel=channel;
+  document.querySelectorAll('.channel-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelector(`.channel-card[data-channel="${channel}"]`).classList.add('selected');
+  ['extraTelegram','extraEmail','extraCabinet'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('visible');
+});
+  const map={telegram:'extraTelegram',email:'extraEmail',cabinet:'extraCabinet'};
+if (map[channel]) {
+  const extra = document.getElementById(map[channel]);
+  if (extra) extra.classList.add('visible');
+}
+  const btn=document.getElementById('btnDeliveryNext');
+  btn.disabled=false;
+  if(channel==='email'){
+    const existingEmail=document.getElementById('inpEmail').value.trim();
+    if(existingEmail&&!document.getElementById('inpDeliveryEmail').value)
+      document.getElementById('inpDeliveryEmail').value=existingEmail;
+  }
+  if(channel==='cabinet'){
+    const existingPhone=document.getElementById('inpPhone').value.trim();
+    if(existingPhone&&!document.getElementById('inpDeliveryCabinetPhone').value)
+      document.getElementById('inpDeliveryCabinetPhone').value=existingPhone;
+  }
+}
+
+/* ─── PAIN SCALE ─── */
+const PAIN_EMOJIS={
+  uk:[{emoji:'😊',label:'Болю немає'},{emoji:'🙂',label:'Дуже слабкий'},{emoji:'😐',label:'Слабкий'},{emoji:'😕',label:'Помірний'},{emoji:'😟',label:'Помітний'},{emoji:'😣',label:'Середній'},{emoji:'😖',label:'Сильний'},{emoji:'😫',label:'Дуже сильний'},{emoji:'😩',label:'Нестерпний'},{emoji:'🤯',label:'Найгірший можливий'}],
+  en:[{emoji:'😊',label:'No pain'},{emoji:'🙂',label:'Very mild'},{emoji:'😐',label:'Mild'},{emoji:'😕',label:'Moderate'},{emoji:'😟',label:'Noticeable'},{emoji:'😣',label:'Moderate–severe'},{emoji:'😖',label:'Severe'},{emoji:'😫',label:'Very severe'},{emoji:'😩',label:'Intense'},{emoji:'🤯',label:'Worst possible'}]
+};
+
+function renderPainScale(questionText,minVal,maxVal){
+  const min=minVal||1,max=maxVal||10;
+  const msgs=document.getElementById('messages');
+  const d=document.createElement('div');d.className='msg bot';
+  const av=document.createElement('div');av.className='msg-av';av.innerHTML=AV_SVG;
+  const bubble=document.createElement('div');bubble.className='msg-bubble';bubble.style.maxWidth='100%';
+  bubble.textContent=fixText(questionText);
+  const btnsRow=document.createElement('div');btnsRow.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;';
+  for(let v=min;v<=max;v++){
+    const btn=document.createElement('button');btn.className='quick-btn';btn.textContent=v;
+    btn.style.cssText='min-width:36px;padding:6px 10px;font-weight:600;';
+    btn.onclick=()=>{
+      btnsRow.querySelectorAll('button').forEach(b=>{b.disabled=true;b.style.opacity='0.4';});
+      btn.style.opacity='1';btn.style.background='var(--accent)';btn.style.color='#fff';btn.style.borderColor='var(--accent)';
+      const displayText=`${v}/${max}`;addUser(displayText);recAns(displayText);currentQIdx++;
+      setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);
+    };
+    btnsRow.appendChild(btn);
+  }
+  bubble.appendChild(btnsRow);d.appendChild(av);d.appendChild(bubble);msgs.appendChild(d);scrollB();
+}
+
+function normalizeYesNo(text){
+  const t=(text||'').toLowerCase().trim().replace(/[!?.,"'«»\-]/g,'').trim();
+  const YES=['так','да','yes','y','ага','звичайно','авжеж','підтверджую','є','маю','маю таке','є таке','+','yep','ок','ok','okay','позитивно','вірно','точно','є у мене','присутній','присутня','присутнє','страждаю','хворів','хворіла','мав','мала','буває','буває таке','інколи','часто','постійно'];
+  const NO=['ні','нет','no','n','не','немає','нема','нічого','відсутні','відсутнє','відсутній','відсутня','заперечую','nope','не маю','не хворів','не хворіла','не було','не спостерігається','не страждаю','ніколи','все гаразд','добре','нормально'];
+  if(YES.includes(t)||YES.some(w=>t===w||t.startsWith(w+' ')))return'yes';
+  if(NO.includes(t)||NO.some(w=>t===w||t.startsWith(w+' ')))return'no';
+  return null;
+}
+
+async function _aiFollowUp(questionText,answerText){
+  const inp=document.getElementById('chatInput');const sendBtn=document.getElementById('sendBtn');
+  if(inp)inp.disabled=true;if(sendBtn)sendBtn.disabled=true;addBot('',true);
+  const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),8000);
+  try{
+    const resp=await fetch('/api/ai-followup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:questionText,answer:answerText,lang}),signal:controller.signal});
+    clearTimeout(timeoutId);const data=await resp.json();return data.followUp||'';
+  }catch(e){clearTimeout(timeoutId);console.warn('[_aiFollowUp]',e.message);return'';}
+  finally{const typing=document.getElementById('typingMsg');if(typing)typing.remove();if(inp)inp.disabled=false;if(sendBtn)sendBtn.disabled=false;if(inp)inp.focus();}
+}
+
+const PRIVACY={
+  uk:{title:'Політика конфіденційності',body:`<h2>1. Загальні положення</h2><p>Ця Політика конфіденційності описує, як Nexum збирає, використовує та захищає персональні дані, які ви надаєте під час заповнення медичної анкети.</p><h2>2. Які дані ми збираємо</h2><ul><li>Прізвище, ім'я, по батькові</li><li>Номер телефону та адреса електронної пошти</li><li>Дата народження, вік, зріст, вага</li><li>Відповіді на медичні запитання анкети</li><li>Фотографії (за вашим бажанням)</li></ul><h2>3. Мета обробки даних</h2><p>Персональні дані обробляються виключно з метою надання медичних послуг.</p><h2>4. Передача даних третім особам</h2><p>Ваші дані передаються лише лікарю або медичному персоналу клініки.</p><h2>5. Зберігання та захист</h2><p>Дані зберігаються на захищених серверах із застосуванням сучасних методів шифрування.</p><h2>6. Права суб'єкта даних</h2><p>Ви маєте право вимагати виправлення або видалення своїх даних, а також відкликати згоду в будь-який час.</p><h2>7. Термін зберігання</h2><p>Персональні дані зберігаються не більше 5 років.</p>`,acceptBtn:'Погоджуюсь ✓'},
+  en:{title:'Privacy Policy',body:`<h2>1. General provisions</h2><p>This Privacy Policy describes how Nexum collects, uses, and protects the personal data you provide when completing a medical intake form.</p><h2>2. Data we collect</h2><ul><li>Full name</li><li>Phone number and email address</li><li>Date of birth, age, height, weight</li><li>Answers to medical survey questions</li><li>Photos (optional)</li></ul><h2>3. Purpose of processing</h2><p>Personal data is processed solely for the purpose of providing medical services.</p><h2>4. Data sharing</h2><p>Your data is shared only with the doctor or medical staff of the clinic.</p><h2>5. Storage and security</h2><p>Data is stored on secure servers using modern encryption.</p><h2>6. Your rights</h2><p>You have the right to request correction or deletion of your data and to withdraw consent at any time.</p><h2>7. Retention period</h2><p>Personal data is retained for no longer than 5 years.</p>`,acceptBtn:'I agree ✓'}
+};
+
+const T={
+  uk:{intakeInfo:'Ці дані будуть включені в медичну картку для лікаря.',lblName:'ПІБ',lblPhone:'Телефон',lblDob:'Дата народження',lblAge:'Вік (роки)',lblHeight:'Зріст (см)',lblWeight:'Вага (кг)',lblContact:'ФІО особи, що спілкується з ботом',contactHint:'Якщо це дитина — вкажіть ПІБ батька або матері',btnProceed:'Далі →',online:'Онлайн',placeholder:'Введіть відповідь...',completeTitle:'Дякуємо!',completeSub:"Ваші дані передані лікарю.<br>Очікуйте на зв'язок найближчим часом.",nameReq:'Введіть ПІБ',phoneReq:'Введіть телефон',consentText:'Я надаю згоду на обробку моїх персональних даних відповідно до',consentLink:'Політики конфіденційності',consentError:'Будь ласка, надайте згоду на обробку персональних даних',photoPanelTitle:'📎 Фото',photoDropLabel:'Натисніть або перетягніть фото',photoDoneBtn:'Готово ✓',attachTitle:'Додати фото',lblBack:'Назад',deliveryTitle:'Куди надіслати протокол?',deliverySub:'Оберіть зручний спосіб отримання медичного протоколу від лікаря після прийому.',chTgName:'Telegram',chTgDesc:'Отримати протокол у цьому боті',chEmName:'Електронна пошта',chEmDesc:'PDF-протокол на вашу адресу',chCabName:'Кабінет пацієнта',chCabDesc:'Збереження в особистому кабінеті',lblDeliveryNext:'Продовжити',tgAutofillText:'Telegram ID визначено автоматично',tgManualHint:'Введіть ваш Telegram ID (числовий)',emailHint:'Введіть email для отримання протоколу',cabinetHint:'Введіть номер телефону для входу в кабінет',deliveryBadgeTg:'Telegram',deliveryBadgeEm:'Email',deliveryBadgeCab:'Кабінет пацієнта',
+photoTipTitle:'Як зробити якісне фото',
+photoTip1:'Текст на фото має бути чітким та читабельним',
+photoTip2:'Фотографуйте при хорошому освітленні',
+photoTip3:'Тримайте камеру рівно, без нахилу',
+photoTipWarn:'⚠️ Якщо фото нечіткі — будь ласка, візьміть оригінали документів на прийом'},
+  en:{intakeInfo:'This information will be included in your medical record.',lblName:'Full name',lblPhone:'Phone',lblDob:'Date of birth',lblAge:'Age (years)',lblHeight:'Height (cm)',lblWeight:'Weight (kg)',lblContact:'Name of person chatting with bot',contactHint:"If this is a child — enter parent's full name",btnProceed:'Next →',online:'Online',placeholder:'Type your answer...',completeTitle:'Thank you!',completeSub:'Your data has been sent to the doctor.<br>They will be in touch soon.',nameReq:'Please enter your full name',phoneReq:'Please enter your phone number',consentText:'I consent to the processing of my personal data in accordance with the',consentLink:'Privacy Policy',consentError:'Please consent to the processing of your personal data',photoPanelTitle:'📎 Photos',photoDropLabel:'Tap or drag photos here',photoDoneBtn:'Done ✓',attachTitle:'Add photo',lblBack:'Back',deliveryTitle:'Where to send the report?',deliverySub:'Choose how you want to receive the medical protocol from your doctor after the appointment.',chTgName:'Telegram',chTgDesc:'Receive the protocol in this bot',chEmName:'Email',chEmDesc:'PDF protocol to your address',chCabName:'Patient cabinet',chCabDesc:'Save in personal cabinet',lblDeliveryNext:'Continue',tgAutofillText:'Telegram ID detected automatically',tgManualHint:'Enter your Telegram ID (numbers only)',emailHint:'Enter email to receive the protocol',cabinetHint:'Enter phone number to access your cabinet',deliveryBadgeTg:'Telegram',deliveryBadgeEm:'Email',deliveryBadgeCab:'Patient cabinet',
+photoTipTitle:'How to take a good photo',
+photoTip1:'Text in the photo must be clear and readable',
+photoTip2:'Take photos in good lighting',
+photoTip3:'Hold the camera straight, without tilting',
+photoTipWarn:'⚠️ If photos are unclear — please bring original documents to the appointment'}
+};
+
+function openModal(e){
+  if(e)e.preventDefault();
+  const p=PRIVACY[lang];
+  document.getElementById('modalTitle').textContent=p.title;
+  document.getElementById('modalBody').innerHTML=p.body;
+  document.getElementById('modalAcceptBtn').textContent=p.acceptBtn;
+  document.getElementById('privacyModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('privacyModal').classList.remove('open');document.body.style.overflow='';}
+function acceptAndClose(){
+  document.getElementById('consentCheck').checked=true;
+  document.getElementById('consentError').style.display='none';
+  document.getElementById('consentBlock').style.borderColor='var(--border)';
+  closeModal();
+}
+function handleModalOverlayClick(e){if(e.target===document.getElementById('privacyModal'))closeModal();}
+
+function openPhotoPanel(){document.getElementById('photoPanel').classList.add('open');document.body.style.overflow='hidden';}
+function closePhotoPanel(){document.getElementById('photoPanel').classList.remove('open');document.body.style.overflow='';updatePhotoBadge();}
+function handlePhotoPanelOverlayClick(e){if(e.target===document.getElementById('photoPanel'))closePhotoPanel();}
+function updatePhotoBadge(){
+  const badge=document.getElementById('photoBadge');const btn=document.getElementById('attachBtn');
+  if(uploadedPhotos.length>0){badge.textContent=uploadedPhotos.length;badge.style.display='flex';btn.classList.add('has-photos');}
+  else{badge.style.display='none';btn.classList.remove('has-photos');}
+}
+
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal();closePhotoPanel();}});
+document.getElementById('inpDob').addEventListener('change',function(){
+  const d=new Date(this.value);
+  if(!isNaN(d))document.getElementById('inpAge').value=Math.floor((Date.now()-d)/(365.25*864e5));
+});
+
+(function(){
+  const parts=location.pathname.split('/');
+  token=parts[parts.length-1]||'';
+  if(token.length>8)loadMeta(token);
+})();
+
+async function loadMeta(t) {
+  try {
+    const r = await fetch('/api/survey/' + encodeURIComponent(t));
+    if (r.status === 404 || r.status === 410) { showInvalidScreen(); return; }
+    if (r.ok) {
+      const d = await r.json();
+      if (d.status === 'deleted') { showInvalidScreen(); return; }
+      if (d.status === 'active') {
+        if (d.aiPrompt) {
+  aiPrompt = d.aiPrompt;
+  aiMode = true;
+}
+        surveyKey = d.surveyKey || 'therapy';
+        surveyName = d.surveyName || '';
+        if (d.questions && d.questions.length) questionsData = d.questions;
+        if (d.doctorCode) {
+          loadDoctorBadge(d.doctorCode);
+        }
+      }
+    }
+  } catch(e) { console.error('[loadMeta]', e); }
+}
+async function aiNextQuestion() {
+  const inp = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+  if (inp) inp.disabled = true;
+  if (sendBtn) sendBtn.disabled = true;
+  addBot('', true); // показуємо typing
+
+  try {
+    const resp = await fetch('/api/ai-chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ history: aiHistory, aiPrompt, lang }),
+    });
+    const data = await resp.json();
+    
+    const typing = document.getElementById('typingMsg');
+    if (typing) typing.remove();
+
+    if (data.done) {
+      // Завершення — показуємо резюме
+      if (data.redFlags && data.redFlags.length) {
+        const flagsText = '⚠️ Зверніть увагу: ' + data.redFlags.join(', ');
+        addBot(flagsText);
+      }
+      answers['__ai_summary'] = data.summary;
+      answers['__ai_redFlags'] = (data.redFlags || []).join(', ');
+      setTimeout(() => finish(), 1000);
+    } else {
+      addBot(data.question);
+      aiHistory.push({ role: 'assistant', content: data.question });
+    }
+  } catch(e) {
+    const typing = document.getElementById('typingMsg');
+    if (typing) typing.remove();
+    console.error('[aiNextQuestion]', e);
+    addBot(lang === 'uk' ? 'Виникла помилка. Спробуйте ще раз.' : 'An error occurred.');
+  } finally {
+    if (inp) inp.disabled = false;
+    if (sendBtn) sendBtn.disabled = false;
+    if (inp) inp.focus();
+    setTimeout(scrollB, 50);
+  }
+}
+async function loadDoctorBadge(doctorCode) {
+  try {
+    const r = await fetch('/api/profile?doctorCode=' + encodeURIComponent(doctorCode));
+    if (!r.ok) return;
+    const prof = await r.json();
+    if (!prof || (!prof.last_name && !prof.first_name)) return;
+
+    const name = [prof.last_name, prof.first_name].filter(Boolean).join(' ');
+    const badge = document.getElementById('doctorBadge');
+    const photoEl = document.getElementById('doctorBadgePhoto');
+    const nameEl = document.getElementById('doctorBadgeName');
+
+    nameEl.textContent = name;
+
+    if (prof.photo_base64) {
+const img = document.createElement('img');
+img.src = prof.photo_base64;
+img.alt = name;
+photoEl.appendChild(img);
+    } else {
+      const initials = [prof.last_name, prof.first_name]
+        .filter(Boolean).map(w => w[0]).join('').toUpperCase();
+      photoEl.textContent = initials;
+    }
+
+    badge.style.display = 'flex';
+  } catch(e) { console.error('[loadDoctorBadge]', e); }
+}
+
+function showInvalidScreen(){
+  document.getElementById('intakeScreen').style.display='none';
+  document.body.innerHTML=`<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:var(--font)"><div style="text-align:center;padding:40px 32px;max-width:360px"><div style="width:72px;height:72px;border-radius:50%;background:var(--accent-bg);border:2px solid var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px">🔗</div><div style="font-family:var(--font-display);font-size:22px;color:var(--text);margin-bottom:10px">Посилання недійсне</div><div style="font-size:14px;color:var(--text2);line-height:1.7">Це посилання було видалено або більше не активне.<br>Зверніться до адміністратора для отримання нового.</div></div></div>`;
+}
+
+function proceedToDelivery(){
+  const name=document.getElementById('inpFullName').value.trim();
+  const phone=document.getElementById('inpPhone').value.trim();
+  const consent=document.getElementById('consentCheck').checked;
+  const t=T[lang];
+  if(!name){alert(t.nameReq);return;}
+  if(!phone){alert(t.phoneReq);return;}
+  if(!consent){
+    const err=document.getElementById('consentError');const block=document.getElementById('consentBlock');
+    err.style.display='block';block.style.borderColor='var(--accent)';
+    block.scrollIntoView({behavior:'smooth',block:'center'});return;
+  }
+  patientData={fullName:name,phone,email:document.getElementById('inpEmail').value.trim(),dob:document.getElementById('inpDob').value,age:document.getElementById('inpAge').value,height:document.getElementById('inpHeight').value,weight:document.getElementById('inpWeight').value,contactPerson:document.getElementById('inpContact').value.trim(),lang,consentGiven:true};
+  showScreen('deliveryScreen');
+}
+
+function proceedToChat(){
+  if(!selectedChannel){return;}
+  if(selectedChannel==='email'){
+    const emailVal=document.getElementById('inpDeliveryEmail').value.trim();
+    if(!emailVal||!emailVal.includes('@')){document.getElementById('inpDeliveryEmail').focus();return alert(lang==='uk'?'Введіть коректну email-адресу':'Please enter a valid email address');}
+    patientData.deliveryEmail=emailVal;
+  }
+  if(selectedChannel==='cabinet'){
+    const cabPhone=document.getElementById('inpDeliveryCabinetPhone').value.trim();
+    patientData.deliveryCabinetPhone=cabPhone;
+  }
+  patientData.deliveryChannel=selectedChannel;
+const tgInput = document.getElementById('inpTelegramId');
+patientData.telegramId = telegramUserId || (tgInput ? tgInput.value.trim() : '');
+  _showChatDeliveryBadge();
+
+  showScreen('chatScreen');
+  startChat();
+}
+
+function _showChatDeliveryBadge(){
+  const badge=document.getElementById('chatDeliveryBadge');
+  const t=T[lang];
+  const labels={telegram:t.deliveryBadgeTg,email:t.deliveryBadgeEm,cabinet:t.deliveryBadgeCab};
+  badge.className='chat-delivery-badge '+(selectedChannel==='telegram'?'tg':selectedChannel==='email'?'em':'cab');
+badge.innerHTML=labels[selectedChannel]||'';
+  badge.style.display='flex';
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startChat() {
+  currentQIdx = 0;
+  surveyStartTime = new Date().toISOString();
+  aiHistory = [];
+  
+  if (aiMode && aiPrompt) {
+    // AI-driven режим
+    aiNextQuestion();
+  } else {
+    // Звичайний режим конструктора
+    nextQ();
+  }
+}
+function updateProgress(){
+  if(!questionsData.length)return;
+  const wrap=document.getElementById('progressBarWrap');const fill=document.getElementById('progressFill');const pct=document.getElementById('progressPct');const label=document.getElementById('progressLabelText');
+  wrap.style.display='block';const done=Math.min(currentQIdx,questionsData.length);const percent=Math.round((done/questionsData.length)*100);
+  fill.style.width=percent+'%';pct.textContent=percent+'%';
+  label.textContent=lang==='uk'?`Питання ${done} з ${questionsData.length}`:`Question ${done} of ${questionsData.length}`;
+}
+
+function nextQ(){
+  updateProgress();
+  if(currentQIdx>=questionsData.length){if(questionsData.length===0){addBot(lang==='uk'?'Не вдалося завантажити опитування. Посилання недійсне або вже використане.':'Could not load the survey. The link may be invalid or already used.');return;}finish();return;}
+  const q=questionsData[currentQIdx];let text=fixText(q.text||'');
+  if(q.type==='scale'){renderPainScale(text,q.min||1,q.max||10);return;}
+  if(q.type==='photo'){addBot(lang==='uk'?'📎 Якщо потрібно — додайте фото за допомогою кнопки зображення ліворуч. Натисніть «Готово» або введіть відповідь, щоб продовжити.':'📎 If needed, add photos using the image button on the left. Tap "Done" or type to continue.');return;}
+  if(q.type==='yesno'){renderQuick(text,q.options||['Так','Ні'],q);}
+  else if(q.type==='choice'&&q.options){renderQuick(text,q.options,q);}
+  else if(q.type==='multi'&&q.options){renderMulti(text,q.options);}
+  else{addBot(text);}
+}
+
+const AV_SVG=`<svg width="14" height="14" viewBox="0 0 36 36" fill="none"><path d="M6 18 Q10 8 18 8 Q26 8 30 18 Q26 28 18 28 Q10 28 6 18Z" stroke="#C2365A" stroke-width="2" fill="none"/><path d="M12 18 Q15 13 18 18 Q21 23 24 18" stroke="#C2365A" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+
+function addBot(text,isTyping=false){
+  const msgs=document.getElementById('messages');const d=document.createElement('div');d.className='msg bot';
+  const bubble=document.createElement('div');bubble.className='msg-bubble';
+  if(isTyping){bubble.innerHTML='<span style="display:inline-flex;gap:4px;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.2s infinite"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.2s infinite .4s"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.2s infinite .8s"></span></span>';d.id='typingMsg';}
+  else{bubble.textContent=fixText(text);}
+  d.innerHTML=`<div class="msg-av">${AV_SVG}</div>`;d.appendChild(bubble);msgs.appendChild(d);scrollB();return d;
+}
+
+function addUser(text){
+  const msgs=document.getElementById('messages');const d=document.createElement('div');d.className='msg user';
+  const init=(patientData.fullName||'?').split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'?';
+d.innerHTML=`<div class="msg-bubble">${esc(text)}</div><div class="msg-av user-av">${esc(init)}</div>`;
+  msgs.appendChild(d);scrollB();
+}
+
+function renderQuick(questionText,opts,qObj){
+  const msgs=document.getElementById('messages');const d=document.createElement('div');d.className='msg bot';
+  const av=document.createElement('div');av.className='msg-av';av.innerHTML=AV_SVG;
+  const bubble=document.createElement('div');bubble.className='msg-bubble';bubble.textContent=questionText;
+  const btnsDiv=document.createElement('div');btnsDiv.className='quick-btns';
+  opts.forEach(o=>{const btn=document.createElement('button');btn.className='quick-btn';btn.textContent=o;btn.onclick=()=>quickReply(o,d,qObj);btnsDiv.appendChild(btn);});
+  bubble.appendChild(btnsDiv);d.appendChild(av);d.appendChild(bubble);msgs.appendChild(d);scrollB();
+}
+
+function renderMulti(questionText,opts){
+  const msgs=document.getElementById('messages');const d=document.createElement('div');d.className='msg bot';
+  const av=document.createElement('div');av.className='msg-av';av.innerHTML=AV_SVG;
+  const bubble=document.createElement('div');bubble.className='msg-bubble';bubble.textContent=questionText;
+  const btnsDiv=document.createElement('div');btnsDiv.className='quick-btns';btnsDiv.style.cssText='flex-direction:column;align-items:flex-start;gap:6px;margin-top:10px';
+  opts.forEach(o=>{
+    const lbl=document.createElement('label');lbl.style.cssText='display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--accent-bg);border:1px solid var(--accent-light);border-radius:20px;cursor:pointer;font-size:13px;color:var(--accent);user-select:none;';
+    const cb=document.createElement('input');cb.type='checkbox';cb.dataset.val=o;cb.style.cssText='accent-color:var(--accent);width:15px;height:15px;cursor:pointer;flex-shrink:0;';
+    lbl.appendChild(cb);lbl.appendChild(document.createTextNode(o));btnsDiv.appendChild(lbl);
+  });
+  const confirmBtn=document.createElement('button');confirmBtn.className='quick-btn';confirmBtn.style.cssText='margin-top:10px;background:var(--accent);color:#fff;border-color:var(--accent);';confirmBtn.textContent='✓ Підтвердити';confirmBtn.onclick=()=>submitMulti(d);
+  bubble.appendChild(btnsDiv);bubble.appendChild(confirmBtn);d.appendChild(av);d.appendChild(bubble);msgs.appendChild(d);scrollB();
+}
+
+function submitMulti(msgEl){
+  const checked=[...msgEl.querySelectorAll('input[type=checkbox]:checked')].map(cb=>cb.dataset.val);
+  const val=checked.length?checked.join(', '):(lang==='uk'?'Не вибрано':'None selected');
+  msgEl.querySelectorAll('input,button').forEach(el=>el.disabled=true);
+  addUser(val);recAns(val);currentQIdx++;setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);
+}
+
+async function quickReply(val,msgEl,qObj){
+  if(msgEl)msgEl.querySelectorAll('.quick-btn').forEach(b=>b.disabled=true);
+  addUser(val);recAns(val);
+  let followUpText='';
+  if(qObj){
+    if(qObj.type==='yesno'){const isYes=val==='Так'||val==='Yes';if(isYes){followUpText=(qObj.followUpYes&&qObj.followUpYes.trim())?qObj.followUpYes.trim():await _aiFollowUp(qObj.text||'',val);}else{followUpText=qObj.followUpNo||'';}}
+    else if(qObj.type==='choice'&&qObj.followUpByOption){followUpText=qObj.followUpByOption[val]||'';}
+  }
+  const parentIdx=currentQIdx;currentQIdx++;
+  if(followUpText&&followUpText.trim()){_followUpQ={text:followUpText.trim(),parentIdx};setTimeout(()=>{addBot(followUpText.trim());setTimeout(scrollB,50);},400);}
+  else{_followUpQ=null;setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);}
+}
+
+function recAns(val){
+  const q=questionsData[currentQIdx];if(!q)return;
+  if(q.text)answers[q.text]=val;if(q.id)answers[q.id]=val;answers['q_'+currentQIdx]=val;
+}
+
+async function sendMsg(){
+  const inp=document.getElementById('chatInput');const text=inp.value.trim();if(!text)return;
+  inp.value='';autoResize(inp);
+  if(_followUpQ){
+    addUser(text);const parentQ=questionsData[_followUpQ.parentIdx];
+    if(parentQ){const key=(parentQ.text||parentQ.id)+'_уточнення';answers[key]=text;}
+    _followUpQ=null;setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);return;
+  }
+  const curQ=questionsData[currentQIdx];
+  if(curQ&&curQ.type==='scale'){
+    const num=parseInt(text);const min=curQ.min||1;const max=curQ.max||10;
+    if(!isNaN(num)&&num>=min&&num<=max){addUser(`${num}/${max}`);recAns(`${num}/${max}`);currentQIdx++;setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);}
+    else{addBot(lang==='uk'?`Будь ласка, оберіть число від ${min} до ${max} на шкалі вище`:`Please select a number from ${min} to ${max} using the scale above`);}
+    return;
+  }
+  if(curQ&&curQ.type==='photo'){
+    const photoSummary=uploadedPhotos.length>0?`📎 ${uploadedPhotos.length} ${lang==='uk'?'фото додано':'photo(s) added'}`:text;
+    addUser(photoSummary);recAns(uploadedPhotos.join(', '));currentQIdx++;setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);return;
+  }
+  if(curQ&&curQ.type==='yesno'){
+    document.getElementById('messages').querySelectorAll('.quick-btn').forEach(b=>b.disabled=true);
+    addUser(text);recAns(text);const normalized=normalizeYesNo(text);let followUpText='';
+    if(normalized==='yes'){followUpText=(curQ.followUpYes&&curQ.followUpYes.trim())?curQ.followUpYes.trim():await _aiFollowUp(curQ.text||'',text);}
+    else if(normalized==='no'){followUpText=curQ.followUpNo||'';}
+    const parentIdx=currentQIdx;currentQIdx++;
+    if(followUpText&&followUpText.trim()){_followUpQ={text:followUpText.trim(),parentIdx};setTimeout(()=>{addBot(followUpText.trim());setTimeout(scrollB,50);},400);}
+    else{_followUpQ=null;setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);}
+    return;
+  }
+  if(curQ&&curQ.type==='choice'){
+    document.getElementById('messages').querySelectorAll('.quick-btn').forEach(b=>b.disabled=true);
+    addUser(text);recAns(text);let followUpText='';
+    if(curQ.followUpByOption){const matchedOpt=Object.keys(curQ.followUpByOption).find(k=>k.toLowerCase()===text.toLowerCase());if(matchedOpt)followUpText=curQ.followUpByOption[matchedOpt]||'';}
+    const parentIdx=currentQIdx;currentQIdx++;
+    if(followUpText&&followUpText.trim()){_followUpQ={text:followUpText.trim(),parentIdx};setTimeout(()=>{addBot(followUpText.trim());setTimeout(scrollB,50);},400);}
+    else{_followUpQ=null;setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);}
+    return;
+  }
+  if(curQ&&curQ.type==='text'){
+    const normalized=normalizeYesNo(text);
+    if(normalized==='yes'){addUser(text);recAns(text);const autoFU=await _aiFollowUp(curQ.text||'',text);const parentIdx=currentQIdx;currentQIdx++;if(autoFU){_followUpQ={text:autoFU,parentIdx};setTimeout(()=>{addBot(autoFU);setTimeout(scrollB,50);},400);}else{setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);}return;}
+  }
+  addUser(text);recAns(text);currentQIdx++;setTimeout(()=>{nextQ();setTimeout(scrollB,50);},400);
+}
+
+// Photo upload
+async function handlePhotoSelect(files){for(const file of files)await uploadPhoto(file);}
+function handlePhotoDrop(event){event.preventDefault();document.getElementById('photoDropArea')?.classList.remove('drag');const files=event.dataTransfer?.files;if(files)handlePhotoSelect(files);}
+async function uploadPhoto(file){
+  const progress=document.getElementById('uploadProgress');const grid=document.getElementById('photoGrid');if(!grid)return;
+  if(progress)progress.textContent=lang==='uk'?'Завантаження...':'Uploading...';
+  const thumbId='thumb_'+Date.now();const thumb=document.createElement('div');thumb.className='photo-thumb photo-uploading';thumb.id=thumbId;
+  const reader=new FileReader();reader.onload=e=>{thumb.innerHTML=`<img src="${e.target.result}"/>`;};reader.readAsDataURL(file);grid.appendChild(thumb);
+  try{
+    const formData=new FormData();formData.append('photo',file);formData.append('token',token||'anon');
+    const r=await fetch('/api/upload-photo',{method:'POST',body:formData});const data=await r.json();if(!data.success)throw new Error(data.error||'Upload failed');
+    uploadedPhotos.push(data.url);thumb.classList.remove('photo-uploading');const img=thumb.querySelector('img');if(img)img.src=data.url;
+    const delBtn=document.createElement('button');delBtn.className='del-photo';delBtn.textContent='×';delBtn.onclick=()=>{uploadedPhotos=uploadedPhotos.filter(u=>u!==data.url);thumb.remove();updatePhotoBadge();};thumb.appendChild(delBtn);
+    if(progress)progress.textContent=`✓ ${uploadedPhotos.length} ${lang==='uk'?'фото завантажено':'photo(s) uploaded'}`;updatePhotoBadge();
+  }catch(e){thumb.remove();if(progress)progress.textContent='❌ '+e.message;}
+}
+
+async function finish(){
+  showScreen('completeScreen');
+  try{
+    const answersArr=questionsData.map((q,i)=>({id:q.id||('q_'+i),text:q.text||'',type:q.type||'text',value:answers[q.text||q.id]||answers[q.id]||answers['q_'+i]||''})).filter(a=>a.value!=='');
+    const followUpEntries=Object.entries(answers).filter(([k])=>k.endsWith('_уточнення')).map(([k,v])=>({id:'followup_'+k,text:'↳ '+k.replace('_уточнення','')+'  (уточнення)',type:'text',value:v}));
+    answersArr.push(...followUpEntries);
+    const nameParts=(patientData.fullName||'').trim().split(/\s+/);
+    const payload = {
+  firstName: nameParts[1]||'', lastName: nameParts[0]||'',
+  phone: patientData.phone||'', telegramId: telegramUserId||'',
+  answers: answersArr, photos: uploadedPhotos, surveyKey, surveyName,
+  startedAt: surveyStartTime||new Date().toISOString(),
+  completedAt: new Date().toISOString(),
+  deliveryChannel: selectedChannel,
+  deliveryEmail: patientData.deliveryEmail||'',
+  deliveryCabinetPhone: patientData.deliveryCabinetPhone||'',
+  meta: {
+    dob: patientData.dob||'', age: patientData.age||'',
+    height: patientData.height||'', weight: patientData.weight||'',
+    email: patientData.email||'', contactPerson: patientData.contactPerson||'',
+    lang: patientData.lang||lang, consentGiven: true,
+    deliveryChannel: selectedChannel||'',
+    deliveryEmail: patientData.deliveryEmail||'',
+    deliveryCabinetPhone: patientData.deliveryCabinetPhone||'',
+  },
+};
+    const controller=new AbortController();const timeoutId=setTimeout(()=>controller.abort(),15000);
+    await fetch('/api/survey/'+encodeURIComponent(token)+'/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
+    clearTimeout(timeoutId);
+  }catch(e){if(e.name!=='AbortError')console.error('[finish] submit error:',e);}
+}
+
+function scrollB(){const m=document.getElementById('messages');requestAnimationFrame(()=>{m.scrollTop=m.scrollHeight;setTimeout(()=>m.scrollTop=m.scrollHeight,100);});}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+function esc(s){const d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
+</script>
+</body>
+</html>
